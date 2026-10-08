@@ -1,0 +1,4002 @@
+[
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 525,
+        "start" : 480
+      }
+    ],
+    "color" : "peach",
+    "courseID" : "EFB7143D-8C83-41BA-8E6F-84599FFCB98E",
+    "endMinute" : 525,
+    "id" : "EFB7143D-8C83-41BA-8E6F-84599FFCB98E-15E5F97C-10D1-4534-AA8B-762316F4A060-1",
+    "isExtra" : false,
+    "location" : "专用实验室",
+    "name" : "计算机网络",
+    "notes" : "",
+    "periodLabel" : "第 1 节",
+    "sourceID" : "15E5F97C-10D1-4534-AA8B-762316F4A060",
+    "startMinute" : 480,
+    "teacher" : "示例教师",
+    "timeLabel" : "08:00–08:45",
+    "week" : 1,
+    "weekday" : 1
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      },
+      {
+        "end" : 735,
+        "start" : 690
+      }
+    ],
+    "color" : "jade",
+    "courseID" : "5891E0C4-2EC1-4403-8E9E-9478F5795DAE",
+    "endMinute" : 735,
+    "id" : "5891E0C4-2EC1-4403-8E9E-9478F5795DAE-1EE22423-D467-496A-9CFC-FF93D9FB33D4-1",
+    "isExtra" : false,
+    "location" : "教三 · 302",
+    "name" : "数据库原理",
+    "notes" : "",
+    "periodLabel" : "第 3–5 节",
+    "sourceID" : "1EE22423-D467-496A-9CFC-FF93D9FB33D4",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–12:15",
+    "week" : 1,
+    "weekday" : 1
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      }
+    ],
+    "color" : "blue",
+    "courseID" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8",
+    "endMinute" : 685,
+    "id" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8-E8AF2A0A-5AF8-4DD6-BDF6-2B3A2E283E90-1",
+    "isExtra" : false,
+    "location" : "教三 · 501",
+    "name" : "编译原理",
+    "notes" : "",
+    "periodLabel" : "第 3–4 节",
+    "sourceID" : "E8AF2A0A-5AF8-4DD6-BDF6-2B3A2E283E90",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–11:25",
+    "week" : 1,
+    "weekday" : 2
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 575,
+        "start" : 530
+      }
+    ],
+    "color" : "mint",
+    "courseID" : "E012E001-B2CE-49F7-AE64-3475C64F0E1F",
+    "endMinute" : 575,
+    "id" : "E012E001-B2CE-49F7-AE64-3475C64F0E1F-CD765CE1-11A1-4321-A9F7-63FB11FE7EAA-1",
+    "isExtra" : false,
+    "location" : "体育馆2楼",
+    "name" : "体育",
+    "notes" : "",
+    "periodLabel" : "第 2 节",
+    "sourceID" : "CD765CE1-11A1-4321-A9F7-63FB11FE7EAA",
+    "startMinute" : 530,
+    "teacher" : "",
+    "timeLabel" : "08:50–09:35",
+    "week" : 1,
+    "weekday" : 3
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      }
+    ],
+    "color" : "violet",
+    "courseID" : "C20A2311-D579-4954-99B0-C0FDDAE08523",
+    "endMinute" : 685,
+    "id" : "C20A2311-D579-4954-99B0-C0FDDAE08523-FA077F1A-03C7-4DC1-8D8A-ED04ECF8D621-1",
+    "isExtra" : false,
+    "location" : "教三 · 304",
+    "name" : "大数据处理",
+    "notes" : "",
+    "periodLabel" : "第 3–4 节",
+    "sourceID" : "FA077F1A-03C7-4DC1-8D8A-ED04ECF8D621",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–11:25",
+    "week" : 1,
+    "weekday" : 3
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 995,
+        "start" : 950
+      },
+      {
+        "end" : 1045,
+        "start" : 1000
+      }
+    ],
+    "color" : "violet",
+    "courseID" : "C20A2311-D579-4954-99B0-C0FDDAE08523",
+    "endMinute" : 1045,
+    "id" : "C20A2311-D579-4954-99B0-C0FDDAE08523-C441A87A-0213-41AF-992F-C4DAF766A545-1",
+    "isExtra" : false,
+    "location" : "教三 · 304",
+    "name" : "大数据处理",
+    "notes" : "",
+    "periodLabel" : "第 8–9 节",
+    "sourceID" : "C441A87A-0213-41AF-992F-C4DAF766A545",
+    "startMinute" : 950,
+    "teacher" : "示例教师",
+    "timeLabel" : "15:50–17:25",
+    "week" : 1,
+    "weekday" : 4
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      },
+      {
+        "end" : 735,
+        "start" : 690
+      }
+    ],
+    "color" : "blue",
+    "courseID" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8",
+    "endMinute" : 735,
+    "id" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8-B473B6D7-7DAC-4FC7-8EA4-4E5A5E5B7E73-1",
+    "isExtra" : false,
+    "location" : "教三 · 501",
+    "name" : "编译原理",
+    "notes" : "",
+    "periodLabel" : "第 3–5 节",
+    "sourceID" : "B473B6D7-7DAC-4FC7-8EA4-4E5A5E5B7E73",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–12:15",
+    "week" : 1,
+    "weekday" : 5
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      },
+      {
+        "end" : 735,
+        "start" : 690
+      }
+    ],
+    "color" : "jade",
+    "courseID" : "5891E0C4-2EC1-4403-8E9E-9478F5795DAE",
+    "endMinute" : 735,
+    "id" : "5891E0C4-2EC1-4403-8E9E-9478F5795DAE-1EE22423-D467-496A-9CFC-FF93D9FB33D4-2",
+    "isExtra" : false,
+    "location" : "教三 · 302",
+    "name" : "数据库原理",
+    "notes" : "",
+    "periodLabel" : "第 3–5 节",
+    "sourceID" : "1EE22423-D467-496A-9CFC-FF93D9FB33D4",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–12:15",
+    "week" : 2,
+    "weekday" : 1
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      }
+    ],
+    "color" : "blue",
+    "courseID" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8",
+    "endMinute" : 685,
+    "id" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8-E8AF2A0A-5AF8-4DD6-BDF6-2B3A2E283E90-2",
+    "isExtra" : false,
+    "location" : "教三 · 501",
+    "name" : "编译原理",
+    "notes" : "",
+    "periodLabel" : "第 3–4 节",
+    "sourceID" : "E8AF2A0A-5AF8-4DD6-BDF6-2B3A2E283E90",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–11:25",
+    "week" : 2,
+    "weekday" : 2
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 575,
+        "start" : 530
+      }
+    ],
+    "color" : "mint",
+    "courseID" : "E012E001-B2CE-49F7-AE64-3475C64F0E1F",
+    "endMinute" : 575,
+    "id" : "E012E001-B2CE-49F7-AE64-3475C64F0E1F-CD765CE1-11A1-4321-A9F7-63FB11FE7EAA-2",
+    "isExtra" : false,
+    "location" : "体育馆2楼",
+    "name" : "体育",
+    "notes" : "",
+    "periodLabel" : "第 2 节",
+    "sourceID" : "CD765CE1-11A1-4321-A9F7-63FB11FE7EAA",
+    "startMinute" : 530,
+    "teacher" : "",
+    "timeLabel" : "08:50–09:35",
+    "week" : 2,
+    "weekday" : 3
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      }
+    ],
+    "color" : "violet",
+    "courseID" : "C20A2311-D579-4954-99B0-C0FDDAE08523",
+    "endMinute" : 685,
+    "id" : "C20A2311-D579-4954-99B0-C0FDDAE08523-FA077F1A-03C7-4DC1-8D8A-ED04ECF8D621-2",
+    "isExtra" : false,
+    "location" : "教三 · 304",
+    "name" : "大数据处理",
+    "notes" : "",
+    "periodLabel" : "第 3–4 节",
+    "sourceID" : "FA077F1A-03C7-4DC1-8D8A-ED04ECF8D621",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–11:25",
+    "week" : 2,
+    "weekday" : 3
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      },
+      {
+        "end" : 735,
+        "start" : 690
+      }
+    ],
+    "color" : "peach",
+    "courseID" : "EFB7143D-8C83-41BA-8E6F-84599FFCB98E",
+    "endMinute" : 735,
+    "id" : "EFB7143D-8C83-41BA-8E6F-84599FFCB98E-112BAC1C-3D5D-4555-A0C7-8EF1EAE05F13-2",
+    "isExtra" : false,
+    "location" : "教三 · 402",
+    "name" : "计算机网络",
+    "notes" : "",
+    "periodLabel" : "第 3–5 节",
+    "sourceID" : "112BAC1C-3D5D-4555-A0C7-8EF1EAE05F13",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–12:15",
+    "week" : 2,
+    "weekday" : 4
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 995,
+        "start" : 950
+      },
+      {
+        "end" : 1045,
+        "start" : 1000
+      }
+    ],
+    "color" : "violet",
+    "courseID" : "C20A2311-D579-4954-99B0-C0FDDAE08523",
+    "endMinute" : 1045,
+    "id" : "C20A2311-D579-4954-99B0-C0FDDAE08523-C441A87A-0213-41AF-992F-C4DAF766A545-2",
+    "isExtra" : false,
+    "location" : "教三 · 304",
+    "name" : "大数据处理",
+    "notes" : "",
+    "periodLabel" : "第 8–9 节",
+    "sourceID" : "C441A87A-0213-41AF-992F-C4DAF766A545",
+    "startMinute" : 950,
+    "teacher" : "示例教师",
+    "timeLabel" : "15:50–17:25",
+    "week" : 2,
+    "weekday" : 4
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      },
+      {
+        "end" : 735,
+        "start" : 690
+      }
+    ],
+    "color" : "blue",
+    "courseID" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8",
+    "endMinute" : 735,
+    "id" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8-B473B6D7-7DAC-4FC7-8EA4-4E5A5E5B7E73-2",
+    "isExtra" : false,
+    "location" : "教三 · 501",
+    "name" : "编译原理",
+    "notes" : "",
+    "periodLabel" : "第 3–5 节",
+    "sourceID" : "B473B6D7-7DAC-4FC7-8EA4-4E5A5E5B7E73",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–12:15",
+    "week" : 2,
+    "weekday" : 5
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 525,
+        "start" : 480
+      }
+    ],
+    "color" : "peach",
+    "courseID" : "EFB7143D-8C83-41BA-8E6F-84599FFCB98E",
+    "endMinute" : 525,
+    "id" : "EFB7143D-8C83-41BA-8E6F-84599FFCB98E-15E5F97C-10D1-4534-AA8B-762316F4A060-3",
+    "isExtra" : false,
+    "location" : "专用实验室",
+    "name" : "计算机网络",
+    "notes" : "",
+    "periodLabel" : "第 1 节",
+    "sourceID" : "15E5F97C-10D1-4534-AA8B-762316F4A060",
+    "startMinute" : 480,
+    "teacher" : "示例教师",
+    "timeLabel" : "08:00–08:45",
+    "week" : 3,
+    "weekday" : 1
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      },
+      {
+        "end" : 735,
+        "start" : 690
+      }
+    ],
+    "color" : "jade",
+    "courseID" : "5891E0C4-2EC1-4403-8E9E-9478F5795DAE",
+    "endMinute" : 735,
+    "id" : "5891E0C4-2EC1-4403-8E9E-9478F5795DAE-1EE22423-D467-496A-9CFC-FF93D9FB33D4-3",
+    "isExtra" : false,
+    "location" : "教三 · 302",
+    "name" : "数据库原理",
+    "notes" : "",
+    "periodLabel" : "第 3–5 节",
+    "sourceID" : "1EE22423-D467-496A-9CFC-FF93D9FB33D4",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–12:15",
+    "week" : 3,
+    "weekday" : 1
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      }
+    ],
+    "color" : "blue",
+    "courseID" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8",
+    "endMinute" : 685,
+    "id" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8-E8AF2A0A-5AF8-4DD6-BDF6-2B3A2E283E90-3",
+    "isExtra" : false,
+    "location" : "教三 · 501",
+    "name" : "编译原理",
+    "notes" : "",
+    "periodLabel" : "第 3–4 节",
+    "sourceID" : "E8AF2A0A-5AF8-4DD6-BDF6-2B3A2E283E90",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–11:25",
+    "week" : 3,
+    "weekday" : 2
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 575,
+        "start" : 530
+      }
+    ],
+    "color" : "mint",
+    "courseID" : "E012E001-B2CE-49F7-AE64-3475C64F0E1F",
+    "endMinute" : 575,
+    "id" : "E012E001-B2CE-49F7-AE64-3475C64F0E1F-CD765CE1-11A1-4321-A9F7-63FB11FE7EAA-3",
+    "isExtra" : false,
+    "location" : "体育馆2楼",
+    "name" : "体育",
+    "notes" : "",
+    "periodLabel" : "第 2 节",
+    "sourceID" : "CD765CE1-11A1-4321-A9F7-63FB11FE7EAA",
+    "startMinute" : 530,
+    "teacher" : "",
+    "timeLabel" : "08:50–09:35",
+    "week" : 3,
+    "weekday" : 3
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      }
+    ],
+    "color" : "violet",
+    "courseID" : "C20A2311-D579-4954-99B0-C0FDDAE08523",
+    "endMinute" : 685,
+    "id" : "C20A2311-D579-4954-99B0-C0FDDAE08523-FA077F1A-03C7-4DC1-8D8A-ED04ECF8D621-3",
+    "isExtra" : false,
+    "location" : "教三 · 304",
+    "name" : "大数据处理",
+    "notes" : "",
+    "periodLabel" : "第 3–4 节",
+    "sourceID" : "FA077F1A-03C7-4DC1-8D8A-ED04ECF8D621",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–11:25",
+    "week" : 3,
+    "weekday" : 3
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 995,
+        "start" : 950
+      },
+      {
+        "end" : 1045,
+        "start" : 1000
+      }
+    ],
+    "color" : "violet",
+    "courseID" : "C20A2311-D579-4954-99B0-C0FDDAE08523",
+    "endMinute" : 1045,
+    "id" : "C20A2311-D579-4954-99B0-C0FDDAE08523-C441A87A-0213-41AF-992F-C4DAF766A545-3",
+    "isExtra" : false,
+    "location" : "教三 · 304",
+    "name" : "大数据处理",
+    "notes" : "",
+    "periodLabel" : "第 8–9 节",
+    "sourceID" : "C441A87A-0213-41AF-992F-C4DAF766A545",
+    "startMinute" : 950,
+    "teacher" : "示例教师",
+    "timeLabel" : "15:50–17:25",
+    "week" : 3,
+    "weekday" : 4
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      },
+      {
+        "end" : 735,
+        "start" : 690
+      }
+    ],
+    "color" : "blue",
+    "courseID" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8",
+    "endMinute" : 735,
+    "id" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8-B473B6D7-7DAC-4FC7-8EA4-4E5A5E5B7E73-3",
+    "isExtra" : false,
+    "location" : "教三 · 501",
+    "name" : "编译原理",
+    "notes" : "",
+    "periodLabel" : "第 3–5 节",
+    "sourceID" : "B473B6D7-7DAC-4FC7-8EA4-4E5A5E5B7E73",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–12:15",
+    "week" : 3,
+    "weekday" : 5
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 730,
+        "start" : 610
+      }
+    ],
+    "color" : "peach",
+    "courseID" : "EFB7143D-8C83-41BA-8E6F-84599FFCB98E",
+    "endMinute" : 730,
+    "id" : "EFB7143D-8C83-41BA-8E6F-84599FFCB98E-2E0CED09-E359-42D8-AB98-F41405F6E16C-3",
+    "isExtra" : true,
+    "location" : "教三 · 402",
+    "name" : "计算机网络 · 补课",
+    "notes" : "演示备注",
+    "periodLabel" : "额外安排",
+    "sourceID" : "2E0CED09-E359-42D8-AB98-F41405F6E16C",
+    "startMinute" : 610,
+    "teacher" : "实验指导教师",
+    "timeLabel" : "10:10–12:10",
+    "week" : 3,
+    "weekday" : 7
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      },
+      {
+        "end" : 735,
+        "start" : 690
+      }
+    ],
+    "color" : "jade",
+    "courseID" : "5891E0C4-2EC1-4403-8E9E-9478F5795DAE",
+    "endMinute" : 735,
+    "id" : "5891E0C4-2EC1-4403-8E9E-9478F5795DAE-1EE22423-D467-496A-9CFC-FF93D9FB33D4-4",
+    "isExtra" : false,
+    "location" : "教三 · 302",
+    "name" : "数据库原理",
+    "notes" : "",
+    "periodLabel" : "第 3–5 节",
+    "sourceID" : "1EE22423-D467-496A-9CFC-FF93D9FB33D4",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–12:15",
+    "week" : 4,
+    "weekday" : 1
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      }
+    ],
+    "color" : "blue",
+    "courseID" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8",
+    "endMinute" : 685,
+    "id" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8-E8AF2A0A-5AF8-4DD6-BDF6-2B3A2E283E90-4",
+    "isExtra" : false,
+    "location" : "教三 · 501",
+    "name" : "编译原理",
+    "notes" : "",
+    "periodLabel" : "第 3–4 节",
+    "sourceID" : "E8AF2A0A-5AF8-4DD6-BDF6-2B3A2E283E90",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–11:25",
+    "week" : 4,
+    "weekday" : 2
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 575,
+        "start" : 530
+      }
+    ],
+    "color" : "mint",
+    "courseID" : "E012E001-B2CE-49F7-AE64-3475C64F0E1F",
+    "endMinute" : 575,
+    "id" : "E012E001-B2CE-49F7-AE64-3475C64F0E1F-CD765CE1-11A1-4321-A9F7-63FB11FE7EAA-4",
+    "isExtra" : false,
+    "location" : "体育馆2楼",
+    "name" : "体育",
+    "notes" : "",
+    "periodLabel" : "第 2 节",
+    "sourceID" : "CD765CE1-11A1-4321-A9F7-63FB11FE7EAA",
+    "startMinute" : 530,
+    "teacher" : "",
+    "timeLabel" : "08:50–09:35",
+    "week" : 4,
+    "weekday" : 3
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      }
+    ],
+    "color" : "violet",
+    "courseID" : "C20A2311-D579-4954-99B0-C0FDDAE08523",
+    "endMinute" : 685,
+    "id" : "C20A2311-D579-4954-99B0-C0FDDAE08523-FA077F1A-03C7-4DC1-8D8A-ED04ECF8D621-4",
+    "isExtra" : false,
+    "location" : "教三 · 304",
+    "name" : "大数据处理",
+    "notes" : "",
+    "periodLabel" : "第 3–4 节",
+    "sourceID" : "FA077F1A-03C7-4DC1-8D8A-ED04ECF8D621",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–11:25",
+    "week" : 4,
+    "weekday" : 3
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      },
+      {
+        "end" : 735,
+        "start" : 690
+      }
+    ],
+    "color" : "peach",
+    "courseID" : "EFB7143D-8C83-41BA-8E6F-84599FFCB98E",
+    "endMinute" : 735,
+    "id" : "EFB7143D-8C83-41BA-8E6F-84599FFCB98E-112BAC1C-3D5D-4555-A0C7-8EF1EAE05F13-4",
+    "isExtra" : false,
+    "location" : "教三 · 402",
+    "name" : "计算机网络",
+    "notes" : "",
+    "periodLabel" : "第 3–5 节",
+    "sourceID" : "112BAC1C-3D5D-4555-A0C7-8EF1EAE05F13",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–12:15",
+    "week" : 4,
+    "weekday" : 4
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 995,
+        "start" : 950
+      },
+      {
+        "end" : 1045,
+        "start" : 1000
+      }
+    ],
+    "color" : "violet",
+    "courseID" : "C20A2311-D579-4954-99B0-C0FDDAE08523",
+    "endMinute" : 1045,
+    "id" : "C20A2311-D579-4954-99B0-C0FDDAE08523-C441A87A-0213-41AF-992F-C4DAF766A545-4",
+    "isExtra" : false,
+    "location" : "教三 · 304",
+    "name" : "大数据处理",
+    "notes" : "",
+    "periodLabel" : "第 8–9 节",
+    "sourceID" : "C441A87A-0213-41AF-992F-C4DAF766A545",
+    "startMinute" : 950,
+    "teacher" : "示例教师",
+    "timeLabel" : "15:50–17:25",
+    "week" : 4,
+    "weekday" : 4
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      },
+      {
+        "end" : 735,
+        "start" : 690
+      }
+    ],
+    "color" : "blue",
+    "courseID" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8",
+    "endMinute" : 735,
+    "id" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8-B473B6D7-7DAC-4FC7-8EA4-4E5A5E5B7E73-4",
+    "isExtra" : false,
+    "location" : "教三 · 501",
+    "name" : "编译原理",
+    "notes" : "",
+    "periodLabel" : "第 3–5 节",
+    "sourceID" : "B473B6D7-7DAC-4FC7-8EA4-4E5A5E5B7E73",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–12:15",
+    "week" : 4,
+    "weekday" : 5
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 525,
+        "start" : 480
+      }
+    ],
+    "color" : "peach",
+    "courseID" : "EFB7143D-8C83-41BA-8E6F-84599FFCB98E",
+    "endMinute" : 525,
+    "id" : "EFB7143D-8C83-41BA-8E6F-84599FFCB98E-15E5F97C-10D1-4534-AA8B-762316F4A060-5",
+    "isExtra" : false,
+    "location" : "专用实验室",
+    "name" : "计算机网络",
+    "notes" : "",
+    "periodLabel" : "第 1 节",
+    "sourceID" : "15E5F97C-10D1-4534-AA8B-762316F4A060",
+    "startMinute" : 480,
+    "teacher" : "示例教师",
+    "timeLabel" : "08:00–08:45",
+    "week" : 5,
+    "weekday" : 1
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      },
+      {
+        "end" : 735,
+        "start" : 690
+      }
+    ],
+    "color" : "jade",
+    "courseID" : "5891E0C4-2EC1-4403-8E9E-9478F5795DAE",
+    "endMinute" : 735,
+    "id" : "5891E0C4-2EC1-4403-8E9E-9478F5795DAE-1EE22423-D467-496A-9CFC-FF93D9FB33D4-5",
+    "isExtra" : false,
+    "location" : "教三 · 302",
+    "name" : "数据库原理",
+    "notes" : "",
+    "periodLabel" : "第 3–5 节",
+    "sourceID" : "1EE22423-D467-496A-9CFC-FF93D9FB33D4",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–12:15",
+    "week" : 5,
+    "weekday" : 1
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      }
+    ],
+    "color" : "blue",
+    "courseID" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8",
+    "endMinute" : 685,
+    "id" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8-E8AF2A0A-5AF8-4DD6-BDF6-2B3A2E283E90-5",
+    "isExtra" : false,
+    "location" : "教三 · 501",
+    "name" : "编译原理",
+    "notes" : "",
+    "periodLabel" : "第 3–4 节",
+    "sourceID" : "E8AF2A0A-5AF8-4DD6-BDF6-2B3A2E283E90",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–11:25",
+    "week" : 5,
+    "weekday" : 2
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 575,
+        "start" : 530
+      }
+    ],
+    "color" : "mint",
+    "courseID" : "E012E001-B2CE-49F7-AE64-3475C64F0E1F",
+    "endMinute" : 575,
+    "id" : "E012E001-B2CE-49F7-AE64-3475C64F0E1F-CD765CE1-11A1-4321-A9F7-63FB11FE7EAA-5",
+    "isExtra" : false,
+    "location" : "体育馆2楼",
+    "name" : "体育",
+    "notes" : "",
+    "periodLabel" : "第 2 节",
+    "sourceID" : "CD765CE1-11A1-4321-A9F7-63FB11FE7EAA",
+    "startMinute" : 530,
+    "teacher" : "",
+    "timeLabel" : "08:50–09:35",
+    "week" : 5,
+    "weekday" : 3
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      }
+    ],
+    "color" : "violet",
+    "courseID" : "C20A2311-D579-4954-99B0-C0FDDAE08523",
+    "endMinute" : 685,
+    "id" : "C20A2311-D579-4954-99B0-C0FDDAE08523-FA077F1A-03C7-4DC1-8D8A-ED04ECF8D621-5",
+    "isExtra" : false,
+    "location" : "教三 · 304",
+    "name" : "大数据处理",
+    "notes" : "",
+    "periodLabel" : "第 3–4 节",
+    "sourceID" : "FA077F1A-03C7-4DC1-8D8A-ED04ECF8D621",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–11:25",
+    "week" : 5,
+    "weekday" : 3
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 995,
+        "start" : 950
+      },
+      {
+        "end" : 1045,
+        "start" : 1000
+      }
+    ],
+    "color" : "violet",
+    "courseID" : "C20A2311-D579-4954-99B0-C0FDDAE08523",
+    "endMinute" : 1045,
+    "id" : "C20A2311-D579-4954-99B0-C0FDDAE08523-C441A87A-0213-41AF-992F-C4DAF766A545-5",
+    "isExtra" : false,
+    "location" : "教三 · 304",
+    "name" : "大数据处理",
+    "notes" : "",
+    "periodLabel" : "第 8–9 节",
+    "sourceID" : "C441A87A-0213-41AF-992F-C4DAF766A545",
+    "startMinute" : 950,
+    "teacher" : "示例教师",
+    "timeLabel" : "15:50–17:25",
+    "week" : 5,
+    "weekday" : 4
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      },
+      {
+        "end" : 735,
+        "start" : 690
+      }
+    ],
+    "color" : "blue",
+    "courseID" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8",
+    "endMinute" : 735,
+    "id" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8-B473B6D7-7DAC-4FC7-8EA4-4E5A5E5B7E73-5",
+    "isExtra" : false,
+    "location" : "教三 · 501",
+    "name" : "编译原理",
+    "notes" : "",
+    "periodLabel" : "第 3–5 节",
+    "sourceID" : "B473B6D7-7DAC-4FC7-8EA4-4E5A5E5B7E73",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–12:15",
+    "week" : 5,
+    "weekday" : 5
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      },
+      {
+        "end" : 735,
+        "start" : 690
+      }
+    ],
+    "color" : "jade",
+    "courseID" : "5891E0C4-2EC1-4403-8E9E-9478F5795DAE",
+    "endMinute" : 735,
+    "id" : "5891E0C4-2EC1-4403-8E9E-9478F5795DAE-1EE22423-D467-496A-9CFC-FF93D9FB33D4-6",
+    "isExtra" : false,
+    "location" : "教三 · 302",
+    "name" : "数据库原理",
+    "notes" : "",
+    "periodLabel" : "第 3–5 节",
+    "sourceID" : "1EE22423-D467-496A-9CFC-FF93D9FB33D4",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–12:15",
+    "week" : 6,
+    "weekday" : 1
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      }
+    ],
+    "color" : "blue",
+    "courseID" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8",
+    "endMinute" : 685,
+    "id" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8-E8AF2A0A-5AF8-4DD6-BDF6-2B3A2E283E90-6",
+    "isExtra" : false,
+    "location" : "教三 · 501",
+    "name" : "编译原理",
+    "notes" : "",
+    "periodLabel" : "第 3–4 节",
+    "sourceID" : "E8AF2A0A-5AF8-4DD6-BDF6-2B3A2E283E90",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–11:25",
+    "week" : 6,
+    "weekday" : 2
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 575,
+        "start" : 530
+      }
+    ],
+    "color" : "mint",
+    "courseID" : "E012E001-B2CE-49F7-AE64-3475C64F0E1F",
+    "endMinute" : 575,
+    "id" : "E012E001-B2CE-49F7-AE64-3475C64F0E1F-CD765CE1-11A1-4321-A9F7-63FB11FE7EAA-6",
+    "isExtra" : false,
+    "location" : "体育馆2楼",
+    "name" : "体育",
+    "notes" : "",
+    "periodLabel" : "第 2 节",
+    "sourceID" : "CD765CE1-11A1-4321-A9F7-63FB11FE7EAA",
+    "startMinute" : 530,
+    "teacher" : "",
+    "timeLabel" : "08:50–09:35",
+    "week" : 6,
+    "weekday" : 3
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      }
+    ],
+    "color" : "violet",
+    "courseID" : "C20A2311-D579-4954-99B0-C0FDDAE08523",
+    "endMinute" : 685,
+    "id" : "C20A2311-D579-4954-99B0-C0FDDAE08523-FA077F1A-03C7-4DC1-8D8A-ED04ECF8D621-6",
+    "isExtra" : false,
+    "location" : "教三 · 304",
+    "name" : "大数据处理",
+    "notes" : "",
+    "periodLabel" : "第 3–4 节",
+    "sourceID" : "FA077F1A-03C7-4DC1-8D8A-ED04ECF8D621",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–11:25",
+    "week" : 6,
+    "weekday" : 3
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      },
+      {
+        "end" : 735,
+        "start" : 690
+      }
+    ],
+    "color" : "peach",
+    "courseID" : "EFB7143D-8C83-41BA-8E6F-84599FFCB98E",
+    "endMinute" : 735,
+    "id" : "EFB7143D-8C83-41BA-8E6F-84599FFCB98E-112BAC1C-3D5D-4555-A0C7-8EF1EAE05F13-6",
+    "isExtra" : false,
+    "location" : "教三 · 402",
+    "name" : "计算机网络",
+    "notes" : "",
+    "periodLabel" : "第 3–5 节",
+    "sourceID" : "112BAC1C-3D5D-4555-A0C7-8EF1EAE05F13",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–12:15",
+    "week" : 6,
+    "weekday" : 4
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 995,
+        "start" : 950
+      },
+      {
+        "end" : 1045,
+        "start" : 1000
+      }
+    ],
+    "color" : "violet",
+    "courseID" : "C20A2311-D579-4954-99B0-C0FDDAE08523",
+    "endMinute" : 1045,
+    "id" : "C20A2311-D579-4954-99B0-C0FDDAE08523-C441A87A-0213-41AF-992F-C4DAF766A545-6",
+    "isExtra" : false,
+    "location" : "教三 · 304",
+    "name" : "大数据处理",
+    "notes" : "",
+    "periodLabel" : "第 8–9 节",
+    "sourceID" : "C441A87A-0213-41AF-992F-C4DAF766A545",
+    "startMinute" : 950,
+    "teacher" : "示例教师",
+    "timeLabel" : "15:50–17:25",
+    "week" : 6,
+    "weekday" : 4
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      },
+      {
+        "end" : 735,
+        "start" : 690
+      }
+    ],
+    "color" : "blue",
+    "courseID" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8",
+    "endMinute" : 735,
+    "id" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8-B473B6D7-7DAC-4FC7-8EA4-4E5A5E5B7E73-6",
+    "isExtra" : false,
+    "location" : "教三 · 501",
+    "name" : "编译原理",
+    "notes" : "",
+    "periodLabel" : "第 3–5 节",
+    "sourceID" : "B473B6D7-7DAC-4FC7-8EA4-4E5A5E5B7E73",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–12:15",
+    "week" : 6,
+    "weekday" : 5
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 525,
+        "start" : 480
+      }
+    ],
+    "color" : "peach",
+    "courseID" : "EFB7143D-8C83-41BA-8E6F-84599FFCB98E",
+    "endMinute" : 525,
+    "id" : "EFB7143D-8C83-41BA-8E6F-84599FFCB98E-15E5F97C-10D1-4534-AA8B-762316F4A060-7",
+    "isExtra" : false,
+    "location" : "专用实验室",
+    "name" : "计算机网络",
+    "notes" : "",
+    "periodLabel" : "第 1 节",
+    "sourceID" : "15E5F97C-10D1-4534-AA8B-762316F4A060",
+    "startMinute" : 480,
+    "teacher" : "示例教师",
+    "timeLabel" : "08:00–08:45",
+    "week" : 7,
+    "weekday" : 1
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      },
+      {
+        "end" : 735,
+        "start" : 690
+      }
+    ],
+    "color" : "jade",
+    "courseID" : "5891E0C4-2EC1-4403-8E9E-9478F5795DAE",
+    "endMinute" : 735,
+    "id" : "5891E0C4-2EC1-4403-8E9E-9478F5795DAE-1EE22423-D467-496A-9CFC-FF93D9FB33D4-7",
+    "isExtra" : false,
+    "location" : "教三 · 302",
+    "name" : "数据库原理",
+    "notes" : "",
+    "periodLabel" : "第 3–5 节",
+    "sourceID" : "1EE22423-D467-496A-9CFC-FF93D9FB33D4",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–12:15",
+    "week" : 7,
+    "weekday" : 1
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      }
+    ],
+    "color" : "blue",
+    "courseID" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8",
+    "endMinute" : 685,
+    "id" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8-E8AF2A0A-5AF8-4DD6-BDF6-2B3A2E283E90-7",
+    "isExtra" : false,
+    "location" : "教三 · 501",
+    "name" : "编译原理",
+    "notes" : "",
+    "periodLabel" : "第 3–4 节",
+    "sourceID" : "E8AF2A0A-5AF8-4DD6-BDF6-2B3A2E283E90",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–11:25",
+    "week" : 7,
+    "weekday" : 2
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 575,
+        "start" : 530
+      }
+    ],
+    "color" : "mint",
+    "courseID" : "E012E001-B2CE-49F7-AE64-3475C64F0E1F",
+    "endMinute" : 575,
+    "id" : "E012E001-B2CE-49F7-AE64-3475C64F0E1F-CD765CE1-11A1-4321-A9F7-63FB11FE7EAA-7",
+    "isExtra" : false,
+    "location" : "体育馆2楼",
+    "name" : "体育",
+    "notes" : "",
+    "periodLabel" : "第 2 节",
+    "sourceID" : "CD765CE1-11A1-4321-A9F7-63FB11FE7EAA",
+    "startMinute" : 530,
+    "teacher" : "",
+    "timeLabel" : "08:50–09:35",
+    "week" : 7,
+    "weekday" : 3
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      }
+    ],
+    "color" : "violet",
+    "courseID" : "C20A2311-D579-4954-99B0-C0FDDAE08523",
+    "endMinute" : 685,
+    "id" : "C20A2311-D579-4954-99B0-C0FDDAE08523-FA077F1A-03C7-4DC1-8D8A-ED04ECF8D621-7",
+    "isExtra" : false,
+    "location" : "教三 · 304",
+    "name" : "大数据处理",
+    "notes" : "",
+    "periodLabel" : "第 3–4 节",
+    "sourceID" : "FA077F1A-03C7-4DC1-8D8A-ED04ECF8D621",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–11:25",
+    "week" : 7,
+    "weekday" : 3
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 995,
+        "start" : 950
+      },
+      {
+        "end" : 1045,
+        "start" : 1000
+      }
+    ],
+    "color" : "violet",
+    "courseID" : "C20A2311-D579-4954-99B0-C0FDDAE08523",
+    "endMinute" : 1045,
+    "id" : "C20A2311-D579-4954-99B0-C0FDDAE08523-C441A87A-0213-41AF-992F-C4DAF766A545-7",
+    "isExtra" : false,
+    "location" : "教三 · 304",
+    "name" : "大数据处理",
+    "notes" : "",
+    "periodLabel" : "第 8–9 节",
+    "sourceID" : "C441A87A-0213-41AF-992F-C4DAF766A545",
+    "startMinute" : 950,
+    "teacher" : "示例教师",
+    "timeLabel" : "15:50–17:25",
+    "week" : 7,
+    "weekday" : 4
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      },
+      {
+        "end" : 735,
+        "start" : 690
+      }
+    ],
+    "color" : "blue",
+    "courseID" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8",
+    "endMinute" : 735,
+    "id" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8-B473B6D7-7DAC-4FC7-8EA4-4E5A5E5B7E73-7",
+    "isExtra" : false,
+    "location" : "教三 · 501",
+    "name" : "编译原理",
+    "notes" : "",
+    "periodLabel" : "第 3–5 节",
+    "sourceID" : "B473B6D7-7DAC-4FC7-8EA4-4E5A5E5B7E73",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–12:15",
+    "week" : 7,
+    "weekday" : 5
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      },
+      {
+        "end" : 735,
+        "start" : 690
+      }
+    ],
+    "color" : "jade",
+    "courseID" : "5891E0C4-2EC1-4403-8E9E-9478F5795DAE",
+    "endMinute" : 735,
+    "id" : "5891E0C4-2EC1-4403-8E9E-9478F5795DAE-1EE22423-D467-496A-9CFC-FF93D9FB33D4-8",
+    "isExtra" : false,
+    "location" : "教三 · 302",
+    "name" : "数据库原理",
+    "notes" : "",
+    "periodLabel" : "第 3–5 节",
+    "sourceID" : "1EE22423-D467-496A-9CFC-FF93D9FB33D4",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–12:15",
+    "week" : 8,
+    "weekday" : 1
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      }
+    ],
+    "color" : "blue",
+    "courseID" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8",
+    "endMinute" : 685,
+    "id" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8-E8AF2A0A-5AF8-4DD6-BDF6-2B3A2E283E90-8",
+    "isExtra" : false,
+    "location" : "教三 · 501",
+    "name" : "编译原理",
+    "notes" : "",
+    "periodLabel" : "第 3–4 节",
+    "sourceID" : "E8AF2A0A-5AF8-4DD6-BDF6-2B3A2E283E90",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–11:25",
+    "week" : 8,
+    "weekday" : 2
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 575,
+        "start" : 530
+      }
+    ],
+    "color" : "mint",
+    "courseID" : "E012E001-B2CE-49F7-AE64-3475C64F0E1F",
+    "endMinute" : 575,
+    "id" : "E012E001-B2CE-49F7-AE64-3475C64F0E1F-CD765CE1-11A1-4321-A9F7-63FB11FE7EAA-8",
+    "isExtra" : false,
+    "location" : "体育馆2楼",
+    "name" : "体育",
+    "notes" : "",
+    "periodLabel" : "第 2 节",
+    "sourceID" : "CD765CE1-11A1-4321-A9F7-63FB11FE7EAA",
+    "startMinute" : 530,
+    "teacher" : "",
+    "timeLabel" : "08:50–09:35",
+    "week" : 8,
+    "weekday" : 3
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      }
+    ],
+    "color" : "violet",
+    "courseID" : "C20A2311-D579-4954-99B0-C0FDDAE08523",
+    "endMinute" : 685,
+    "id" : "C20A2311-D579-4954-99B0-C0FDDAE08523-FA077F1A-03C7-4DC1-8D8A-ED04ECF8D621-8",
+    "isExtra" : false,
+    "location" : "教三 · 304",
+    "name" : "大数据处理",
+    "notes" : "",
+    "periodLabel" : "第 3–4 节",
+    "sourceID" : "FA077F1A-03C7-4DC1-8D8A-ED04ECF8D621",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–11:25",
+    "week" : 8,
+    "weekday" : 3
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      },
+      {
+        "end" : 735,
+        "start" : 690
+      }
+    ],
+    "color" : "peach",
+    "courseID" : "EFB7143D-8C83-41BA-8E6F-84599FFCB98E",
+    "endMinute" : 735,
+    "id" : "EFB7143D-8C83-41BA-8E6F-84599FFCB98E-112BAC1C-3D5D-4555-A0C7-8EF1EAE05F13-8",
+    "isExtra" : false,
+    "location" : "教三 · 402",
+    "name" : "计算机网络",
+    "notes" : "",
+    "periodLabel" : "第 3–5 节",
+    "sourceID" : "112BAC1C-3D5D-4555-A0C7-8EF1EAE05F13",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–12:15",
+    "week" : 8,
+    "weekday" : 4
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 995,
+        "start" : 950
+      },
+      {
+        "end" : 1045,
+        "start" : 1000
+      }
+    ],
+    "color" : "violet",
+    "courseID" : "C20A2311-D579-4954-99B0-C0FDDAE08523",
+    "endMinute" : 1045,
+    "id" : "C20A2311-D579-4954-99B0-C0FDDAE08523-C441A87A-0213-41AF-992F-C4DAF766A545-8",
+    "isExtra" : false,
+    "location" : "教三 · 304",
+    "name" : "大数据处理",
+    "notes" : "",
+    "periodLabel" : "第 8–9 节",
+    "sourceID" : "C441A87A-0213-41AF-992F-C4DAF766A545",
+    "startMinute" : 950,
+    "teacher" : "示例教师",
+    "timeLabel" : "15:50–17:25",
+    "week" : 8,
+    "weekday" : 4
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      },
+      {
+        "end" : 735,
+        "start" : 690
+      }
+    ],
+    "color" : "blue",
+    "courseID" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8",
+    "endMinute" : 735,
+    "id" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8-B473B6D7-7DAC-4FC7-8EA4-4E5A5E5B7E73-8",
+    "isExtra" : false,
+    "location" : "教三 · 501",
+    "name" : "编译原理",
+    "notes" : "",
+    "periodLabel" : "第 3–5 节",
+    "sourceID" : "B473B6D7-7DAC-4FC7-8EA4-4E5A5E5B7E73",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–12:15",
+    "week" : 8,
+    "weekday" : 5
+  },
+  {
+    "allDay" : true,
+    "busyRanges" : [
+      {
+        "end" : 1440,
+        "start" : 0
+      }
+    ],
+    "color" : "peach",
+    "courseID" : "EFB7143D-8C83-41BA-8E6F-84599FFCB98E",
+    "endMinute" : 1440,
+    "id" : "EFB7143D-8C83-41BA-8E6F-84599FFCB98E-52C8F68E-8F76-4C13-98F2-D5547F63A011-8",
+    "isExtra" : true,
+    "location" : "实验中心 · 301",
+    "name" : "计算机网络 · 大型实验",
+    "notes" : "示例：请携带电脑和实验报告。",
+    "periodLabel" : "全天",
+    "sourceID" : "52C8F68E-8F76-4C13-98F2-D5547F63A011",
+    "startMinute" : 0,
+    "teacher" : "示例教师",
+    "timeLabel" : "全天",
+    "week" : 8,
+    "weekday" : 7
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 525,
+        "start" : 480
+      }
+    ],
+    "color" : "peach",
+    "courseID" : "EFB7143D-8C83-41BA-8E6F-84599FFCB98E",
+    "endMinute" : 525,
+    "id" : "EFB7143D-8C83-41BA-8E6F-84599FFCB98E-15E5F97C-10D1-4534-AA8B-762316F4A060-9",
+    "isExtra" : false,
+    "location" : "专用实验室",
+    "name" : "计算机网络",
+    "notes" : "",
+    "periodLabel" : "第 1 节",
+    "sourceID" : "15E5F97C-10D1-4534-AA8B-762316F4A060",
+    "startMinute" : 480,
+    "teacher" : "示例教师",
+    "timeLabel" : "08:00–08:45",
+    "week" : 9,
+    "weekday" : 1
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      },
+      {
+        "end" : 735,
+        "start" : 690
+      }
+    ],
+    "color" : "jade",
+    "courseID" : "5891E0C4-2EC1-4403-8E9E-9478F5795DAE",
+    "endMinute" : 735,
+    "id" : "5891E0C4-2EC1-4403-8E9E-9478F5795DAE-1EE22423-D467-496A-9CFC-FF93D9FB33D4-9",
+    "isExtra" : false,
+    "location" : "教三 · 302",
+    "name" : "数据库原理",
+    "notes" : "",
+    "periodLabel" : "第 3–5 节",
+    "sourceID" : "1EE22423-D467-496A-9CFC-FF93D9FB33D4",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–12:15",
+    "week" : 9,
+    "weekday" : 1
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      }
+    ],
+    "color" : "blue",
+    "courseID" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8",
+    "endMinute" : 685,
+    "id" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8-E8AF2A0A-5AF8-4DD6-BDF6-2B3A2E283E90-9",
+    "isExtra" : false,
+    "location" : "教三 · 501",
+    "name" : "编译原理",
+    "notes" : "",
+    "periodLabel" : "第 3–4 节",
+    "sourceID" : "E8AF2A0A-5AF8-4DD6-BDF6-2B3A2E283E90",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–11:25",
+    "week" : 9,
+    "weekday" : 2
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 575,
+        "start" : 530
+      }
+    ],
+    "color" : "mint",
+    "courseID" : "E012E001-B2CE-49F7-AE64-3475C64F0E1F",
+    "endMinute" : 575,
+    "id" : "E012E001-B2CE-49F7-AE64-3475C64F0E1F-CD765CE1-11A1-4321-A9F7-63FB11FE7EAA-9",
+    "isExtra" : false,
+    "location" : "体育馆2楼",
+    "name" : "体育",
+    "notes" : "",
+    "periodLabel" : "第 2 节",
+    "sourceID" : "CD765CE1-11A1-4321-A9F7-63FB11FE7EAA",
+    "startMinute" : 530,
+    "teacher" : "",
+    "timeLabel" : "08:50–09:35",
+    "week" : 9,
+    "weekday" : 3
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      }
+    ],
+    "color" : "violet",
+    "courseID" : "C20A2311-D579-4954-99B0-C0FDDAE08523",
+    "endMinute" : 685,
+    "id" : "C20A2311-D579-4954-99B0-C0FDDAE08523-FA077F1A-03C7-4DC1-8D8A-ED04ECF8D621-9",
+    "isExtra" : false,
+    "location" : "教三 · 304",
+    "name" : "大数据处理",
+    "notes" : "",
+    "periodLabel" : "第 3–4 节",
+    "sourceID" : "FA077F1A-03C7-4DC1-8D8A-ED04ECF8D621",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–11:25",
+    "week" : 9,
+    "weekday" : 3
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 995,
+        "start" : 950
+      },
+      {
+        "end" : 1045,
+        "start" : 1000
+      }
+    ],
+    "color" : "violet",
+    "courseID" : "C20A2311-D579-4954-99B0-C0FDDAE08523",
+    "endMinute" : 1045,
+    "id" : "C20A2311-D579-4954-99B0-C0FDDAE08523-C441A87A-0213-41AF-992F-C4DAF766A545-9",
+    "isExtra" : false,
+    "location" : "教三 · 304",
+    "name" : "大数据处理",
+    "notes" : "",
+    "periodLabel" : "第 8–9 节",
+    "sourceID" : "C441A87A-0213-41AF-992F-C4DAF766A545",
+    "startMinute" : 950,
+    "teacher" : "示例教师",
+    "timeLabel" : "15:50–17:25",
+    "week" : 9,
+    "weekday" : 4
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      },
+      {
+        "end" : 735,
+        "start" : 690
+      }
+    ],
+    "color" : "blue",
+    "courseID" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8",
+    "endMinute" : 735,
+    "id" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8-B473B6D7-7DAC-4FC7-8EA4-4E5A5E5B7E73-9",
+    "isExtra" : false,
+    "location" : "教三 · 501",
+    "name" : "编译原理",
+    "notes" : "",
+    "periodLabel" : "第 3–5 节",
+    "sourceID" : "B473B6D7-7DAC-4FC7-8EA4-4E5A5E5B7E73",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–12:15",
+    "week" : 9,
+    "weekday" : 5
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      },
+      {
+        "end" : 735,
+        "start" : 690
+      }
+    ],
+    "color" : "jade",
+    "courseID" : "5891E0C4-2EC1-4403-8E9E-9478F5795DAE",
+    "endMinute" : 735,
+    "id" : "5891E0C4-2EC1-4403-8E9E-9478F5795DAE-1EE22423-D467-496A-9CFC-FF93D9FB33D4-10",
+    "isExtra" : false,
+    "location" : "教三 · 302",
+    "name" : "数据库原理",
+    "notes" : "",
+    "periodLabel" : "第 3–5 节",
+    "sourceID" : "1EE22423-D467-496A-9CFC-FF93D9FB33D4",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–12:15",
+    "week" : 10,
+    "weekday" : 1
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      }
+    ],
+    "color" : "blue",
+    "courseID" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8",
+    "endMinute" : 685,
+    "id" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8-E8AF2A0A-5AF8-4DD6-BDF6-2B3A2E283E90-10",
+    "isExtra" : false,
+    "location" : "教三 · 501",
+    "name" : "编译原理",
+    "notes" : "",
+    "periodLabel" : "第 3–4 节",
+    "sourceID" : "E8AF2A0A-5AF8-4DD6-BDF6-2B3A2E283E90",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–11:25",
+    "week" : 10,
+    "weekday" : 2
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 575,
+        "start" : 530
+      }
+    ],
+    "color" : "mint",
+    "courseID" : "E012E001-B2CE-49F7-AE64-3475C64F0E1F",
+    "endMinute" : 575,
+    "id" : "E012E001-B2CE-49F7-AE64-3475C64F0E1F-CD765CE1-11A1-4321-A9F7-63FB11FE7EAA-10",
+    "isExtra" : false,
+    "location" : "体育馆2楼",
+    "name" : "体育",
+    "notes" : "",
+    "periodLabel" : "第 2 节",
+    "sourceID" : "CD765CE1-11A1-4321-A9F7-63FB11FE7EAA",
+    "startMinute" : 530,
+    "teacher" : "",
+    "timeLabel" : "08:50–09:35",
+    "week" : 10,
+    "weekday" : 3
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      }
+    ],
+    "color" : "violet",
+    "courseID" : "C20A2311-D579-4954-99B0-C0FDDAE08523",
+    "endMinute" : 685,
+    "id" : "C20A2311-D579-4954-99B0-C0FDDAE08523-FA077F1A-03C7-4DC1-8D8A-ED04ECF8D621-10",
+    "isExtra" : false,
+    "location" : "教三 · 304",
+    "name" : "大数据处理",
+    "notes" : "",
+    "periodLabel" : "第 3–4 节",
+    "sourceID" : "FA077F1A-03C7-4DC1-8D8A-ED04ECF8D621",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–11:25",
+    "week" : 10,
+    "weekday" : 3
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      },
+      {
+        "end" : 735,
+        "start" : 690
+      }
+    ],
+    "color" : "peach",
+    "courseID" : "EFB7143D-8C83-41BA-8E6F-84599FFCB98E",
+    "endMinute" : 735,
+    "id" : "EFB7143D-8C83-41BA-8E6F-84599FFCB98E-112BAC1C-3D5D-4555-A0C7-8EF1EAE05F13-10",
+    "isExtra" : false,
+    "location" : "教三 · 402",
+    "name" : "计算机网络",
+    "notes" : "",
+    "periodLabel" : "第 3–5 节",
+    "sourceID" : "112BAC1C-3D5D-4555-A0C7-8EF1EAE05F13",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–12:15",
+    "week" : 10,
+    "weekday" : 4
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 995,
+        "start" : 950
+      },
+      {
+        "end" : 1045,
+        "start" : 1000
+      }
+    ],
+    "color" : "violet",
+    "courseID" : "C20A2311-D579-4954-99B0-C0FDDAE08523",
+    "endMinute" : 1045,
+    "id" : "C20A2311-D579-4954-99B0-C0FDDAE08523-C441A87A-0213-41AF-992F-C4DAF766A545-10",
+    "isExtra" : false,
+    "location" : "教三 · 304",
+    "name" : "大数据处理",
+    "notes" : "",
+    "periodLabel" : "第 8–9 节",
+    "sourceID" : "C441A87A-0213-41AF-992F-C4DAF766A545",
+    "startMinute" : 950,
+    "teacher" : "示例教师",
+    "timeLabel" : "15:50–17:25",
+    "week" : 10,
+    "weekday" : 4
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      },
+      {
+        "end" : 735,
+        "start" : 690
+      }
+    ],
+    "color" : "blue",
+    "courseID" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8",
+    "endMinute" : 735,
+    "id" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8-B473B6D7-7DAC-4FC7-8EA4-4E5A5E5B7E73-10",
+    "isExtra" : false,
+    "location" : "教三 · 501",
+    "name" : "编译原理",
+    "notes" : "",
+    "periodLabel" : "第 3–5 节",
+    "sourceID" : "B473B6D7-7DAC-4FC7-8EA4-4E5A5E5B7E73",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–12:15",
+    "week" : 10,
+    "weekday" : 5
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 525,
+        "start" : 480
+      }
+    ],
+    "color" : "peach",
+    "courseID" : "EFB7143D-8C83-41BA-8E6F-84599FFCB98E",
+    "endMinute" : 525,
+    "id" : "EFB7143D-8C83-41BA-8E6F-84599FFCB98E-15E5F97C-10D1-4534-AA8B-762316F4A060-11",
+    "isExtra" : false,
+    "location" : "专用实验室",
+    "name" : "计算机网络",
+    "notes" : "",
+    "periodLabel" : "第 1 节",
+    "sourceID" : "15E5F97C-10D1-4534-AA8B-762316F4A060",
+    "startMinute" : 480,
+    "teacher" : "示例教师",
+    "timeLabel" : "08:00–08:45",
+    "week" : 11,
+    "weekday" : 1
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      },
+      {
+        "end" : 735,
+        "start" : 690
+      }
+    ],
+    "color" : "jade",
+    "courseID" : "5891E0C4-2EC1-4403-8E9E-9478F5795DAE",
+    "endMinute" : 735,
+    "id" : "5891E0C4-2EC1-4403-8E9E-9478F5795DAE-1EE22423-D467-496A-9CFC-FF93D9FB33D4-11",
+    "isExtra" : false,
+    "location" : "教三 · 302",
+    "name" : "数据库原理",
+    "notes" : "",
+    "periodLabel" : "第 3–5 节",
+    "sourceID" : "1EE22423-D467-496A-9CFC-FF93D9FB33D4",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–12:15",
+    "week" : 11,
+    "weekday" : 1
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      }
+    ],
+    "color" : "blue",
+    "courseID" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8",
+    "endMinute" : 685,
+    "id" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8-E8AF2A0A-5AF8-4DD6-BDF6-2B3A2E283E90-11",
+    "isExtra" : false,
+    "location" : "教三 · 501",
+    "name" : "编译原理",
+    "notes" : "",
+    "periodLabel" : "第 3–4 节",
+    "sourceID" : "E8AF2A0A-5AF8-4DD6-BDF6-2B3A2E283E90",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–11:25",
+    "week" : 11,
+    "weekday" : 2
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 575,
+        "start" : 530
+      }
+    ],
+    "color" : "mint",
+    "courseID" : "E012E001-B2CE-49F7-AE64-3475C64F0E1F",
+    "endMinute" : 575,
+    "id" : "E012E001-B2CE-49F7-AE64-3475C64F0E1F-CD765CE1-11A1-4321-A9F7-63FB11FE7EAA-11",
+    "isExtra" : false,
+    "location" : "体育馆2楼",
+    "name" : "体育",
+    "notes" : "",
+    "periodLabel" : "第 2 节",
+    "sourceID" : "CD765CE1-11A1-4321-A9F7-63FB11FE7EAA",
+    "startMinute" : 530,
+    "teacher" : "",
+    "timeLabel" : "08:50–09:35",
+    "week" : 11,
+    "weekday" : 3
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      }
+    ],
+    "color" : "violet",
+    "courseID" : "C20A2311-D579-4954-99B0-C0FDDAE08523",
+    "endMinute" : 685,
+    "id" : "C20A2311-D579-4954-99B0-C0FDDAE08523-FA077F1A-03C7-4DC1-8D8A-ED04ECF8D621-11",
+    "isExtra" : false,
+    "location" : "教三 · 304",
+    "name" : "大数据处理",
+    "notes" : "",
+    "periodLabel" : "第 3–4 节",
+    "sourceID" : "FA077F1A-03C7-4DC1-8D8A-ED04ECF8D621",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–11:25",
+    "week" : 11,
+    "weekday" : 3
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 995,
+        "start" : 950
+      },
+      {
+        "end" : 1045,
+        "start" : 1000
+      }
+    ],
+    "color" : "violet",
+    "courseID" : "C20A2311-D579-4954-99B0-C0FDDAE08523",
+    "endMinute" : 1045,
+    "id" : "C20A2311-D579-4954-99B0-C0FDDAE08523-C441A87A-0213-41AF-992F-C4DAF766A545-11",
+    "isExtra" : false,
+    "location" : "教三 · 304",
+    "name" : "大数据处理",
+    "notes" : "",
+    "periodLabel" : "第 8–9 节",
+    "sourceID" : "C441A87A-0213-41AF-992F-C4DAF766A545",
+    "startMinute" : 950,
+    "teacher" : "示例教师",
+    "timeLabel" : "15:50–17:25",
+    "week" : 11,
+    "weekday" : 4
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      },
+      {
+        "end" : 735,
+        "start" : 690
+      }
+    ],
+    "color" : "blue",
+    "courseID" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8",
+    "endMinute" : 735,
+    "id" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8-B473B6D7-7DAC-4FC7-8EA4-4E5A5E5B7E73-11",
+    "isExtra" : false,
+    "location" : "教三 · 501",
+    "name" : "编译原理",
+    "notes" : "",
+    "periodLabel" : "第 3–5 节",
+    "sourceID" : "B473B6D7-7DAC-4FC7-8EA4-4E5A5E5B7E73",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–12:15",
+    "week" : 11,
+    "weekday" : 5
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      },
+      {
+        "end" : 735,
+        "start" : 690
+      }
+    ],
+    "color" : "jade",
+    "courseID" : "5891E0C4-2EC1-4403-8E9E-9478F5795DAE",
+    "endMinute" : 735,
+    "id" : "5891E0C4-2EC1-4403-8E9E-9478F5795DAE-1EE22423-D467-496A-9CFC-FF93D9FB33D4-12",
+    "isExtra" : false,
+    "location" : "教三 · 302",
+    "name" : "数据库原理",
+    "notes" : "",
+    "periodLabel" : "第 3–5 节",
+    "sourceID" : "1EE22423-D467-496A-9CFC-FF93D9FB33D4",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–12:15",
+    "week" : 12,
+    "weekday" : 1
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      }
+    ],
+    "color" : "blue",
+    "courseID" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8",
+    "endMinute" : 685,
+    "id" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8-E8AF2A0A-5AF8-4DD6-BDF6-2B3A2E283E90-12",
+    "isExtra" : false,
+    "location" : "教三 · 501",
+    "name" : "编译原理",
+    "notes" : "",
+    "periodLabel" : "第 3–4 节",
+    "sourceID" : "E8AF2A0A-5AF8-4DD6-BDF6-2B3A2E283E90",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–11:25",
+    "week" : 12,
+    "weekday" : 2
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 575,
+        "start" : 530
+      }
+    ],
+    "color" : "mint",
+    "courseID" : "E012E001-B2CE-49F7-AE64-3475C64F0E1F",
+    "endMinute" : 575,
+    "id" : "E012E001-B2CE-49F7-AE64-3475C64F0E1F-CD765CE1-11A1-4321-A9F7-63FB11FE7EAA-12",
+    "isExtra" : false,
+    "location" : "体育馆2楼",
+    "name" : "体育",
+    "notes" : "",
+    "periodLabel" : "第 2 节",
+    "sourceID" : "CD765CE1-11A1-4321-A9F7-63FB11FE7EAA",
+    "startMinute" : 530,
+    "teacher" : "",
+    "timeLabel" : "08:50–09:35",
+    "week" : 12,
+    "weekday" : 3
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      }
+    ],
+    "color" : "violet",
+    "courseID" : "C20A2311-D579-4954-99B0-C0FDDAE08523",
+    "endMinute" : 685,
+    "id" : "C20A2311-D579-4954-99B0-C0FDDAE08523-FA077F1A-03C7-4DC1-8D8A-ED04ECF8D621-12",
+    "isExtra" : false,
+    "location" : "教三 · 304",
+    "name" : "大数据处理",
+    "notes" : "",
+    "periodLabel" : "第 3–4 节",
+    "sourceID" : "FA077F1A-03C7-4DC1-8D8A-ED04ECF8D621",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–11:25",
+    "week" : 12,
+    "weekday" : 3
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      },
+      {
+        "end" : 735,
+        "start" : 690
+      }
+    ],
+    "color" : "peach",
+    "courseID" : "EFB7143D-8C83-41BA-8E6F-84599FFCB98E",
+    "endMinute" : 735,
+    "id" : "EFB7143D-8C83-41BA-8E6F-84599FFCB98E-112BAC1C-3D5D-4555-A0C7-8EF1EAE05F13-12",
+    "isExtra" : false,
+    "location" : "教三 · 402",
+    "name" : "计算机网络",
+    "notes" : "",
+    "periodLabel" : "第 3–5 节",
+    "sourceID" : "112BAC1C-3D5D-4555-A0C7-8EF1EAE05F13",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–12:15",
+    "week" : 12,
+    "weekday" : 4
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 995,
+        "start" : 950
+      },
+      {
+        "end" : 1045,
+        "start" : 1000
+      }
+    ],
+    "color" : "violet",
+    "courseID" : "C20A2311-D579-4954-99B0-C0FDDAE08523",
+    "endMinute" : 1045,
+    "id" : "C20A2311-D579-4954-99B0-C0FDDAE08523-C441A87A-0213-41AF-992F-C4DAF766A545-12",
+    "isExtra" : false,
+    "location" : "教三 · 304",
+    "name" : "大数据处理",
+    "notes" : "",
+    "periodLabel" : "第 8–9 节",
+    "sourceID" : "C441A87A-0213-41AF-992F-C4DAF766A545",
+    "startMinute" : 950,
+    "teacher" : "示例教师",
+    "timeLabel" : "15:50–17:25",
+    "week" : 12,
+    "weekday" : 4
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      },
+      {
+        "end" : 735,
+        "start" : 690
+      }
+    ],
+    "color" : "blue",
+    "courseID" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8",
+    "endMinute" : 735,
+    "id" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8-B473B6D7-7DAC-4FC7-8EA4-4E5A5E5B7E73-12",
+    "isExtra" : false,
+    "location" : "教三 · 501",
+    "name" : "编译原理",
+    "notes" : "",
+    "periodLabel" : "第 3–5 节",
+    "sourceID" : "B473B6D7-7DAC-4FC7-8EA4-4E5A5E5B7E73",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–12:15",
+    "week" : 12,
+    "weekday" : 5
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 525,
+        "start" : 480
+      }
+    ],
+    "color" : "peach",
+    "courseID" : "EFB7143D-8C83-41BA-8E6F-84599FFCB98E",
+    "endMinute" : 525,
+    "id" : "EFB7143D-8C83-41BA-8E6F-84599FFCB98E-15E5F97C-10D1-4534-AA8B-762316F4A060-13",
+    "isExtra" : false,
+    "location" : "专用实验室",
+    "name" : "计算机网络",
+    "notes" : "",
+    "periodLabel" : "第 1 节",
+    "sourceID" : "15E5F97C-10D1-4534-AA8B-762316F4A060",
+    "startMinute" : 480,
+    "teacher" : "示例教师",
+    "timeLabel" : "08:00–08:45",
+    "week" : 13,
+    "weekday" : 1
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      },
+      {
+        "end" : 735,
+        "start" : 690
+      }
+    ],
+    "color" : "jade",
+    "courseID" : "5891E0C4-2EC1-4403-8E9E-9478F5795DAE",
+    "endMinute" : 735,
+    "id" : "5891E0C4-2EC1-4403-8E9E-9478F5795DAE-1EE22423-D467-496A-9CFC-FF93D9FB33D4-13",
+    "isExtra" : false,
+    "location" : "教三 · 302",
+    "name" : "数据库原理",
+    "notes" : "",
+    "periodLabel" : "第 3–5 节",
+    "sourceID" : "1EE22423-D467-496A-9CFC-FF93D9FB33D4",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–12:15",
+    "week" : 13,
+    "weekday" : 1
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      }
+    ],
+    "color" : "blue",
+    "courseID" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8",
+    "endMinute" : 685,
+    "id" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8-E8AF2A0A-5AF8-4DD6-BDF6-2B3A2E283E90-13",
+    "isExtra" : false,
+    "location" : "教三 · 501",
+    "name" : "编译原理",
+    "notes" : "",
+    "periodLabel" : "第 3–4 节",
+    "sourceID" : "E8AF2A0A-5AF8-4DD6-BDF6-2B3A2E283E90",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–11:25",
+    "week" : 13,
+    "weekday" : 2
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 575,
+        "start" : 530
+      }
+    ],
+    "color" : "mint",
+    "courseID" : "E012E001-B2CE-49F7-AE64-3475C64F0E1F",
+    "endMinute" : 575,
+    "id" : "E012E001-B2CE-49F7-AE64-3475C64F0E1F-CD765CE1-11A1-4321-A9F7-63FB11FE7EAA-13",
+    "isExtra" : false,
+    "location" : "体育馆2楼",
+    "name" : "体育",
+    "notes" : "",
+    "periodLabel" : "第 2 节",
+    "sourceID" : "CD765CE1-11A1-4321-A9F7-63FB11FE7EAA",
+    "startMinute" : 530,
+    "teacher" : "",
+    "timeLabel" : "08:50–09:35",
+    "week" : 13,
+    "weekday" : 3
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      }
+    ],
+    "color" : "violet",
+    "courseID" : "C20A2311-D579-4954-99B0-C0FDDAE08523",
+    "endMinute" : 685,
+    "id" : "C20A2311-D579-4954-99B0-C0FDDAE08523-FA077F1A-03C7-4DC1-8D8A-ED04ECF8D621-13",
+    "isExtra" : false,
+    "location" : "教三 · 304",
+    "name" : "大数据处理",
+    "notes" : "",
+    "periodLabel" : "第 3–4 节",
+    "sourceID" : "FA077F1A-03C7-4DC1-8D8A-ED04ECF8D621",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–11:25",
+    "week" : 13,
+    "weekday" : 3
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 995,
+        "start" : 950
+      },
+      {
+        "end" : 1045,
+        "start" : 1000
+      }
+    ],
+    "color" : "violet",
+    "courseID" : "C20A2311-D579-4954-99B0-C0FDDAE08523",
+    "endMinute" : 1045,
+    "id" : "C20A2311-D579-4954-99B0-C0FDDAE08523-C441A87A-0213-41AF-992F-C4DAF766A545-13",
+    "isExtra" : false,
+    "location" : "教三 · 304",
+    "name" : "大数据处理",
+    "notes" : "",
+    "periodLabel" : "第 8–9 节",
+    "sourceID" : "C441A87A-0213-41AF-992F-C4DAF766A545",
+    "startMinute" : 950,
+    "teacher" : "示例教师",
+    "timeLabel" : "15:50–17:25",
+    "week" : 13,
+    "weekday" : 4
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      },
+      {
+        "end" : 735,
+        "start" : 690
+      }
+    ],
+    "color" : "blue",
+    "courseID" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8",
+    "endMinute" : 735,
+    "id" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8-B473B6D7-7DAC-4FC7-8EA4-4E5A5E5B7E73-13",
+    "isExtra" : false,
+    "location" : "教三 · 501",
+    "name" : "编译原理",
+    "notes" : "",
+    "periodLabel" : "第 3–5 节",
+    "sourceID" : "B473B6D7-7DAC-4FC7-8EA4-4E5A5E5B7E73",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–12:15",
+    "week" : 13,
+    "weekday" : 5
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      },
+      {
+        "end" : 735,
+        "start" : 690
+      }
+    ],
+    "color" : "jade",
+    "courseID" : "5891E0C4-2EC1-4403-8E9E-9478F5795DAE",
+    "endMinute" : 735,
+    "id" : "5891E0C4-2EC1-4403-8E9E-9478F5795DAE-1EE22423-D467-496A-9CFC-FF93D9FB33D4-14",
+    "isExtra" : false,
+    "location" : "教三 · 302",
+    "name" : "数据库原理",
+    "notes" : "",
+    "periodLabel" : "第 3–5 节",
+    "sourceID" : "1EE22423-D467-496A-9CFC-FF93D9FB33D4",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–12:15",
+    "week" : 14,
+    "weekday" : 1
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      }
+    ],
+    "color" : "blue",
+    "courseID" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8",
+    "endMinute" : 685,
+    "id" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8-E8AF2A0A-5AF8-4DD6-BDF6-2B3A2E283E90-14",
+    "isExtra" : false,
+    "location" : "教三 · 501",
+    "name" : "编译原理",
+    "notes" : "",
+    "periodLabel" : "第 3–4 节",
+    "sourceID" : "E8AF2A0A-5AF8-4DD6-BDF6-2B3A2E283E90",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–11:25",
+    "week" : 14,
+    "weekday" : 2
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 575,
+        "start" : 530
+      }
+    ],
+    "color" : "mint",
+    "courseID" : "E012E001-B2CE-49F7-AE64-3475C64F0E1F",
+    "endMinute" : 575,
+    "id" : "E012E001-B2CE-49F7-AE64-3475C64F0E1F-CD765CE1-11A1-4321-A9F7-63FB11FE7EAA-14",
+    "isExtra" : false,
+    "location" : "体育馆2楼",
+    "name" : "体育",
+    "notes" : "",
+    "periodLabel" : "第 2 节",
+    "sourceID" : "CD765CE1-11A1-4321-A9F7-63FB11FE7EAA",
+    "startMinute" : 530,
+    "teacher" : "",
+    "timeLabel" : "08:50–09:35",
+    "week" : 14,
+    "weekday" : 3
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      }
+    ],
+    "color" : "violet",
+    "courseID" : "C20A2311-D579-4954-99B0-C0FDDAE08523",
+    "endMinute" : 685,
+    "id" : "C20A2311-D579-4954-99B0-C0FDDAE08523-FA077F1A-03C7-4DC1-8D8A-ED04ECF8D621-14",
+    "isExtra" : false,
+    "location" : "教三 · 304",
+    "name" : "大数据处理",
+    "notes" : "",
+    "periodLabel" : "第 3–4 节",
+    "sourceID" : "FA077F1A-03C7-4DC1-8D8A-ED04ECF8D621",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–11:25",
+    "week" : 14,
+    "weekday" : 3
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      },
+      {
+        "end" : 735,
+        "start" : 690
+      }
+    ],
+    "color" : "peach",
+    "courseID" : "EFB7143D-8C83-41BA-8E6F-84599FFCB98E",
+    "endMinute" : 735,
+    "id" : "EFB7143D-8C83-41BA-8E6F-84599FFCB98E-112BAC1C-3D5D-4555-A0C7-8EF1EAE05F13-14",
+    "isExtra" : false,
+    "location" : "教三 · 402",
+    "name" : "计算机网络",
+    "notes" : "",
+    "periodLabel" : "第 3–5 节",
+    "sourceID" : "112BAC1C-3D5D-4555-A0C7-8EF1EAE05F13",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–12:15",
+    "week" : 14,
+    "weekday" : 4
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 995,
+        "start" : 950
+      },
+      {
+        "end" : 1045,
+        "start" : 1000
+      }
+    ],
+    "color" : "violet",
+    "courseID" : "C20A2311-D579-4954-99B0-C0FDDAE08523",
+    "endMinute" : 1045,
+    "id" : "C20A2311-D579-4954-99B0-C0FDDAE08523-C441A87A-0213-41AF-992F-C4DAF766A545-14",
+    "isExtra" : false,
+    "location" : "教三 · 304",
+    "name" : "大数据处理",
+    "notes" : "",
+    "periodLabel" : "第 8–9 节",
+    "sourceID" : "C441A87A-0213-41AF-992F-C4DAF766A545",
+    "startMinute" : 950,
+    "teacher" : "示例教师",
+    "timeLabel" : "15:50–17:25",
+    "week" : 14,
+    "weekday" : 4
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      },
+      {
+        "end" : 735,
+        "start" : 690
+      }
+    ],
+    "color" : "blue",
+    "courseID" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8",
+    "endMinute" : 735,
+    "id" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8-B473B6D7-7DAC-4FC7-8EA4-4E5A5E5B7E73-14",
+    "isExtra" : false,
+    "location" : "教三 · 501",
+    "name" : "编译原理",
+    "notes" : "",
+    "periodLabel" : "第 3–5 节",
+    "sourceID" : "B473B6D7-7DAC-4FC7-8EA4-4E5A5E5B7E73",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–12:15",
+    "week" : 14,
+    "weekday" : 5
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 525,
+        "start" : 480
+      }
+    ],
+    "color" : "peach",
+    "courseID" : "EFB7143D-8C83-41BA-8E6F-84599FFCB98E",
+    "endMinute" : 525,
+    "id" : "EFB7143D-8C83-41BA-8E6F-84599FFCB98E-15E5F97C-10D1-4534-AA8B-762316F4A060-15",
+    "isExtra" : false,
+    "location" : "专用实验室",
+    "name" : "计算机网络",
+    "notes" : "",
+    "periodLabel" : "第 1 节",
+    "sourceID" : "15E5F97C-10D1-4534-AA8B-762316F4A060",
+    "startMinute" : 480,
+    "teacher" : "示例教师",
+    "timeLabel" : "08:00–08:45",
+    "week" : 15,
+    "weekday" : 1
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      },
+      {
+        "end" : 735,
+        "start" : 690
+      }
+    ],
+    "color" : "jade",
+    "courseID" : "5891E0C4-2EC1-4403-8E9E-9478F5795DAE",
+    "endMinute" : 735,
+    "id" : "5891E0C4-2EC1-4403-8E9E-9478F5795DAE-1EE22423-D467-496A-9CFC-FF93D9FB33D4-15",
+    "isExtra" : false,
+    "location" : "教三 · 302",
+    "name" : "数据库原理",
+    "notes" : "",
+    "periodLabel" : "第 3–5 节",
+    "sourceID" : "1EE22423-D467-496A-9CFC-FF93D9FB33D4",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–12:15",
+    "week" : 15,
+    "weekday" : 1
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      }
+    ],
+    "color" : "blue",
+    "courseID" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8",
+    "endMinute" : 685,
+    "id" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8-E8AF2A0A-5AF8-4DD6-BDF6-2B3A2E283E90-15",
+    "isExtra" : false,
+    "location" : "教三 · 501",
+    "name" : "编译原理",
+    "notes" : "",
+    "periodLabel" : "第 3–4 节",
+    "sourceID" : "E8AF2A0A-5AF8-4DD6-BDF6-2B3A2E283E90",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–11:25",
+    "week" : 15,
+    "weekday" : 2
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 575,
+        "start" : 530
+      }
+    ],
+    "color" : "mint",
+    "courseID" : "E012E001-B2CE-49F7-AE64-3475C64F0E1F",
+    "endMinute" : 575,
+    "id" : "E012E001-B2CE-49F7-AE64-3475C64F0E1F-CD765CE1-11A1-4321-A9F7-63FB11FE7EAA-15",
+    "isExtra" : false,
+    "location" : "体育馆2楼",
+    "name" : "体育",
+    "notes" : "",
+    "periodLabel" : "第 2 节",
+    "sourceID" : "CD765CE1-11A1-4321-A9F7-63FB11FE7EAA",
+    "startMinute" : 530,
+    "teacher" : "",
+    "timeLabel" : "08:50–09:35",
+    "week" : 15,
+    "weekday" : 3
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      }
+    ],
+    "color" : "violet",
+    "courseID" : "C20A2311-D579-4954-99B0-C0FDDAE08523",
+    "endMinute" : 685,
+    "id" : "C20A2311-D579-4954-99B0-C0FDDAE08523-FA077F1A-03C7-4DC1-8D8A-ED04ECF8D621-15",
+    "isExtra" : false,
+    "location" : "教三 · 304",
+    "name" : "大数据处理",
+    "notes" : "",
+    "periodLabel" : "第 3–4 节",
+    "sourceID" : "FA077F1A-03C7-4DC1-8D8A-ED04ECF8D621",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–11:25",
+    "week" : 15,
+    "weekday" : 3
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 995,
+        "start" : 950
+      },
+      {
+        "end" : 1045,
+        "start" : 1000
+      }
+    ],
+    "color" : "violet",
+    "courseID" : "C20A2311-D579-4954-99B0-C0FDDAE08523",
+    "endMinute" : 1045,
+    "id" : "C20A2311-D579-4954-99B0-C0FDDAE08523-C441A87A-0213-41AF-992F-C4DAF766A545-15",
+    "isExtra" : false,
+    "location" : "教三 · 304",
+    "name" : "大数据处理",
+    "notes" : "",
+    "periodLabel" : "第 8–9 节",
+    "sourceID" : "C441A87A-0213-41AF-992F-C4DAF766A545",
+    "startMinute" : 950,
+    "teacher" : "示例教师",
+    "timeLabel" : "15:50–17:25",
+    "week" : 15,
+    "weekday" : 4
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      },
+      {
+        "end" : 735,
+        "start" : 690
+      }
+    ],
+    "color" : "blue",
+    "courseID" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8",
+    "endMinute" : 735,
+    "id" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8-B473B6D7-7DAC-4FC7-8EA4-4E5A5E5B7E73-15",
+    "isExtra" : false,
+    "location" : "教三 · 501",
+    "name" : "编译原理",
+    "notes" : "",
+    "periodLabel" : "第 3–5 节",
+    "sourceID" : "B473B6D7-7DAC-4FC7-8EA4-4E5A5E5B7E73",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–12:15",
+    "week" : 15,
+    "weekday" : 5
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      },
+      {
+        "end" : 735,
+        "start" : 690
+      }
+    ],
+    "color" : "jade",
+    "courseID" : "5891E0C4-2EC1-4403-8E9E-9478F5795DAE",
+    "endMinute" : 735,
+    "id" : "5891E0C4-2EC1-4403-8E9E-9478F5795DAE-1EE22423-D467-496A-9CFC-FF93D9FB33D4-16",
+    "isExtra" : false,
+    "location" : "教三 · 302",
+    "name" : "数据库原理",
+    "notes" : "",
+    "periodLabel" : "第 3–5 节",
+    "sourceID" : "1EE22423-D467-496A-9CFC-FF93D9FB33D4",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–12:15",
+    "week" : 16,
+    "weekday" : 1
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      }
+    ],
+    "color" : "blue",
+    "courseID" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8",
+    "endMinute" : 685,
+    "id" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8-E8AF2A0A-5AF8-4DD6-BDF6-2B3A2E283E90-16",
+    "isExtra" : false,
+    "location" : "教三 · 501",
+    "name" : "编译原理",
+    "notes" : "",
+    "periodLabel" : "第 3–4 节",
+    "sourceID" : "E8AF2A0A-5AF8-4DD6-BDF6-2B3A2E283E90",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–11:25",
+    "week" : 16,
+    "weekday" : 2
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 575,
+        "start" : 530
+      }
+    ],
+    "color" : "mint",
+    "courseID" : "E012E001-B2CE-49F7-AE64-3475C64F0E1F",
+    "endMinute" : 575,
+    "id" : "E012E001-B2CE-49F7-AE64-3475C64F0E1F-CD765CE1-11A1-4321-A9F7-63FB11FE7EAA-16",
+    "isExtra" : false,
+    "location" : "体育馆2楼",
+    "name" : "体育",
+    "notes" : "",
+    "periodLabel" : "第 2 节",
+    "sourceID" : "CD765CE1-11A1-4321-A9F7-63FB11FE7EAA",
+    "startMinute" : 530,
+    "teacher" : "",
+    "timeLabel" : "08:50–09:35",
+    "week" : 16,
+    "weekday" : 3
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      }
+    ],
+    "color" : "violet",
+    "courseID" : "C20A2311-D579-4954-99B0-C0FDDAE08523",
+    "endMinute" : 685,
+    "id" : "C20A2311-D579-4954-99B0-C0FDDAE08523-FA077F1A-03C7-4DC1-8D8A-ED04ECF8D621-16",
+    "isExtra" : false,
+    "location" : "教三 · 304",
+    "name" : "大数据处理",
+    "notes" : "",
+    "periodLabel" : "第 3–4 节",
+    "sourceID" : "FA077F1A-03C7-4DC1-8D8A-ED04ECF8D621",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–11:25",
+    "week" : 16,
+    "weekday" : 3
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      },
+      {
+        "end" : 735,
+        "start" : 690
+      }
+    ],
+    "color" : "peach",
+    "courseID" : "EFB7143D-8C83-41BA-8E6F-84599FFCB98E",
+    "endMinute" : 735,
+    "id" : "EFB7143D-8C83-41BA-8E6F-84599FFCB98E-112BAC1C-3D5D-4555-A0C7-8EF1EAE05F13-16",
+    "isExtra" : false,
+    "location" : "教三 · 402",
+    "name" : "计算机网络",
+    "notes" : "",
+    "periodLabel" : "第 3–5 节",
+    "sourceID" : "112BAC1C-3D5D-4555-A0C7-8EF1EAE05F13",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–12:15",
+    "week" : 16,
+    "weekday" : 4
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 995,
+        "start" : 950
+      },
+      {
+        "end" : 1045,
+        "start" : 1000
+      }
+    ],
+    "color" : "violet",
+    "courseID" : "C20A2311-D579-4954-99B0-C0FDDAE08523",
+    "endMinute" : 1045,
+    "id" : "C20A2311-D579-4954-99B0-C0FDDAE08523-C441A87A-0213-41AF-992F-C4DAF766A545-16",
+    "isExtra" : false,
+    "location" : "教三 · 304",
+    "name" : "大数据处理",
+    "notes" : "",
+    "periodLabel" : "第 8–9 节",
+    "sourceID" : "C441A87A-0213-41AF-992F-C4DAF766A545",
+    "startMinute" : 950,
+    "teacher" : "示例教师",
+    "timeLabel" : "15:50–17:25",
+    "week" : 16,
+    "weekday" : 4
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      },
+      {
+        "end" : 735,
+        "start" : 690
+      }
+    ],
+    "color" : "blue",
+    "courseID" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8",
+    "endMinute" : 735,
+    "id" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8-B473B6D7-7DAC-4FC7-8EA4-4E5A5E5B7E73-16",
+    "isExtra" : false,
+    "location" : "教三 · 501",
+    "name" : "编译原理",
+    "notes" : "",
+    "periodLabel" : "第 3–5 节",
+    "sourceID" : "B473B6D7-7DAC-4FC7-8EA4-4E5A5E5B7E73",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–12:15",
+    "week" : 16,
+    "weekday" : 5
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      },
+      {
+        "end" : 735,
+        "start" : 690
+      }
+    ],
+    "color" : "jade",
+    "courseID" : "5891E0C4-2EC1-4403-8E9E-9478F5795DAE",
+    "endMinute" : 735,
+    "id" : "5891E0C4-2EC1-4403-8E9E-9478F5795DAE-1EE22423-D467-496A-9CFC-FF93D9FB33D4-17",
+    "isExtra" : false,
+    "location" : "教三 · 302",
+    "name" : "数据库原理",
+    "notes" : "",
+    "periodLabel" : "第 3–5 节",
+    "sourceID" : "1EE22423-D467-496A-9CFC-FF93D9FB33D4",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–12:15",
+    "week" : 17,
+    "weekday" : 1
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      }
+    ],
+    "color" : "blue",
+    "courseID" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8",
+    "endMinute" : 685,
+    "id" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8-E8AF2A0A-5AF8-4DD6-BDF6-2B3A2E283E90-17",
+    "isExtra" : false,
+    "location" : "教三 · 501",
+    "name" : "编译原理",
+    "notes" : "",
+    "periodLabel" : "第 3–4 节",
+    "sourceID" : "E8AF2A0A-5AF8-4DD6-BDF6-2B3A2E283E90",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–11:25",
+    "week" : 17,
+    "weekday" : 2
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 575,
+        "start" : 530
+      }
+    ],
+    "color" : "mint",
+    "courseID" : "E012E001-B2CE-49F7-AE64-3475C64F0E1F",
+    "endMinute" : 575,
+    "id" : "E012E001-B2CE-49F7-AE64-3475C64F0E1F-CD765CE1-11A1-4321-A9F7-63FB11FE7EAA-17",
+    "isExtra" : false,
+    "location" : "体育馆2楼",
+    "name" : "体育",
+    "notes" : "",
+    "periodLabel" : "第 2 节",
+    "sourceID" : "CD765CE1-11A1-4321-A9F7-63FB11FE7EAA",
+    "startMinute" : 530,
+    "teacher" : "",
+    "timeLabel" : "08:50–09:35",
+    "week" : 17,
+    "weekday" : 3
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      }
+    ],
+    "color" : "violet",
+    "courseID" : "C20A2311-D579-4954-99B0-C0FDDAE08523",
+    "endMinute" : 685,
+    "id" : "C20A2311-D579-4954-99B0-C0FDDAE08523-FA077F1A-03C7-4DC1-8D8A-ED04ECF8D621-17",
+    "isExtra" : false,
+    "location" : "教三 · 304",
+    "name" : "大数据处理",
+    "notes" : "",
+    "periodLabel" : "第 3–4 节",
+    "sourceID" : "FA077F1A-03C7-4DC1-8D8A-ED04ECF8D621",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–11:25",
+    "week" : 17,
+    "weekday" : 3
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 995,
+        "start" : 950
+      },
+      {
+        "end" : 1045,
+        "start" : 1000
+      }
+    ],
+    "color" : "violet",
+    "courseID" : "C20A2311-D579-4954-99B0-C0FDDAE08523",
+    "endMinute" : 1045,
+    "id" : "C20A2311-D579-4954-99B0-C0FDDAE08523-C441A87A-0213-41AF-992F-C4DAF766A545-17",
+    "isExtra" : false,
+    "location" : "教三 · 304",
+    "name" : "大数据处理",
+    "notes" : "",
+    "periodLabel" : "第 8–9 节",
+    "sourceID" : "C441A87A-0213-41AF-992F-C4DAF766A545",
+    "startMinute" : 950,
+    "teacher" : "示例教师",
+    "timeLabel" : "15:50–17:25",
+    "week" : 17,
+    "weekday" : 4
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      },
+      {
+        "end" : 735,
+        "start" : 690
+      }
+    ],
+    "color" : "blue",
+    "courseID" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8",
+    "endMinute" : 735,
+    "id" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8-B473B6D7-7DAC-4FC7-8EA4-4E5A5E5B7E73-17",
+    "isExtra" : false,
+    "location" : "教三 · 501",
+    "name" : "编译原理",
+    "notes" : "",
+    "periodLabel" : "第 3–5 节",
+    "sourceID" : "B473B6D7-7DAC-4FC7-8EA4-4E5A5E5B7E73",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–12:15",
+    "week" : 17,
+    "weekday" : 5
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      },
+      {
+        "end" : 735,
+        "start" : 690
+      }
+    ],
+    "color" : "jade",
+    "courseID" : "5891E0C4-2EC1-4403-8E9E-9478F5795DAE",
+    "endMinute" : 735,
+    "id" : "5891E0C4-2EC1-4403-8E9E-9478F5795DAE-1EE22423-D467-496A-9CFC-FF93D9FB33D4-18",
+    "isExtra" : false,
+    "location" : "教三 · 302",
+    "name" : "数据库原理",
+    "notes" : "",
+    "periodLabel" : "第 3–5 节",
+    "sourceID" : "1EE22423-D467-496A-9CFC-FF93D9FB33D4",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–12:15",
+    "week" : 18,
+    "weekday" : 1
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      }
+    ],
+    "color" : "blue",
+    "courseID" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8",
+    "endMinute" : 685,
+    "id" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8-E8AF2A0A-5AF8-4DD6-BDF6-2B3A2E283E90-18",
+    "isExtra" : false,
+    "location" : "教三 · 501",
+    "name" : "编译原理",
+    "notes" : "",
+    "periodLabel" : "第 3–4 节",
+    "sourceID" : "E8AF2A0A-5AF8-4DD6-BDF6-2B3A2E283E90",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–11:25",
+    "week" : 18,
+    "weekday" : 2
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 575,
+        "start" : 530
+      }
+    ],
+    "color" : "mint",
+    "courseID" : "E012E001-B2CE-49F7-AE64-3475C64F0E1F",
+    "endMinute" : 575,
+    "id" : "E012E001-B2CE-49F7-AE64-3475C64F0E1F-CD765CE1-11A1-4321-A9F7-63FB11FE7EAA-18",
+    "isExtra" : false,
+    "location" : "体育馆2楼",
+    "name" : "体育",
+    "notes" : "",
+    "periodLabel" : "第 2 节",
+    "sourceID" : "CD765CE1-11A1-4321-A9F7-63FB11FE7EAA",
+    "startMinute" : 530,
+    "teacher" : "",
+    "timeLabel" : "08:50–09:35",
+    "week" : 18,
+    "weekday" : 3
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      }
+    ],
+    "color" : "violet",
+    "courseID" : "C20A2311-D579-4954-99B0-C0FDDAE08523",
+    "endMinute" : 685,
+    "id" : "C20A2311-D579-4954-99B0-C0FDDAE08523-FA077F1A-03C7-4DC1-8D8A-ED04ECF8D621-18",
+    "isExtra" : false,
+    "location" : "教三 · 304",
+    "name" : "大数据处理",
+    "notes" : "",
+    "periodLabel" : "第 3–4 节",
+    "sourceID" : "FA077F1A-03C7-4DC1-8D8A-ED04ECF8D621",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–11:25",
+    "week" : 18,
+    "weekday" : 3
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      },
+      {
+        "end" : 735,
+        "start" : 690
+      }
+    ],
+    "color" : "peach",
+    "courseID" : "EFB7143D-8C83-41BA-8E6F-84599FFCB98E",
+    "endMinute" : 735,
+    "id" : "EFB7143D-8C83-41BA-8E6F-84599FFCB98E-112BAC1C-3D5D-4555-A0C7-8EF1EAE05F13-18",
+    "isExtra" : false,
+    "location" : "教三 · 402",
+    "name" : "计算机网络",
+    "notes" : "",
+    "periodLabel" : "第 3–5 节",
+    "sourceID" : "112BAC1C-3D5D-4555-A0C7-8EF1EAE05F13",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–12:15",
+    "week" : 18,
+    "weekday" : 4
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 995,
+        "start" : 950
+      },
+      {
+        "end" : 1045,
+        "start" : 1000
+      }
+    ],
+    "color" : "violet",
+    "courseID" : "C20A2311-D579-4954-99B0-C0FDDAE08523",
+    "endMinute" : 1045,
+    "id" : "C20A2311-D579-4954-99B0-C0FDDAE08523-C441A87A-0213-41AF-992F-C4DAF766A545-18",
+    "isExtra" : false,
+    "location" : "教三 · 304",
+    "name" : "大数据处理",
+    "notes" : "",
+    "periodLabel" : "第 8–9 节",
+    "sourceID" : "C441A87A-0213-41AF-992F-C4DAF766A545",
+    "startMinute" : 950,
+    "teacher" : "示例教师",
+    "timeLabel" : "15:50–17:25",
+    "week" : 18,
+    "weekday" : 4
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      },
+      {
+        "end" : 735,
+        "start" : 690
+      }
+    ],
+    "color" : "blue",
+    "courseID" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8",
+    "endMinute" : 735,
+    "id" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8-B473B6D7-7DAC-4FC7-8EA4-4E5A5E5B7E73-18",
+    "isExtra" : false,
+    "location" : "教三 · 501",
+    "name" : "编译原理",
+    "notes" : "",
+    "periodLabel" : "第 3–5 节",
+    "sourceID" : "B473B6D7-7DAC-4FC7-8EA4-4E5A5E5B7E73",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–12:15",
+    "week" : 18,
+    "weekday" : 5
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      },
+      {
+        "end" : 735,
+        "start" : 690
+      }
+    ],
+    "color" : "jade",
+    "courseID" : "5891E0C4-2EC1-4403-8E9E-9478F5795DAE",
+    "endMinute" : 735,
+    "id" : "5891E0C4-2EC1-4403-8E9E-9478F5795DAE-1EE22423-D467-496A-9CFC-FF93D9FB33D4-19",
+    "isExtra" : false,
+    "location" : "教三 · 302",
+    "name" : "数据库原理",
+    "notes" : "",
+    "periodLabel" : "第 3–5 节",
+    "sourceID" : "1EE22423-D467-496A-9CFC-FF93D9FB33D4",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–12:15",
+    "week" : 19,
+    "weekday" : 1
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      }
+    ],
+    "color" : "blue",
+    "courseID" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8",
+    "endMinute" : 685,
+    "id" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8-E8AF2A0A-5AF8-4DD6-BDF6-2B3A2E283E90-19",
+    "isExtra" : false,
+    "location" : "教三 · 501",
+    "name" : "编译原理",
+    "notes" : "",
+    "periodLabel" : "第 3–4 节",
+    "sourceID" : "E8AF2A0A-5AF8-4DD6-BDF6-2B3A2E283E90",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–11:25",
+    "week" : 19,
+    "weekday" : 2
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 575,
+        "start" : 530
+      }
+    ],
+    "color" : "mint",
+    "courseID" : "E012E001-B2CE-49F7-AE64-3475C64F0E1F",
+    "endMinute" : 575,
+    "id" : "E012E001-B2CE-49F7-AE64-3475C64F0E1F-CD765CE1-11A1-4321-A9F7-63FB11FE7EAA-19",
+    "isExtra" : false,
+    "location" : "体育馆2楼",
+    "name" : "体育",
+    "notes" : "",
+    "periodLabel" : "第 2 节",
+    "sourceID" : "CD765CE1-11A1-4321-A9F7-63FB11FE7EAA",
+    "startMinute" : 530,
+    "teacher" : "",
+    "timeLabel" : "08:50–09:35",
+    "week" : 19,
+    "weekday" : 3
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      }
+    ],
+    "color" : "violet",
+    "courseID" : "C20A2311-D579-4954-99B0-C0FDDAE08523",
+    "endMinute" : 685,
+    "id" : "C20A2311-D579-4954-99B0-C0FDDAE08523-FA077F1A-03C7-4DC1-8D8A-ED04ECF8D621-19",
+    "isExtra" : false,
+    "location" : "教三 · 304",
+    "name" : "大数据处理",
+    "notes" : "",
+    "periodLabel" : "第 3–4 节",
+    "sourceID" : "FA077F1A-03C7-4DC1-8D8A-ED04ECF8D621",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–11:25",
+    "week" : 19,
+    "weekday" : 3
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 995,
+        "start" : 950
+      },
+      {
+        "end" : 1045,
+        "start" : 1000
+      }
+    ],
+    "color" : "violet",
+    "courseID" : "C20A2311-D579-4954-99B0-C0FDDAE08523",
+    "endMinute" : 1045,
+    "id" : "C20A2311-D579-4954-99B0-C0FDDAE08523-C441A87A-0213-41AF-992F-C4DAF766A545-19",
+    "isExtra" : false,
+    "location" : "教三 · 304",
+    "name" : "大数据处理",
+    "notes" : "",
+    "periodLabel" : "第 8–9 节",
+    "sourceID" : "C441A87A-0213-41AF-992F-C4DAF766A545",
+    "startMinute" : 950,
+    "teacher" : "示例教师",
+    "timeLabel" : "15:50–17:25",
+    "week" : 19,
+    "weekday" : 4
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      },
+      {
+        "end" : 735,
+        "start" : 690
+      }
+    ],
+    "color" : "blue",
+    "courseID" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8",
+    "endMinute" : 735,
+    "id" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8-B473B6D7-7DAC-4FC7-8EA4-4E5A5E5B7E73-19",
+    "isExtra" : false,
+    "location" : "教三 · 501",
+    "name" : "编译原理",
+    "notes" : "",
+    "periodLabel" : "第 3–5 节",
+    "sourceID" : "B473B6D7-7DAC-4FC7-8EA4-4E5A5E5B7E73",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–12:15",
+    "week" : 19,
+    "weekday" : 5
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      },
+      {
+        "end" : 735,
+        "start" : 690
+      }
+    ],
+    "color" : "jade",
+    "courseID" : "5891E0C4-2EC1-4403-8E9E-9478F5795DAE",
+    "endMinute" : 735,
+    "id" : "5891E0C4-2EC1-4403-8E9E-9478F5795DAE-1EE22423-D467-496A-9CFC-FF93D9FB33D4-20",
+    "isExtra" : false,
+    "location" : "教三 · 302",
+    "name" : "数据库原理",
+    "notes" : "",
+    "periodLabel" : "第 3–5 节",
+    "sourceID" : "1EE22423-D467-496A-9CFC-FF93D9FB33D4",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–12:15",
+    "week" : 20,
+    "weekday" : 1
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      }
+    ],
+    "color" : "blue",
+    "courseID" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8",
+    "endMinute" : 685,
+    "id" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8-E8AF2A0A-5AF8-4DD6-BDF6-2B3A2E283E90-20",
+    "isExtra" : false,
+    "location" : "教三 · 501",
+    "name" : "编译原理",
+    "notes" : "",
+    "periodLabel" : "第 3–4 节",
+    "sourceID" : "E8AF2A0A-5AF8-4DD6-BDF6-2B3A2E283E90",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–11:25",
+    "week" : 20,
+    "weekday" : 2
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 575,
+        "start" : 530
+      }
+    ],
+    "color" : "mint",
+    "courseID" : "E012E001-B2CE-49F7-AE64-3475C64F0E1F",
+    "endMinute" : 575,
+    "id" : "E012E001-B2CE-49F7-AE64-3475C64F0E1F-CD765CE1-11A1-4321-A9F7-63FB11FE7EAA-20",
+    "isExtra" : false,
+    "location" : "体育馆2楼",
+    "name" : "体育",
+    "notes" : "",
+    "periodLabel" : "第 2 节",
+    "sourceID" : "CD765CE1-11A1-4321-A9F7-63FB11FE7EAA",
+    "startMinute" : 530,
+    "teacher" : "",
+    "timeLabel" : "08:50–09:35",
+    "week" : 20,
+    "weekday" : 3
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      }
+    ],
+    "color" : "violet",
+    "courseID" : "C20A2311-D579-4954-99B0-C0FDDAE08523",
+    "endMinute" : 685,
+    "id" : "C20A2311-D579-4954-99B0-C0FDDAE08523-FA077F1A-03C7-4DC1-8D8A-ED04ECF8D621-20",
+    "isExtra" : false,
+    "location" : "教三 · 304",
+    "name" : "大数据处理",
+    "notes" : "",
+    "periodLabel" : "第 3–4 节",
+    "sourceID" : "FA077F1A-03C7-4DC1-8D8A-ED04ECF8D621",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–11:25",
+    "week" : 20,
+    "weekday" : 3
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      },
+      {
+        "end" : 735,
+        "start" : 690
+      }
+    ],
+    "color" : "peach",
+    "courseID" : "EFB7143D-8C83-41BA-8E6F-84599FFCB98E",
+    "endMinute" : 735,
+    "id" : "EFB7143D-8C83-41BA-8E6F-84599FFCB98E-112BAC1C-3D5D-4555-A0C7-8EF1EAE05F13-20",
+    "isExtra" : false,
+    "location" : "教三 · 402",
+    "name" : "计算机网络",
+    "notes" : "",
+    "periodLabel" : "第 3–5 节",
+    "sourceID" : "112BAC1C-3D5D-4555-A0C7-8EF1EAE05F13",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–12:15",
+    "week" : 20,
+    "weekday" : 4
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 995,
+        "start" : 950
+      },
+      {
+        "end" : 1045,
+        "start" : 1000
+      }
+    ],
+    "color" : "violet",
+    "courseID" : "C20A2311-D579-4954-99B0-C0FDDAE08523",
+    "endMinute" : 1045,
+    "id" : "C20A2311-D579-4954-99B0-C0FDDAE08523-C441A87A-0213-41AF-992F-C4DAF766A545-20",
+    "isExtra" : false,
+    "location" : "教三 · 304",
+    "name" : "大数据处理",
+    "notes" : "",
+    "periodLabel" : "第 8–9 节",
+    "sourceID" : "C441A87A-0213-41AF-992F-C4DAF766A545",
+    "startMinute" : 950,
+    "teacher" : "示例教师",
+    "timeLabel" : "15:50–17:25",
+    "week" : 20,
+    "weekday" : 4
+  },
+  {
+    "allDay" : false,
+    "busyRanges" : [
+      {
+        "end" : 635,
+        "start" : 590
+      },
+      {
+        "end" : 685,
+        "start" : 640
+      },
+      {
+        "end" : 735,
+        "start" : 690
+      }
+    ],
+    "color" : "blue",
+    "courseID" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8",
+    "endMinute" : 735,
+    "id" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8-B473B6D7-7DAC-4FC7-8EA4-4E5A5E5B7E73-20",
+    "isExtra" : false,
+    "location" : "教三 · 501",
+    "name" : "编译原理",
+    "notes" : "",
+    "periodLabel" : "第 3–5 节",
+    "sourceID" : "B473B6D7-7DAC-4FC7-8EA4-4E5A5E5B7E73",
+    "startMinute" : 590,
+    "teacher" : "示例教师",
+    "timeLabel" : "09:50–12:15",
+    "week" : 20,
+    "weekday" : 5
+  }
+]

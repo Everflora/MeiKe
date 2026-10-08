@@ -1,0 +1,245 @@
+{
+  "courses" : [
+    {
+      "color" : "peach",
+      "extras" : [
+        {
+          "allDay" : true,
+          "endMinute" : 1020,
+          "id" : "52C8F68E-8F76-4C13-98F2-D5547F63A011",
+          "location" : "实验中心 · 301",
+          "notes" : "示例：请携带电脑和实验报告。",
+          "startMinute" : 480,
+          "teacher" : "",
+          "title" : "大型实验",
+          "week" : 8,
+          "weekday" : 7
+        },
+        {
+          "allDay" : false,
+          "endMinute" : 730,
+          "id" : "2E0CED09-E359-42D8-AB98-F41405F6E16C",
+          "location" : "",
+          "notes" : "演示备注",
+          "startMinute" : 610,
+          "teacher" : "实验指导教师",
+          "title" : "补课",
+          "week" : 3,
+          "weekday" : 7
+        }
+      ],
+      "id" : "EFB7143D-8C83-41BA-8E6F-84599FFCB98E",
+      "location" : "教三 · 402",
+      "meetings" : [
+        {
+          "endPeriod" : 5,
+          "endWeek" : 20,
+          "id" : "112BAC1C-3D5D-4555-A0C7-8EF1EAE05F13",
+          "location" : "",
+          "pattern" : "even",
+          "startPeriod" : 3,
+          "startWeek" : 2,
+          "weekday" : 4
+        },
+        {
+          "endPeriod" : 1,
+          "endWeek" : 16,
+          "id" : "15E5F97C-10D1-4534-AA8B-762316F4A060",
+          "location" : "专用实验室",
+          "pattern" : "odd",
+          "startPeriod" : 1,
+          "startWeek" : 1,
+          "weekday" : 1
+        }
+      ],
+      "name" : "计算机网络",
+      "notes" : "",
+      "teacher" : "示例教师"
+    },
+    {
+      "color" : "jade",
+      "extras" : [
+
+      ],
+      "id" : "5891E0C4-2EC1-4403-8E9E-9478F5795DAE",
+      "location" : "教三 · 302",
+      "meetings" : [
+        {
+          "endPeriod" : 5,
+          "endWeek" : 20,
+          "id" : "1EE22423-D467-496A-9CFC-FF93D9FB33D4",
+          "location" : "",
+          "pattern" : "every",
+          "startPeriod" : 3,
+          "startWeek" : 1,
+          "weekday" : 1
+        }
+      ],
+      "name" : "数据库原理",
+      "notes" : "",
+      "teacher" : "示例教师"
+    },
+    {
+      "color" : "blue",
+      "extras" : [
+
+      ],
+      "id" : "19FEC763-1DFA-4170-B5F9-0D52EB7CFDA8",
+      "location" : "教三 · 501",
+      "meetings" : [
+        {
+          "endPeriod" : 4,
+          "endWeek" : 20,
+          "id" : "E8AF2A0A-5AF8-4DD6-BDF6-2B3A2E283E90",
+          "location" : "",
+          "pattern" : "every",
+          "startPeriod" : 3,
+          "startWeek" : 1,
+          "weekday" : 2
+        },
+        {
+          "endPeriod" : 5,
+          "endWeek" : 20,
+          "id" : "B473B6D7-7DAC-4FC7-8EA4-4E5A5E5B7E73",
+          "location" : "",
+          "pattern" : "every",
+          "startPeriod" : 3,
+          "startWeek" : 1,
+          "weekday" : 5
+        }
+      ],
+      "name" : "编译原理",
+      "notes" : "",
+      "teacher" : "示例教师"
+    },
+    {
+      "color" : "violet",
+      "extras" : [
+
+      ],
+      "id" : "C20A2311-D579-4954-99B0-C0FDDAE08523",
+      "location" : "教三 · 304",
+      "meetings" : [
+        {
+          "endPeriod" : 4,
+          "endWeek" : 20,
+          "id" : "FA077F1A-03C7-4DC1-8D8A-ED04ECF8D621",
+          "location" : "",
+          "pattern" : "every",
+          "startPeriod" : 3,
+          "startWeek" : 1,
+          "weekday" : 3
+        },
+        {
+          "endPeriod" : 9,
+          "endWeek" : 20,
+          "id" : "C441A87A-0213-41AF-992F-C4DAF766A545",
+          "location" : "",
+          "pattern" : "every",
+          "startPeriod" : 8,
+          "startWeek" : 1,
+          "weekday" : 4
+        }
+      ],
+      "name" : "大数据处理",
+      "notes" : "",
+      "teacher" : "示例教师"
+    },
+    {
+      "color" : "mint",
+      "extras" : [
+
+      ],
+      "id" : "E012E001-B2CE-49F7-AE64-3475C64F0E1F",
+      "location" : "体育馆2楼",
+      "meetings" : [
+        {
+          "endPeriod" : 2,
+          "endWeek" : 20,
+          "id" : "CD765CE1-11A1-4321-A9F7-63FB11FE7EAA",
+          "location" : "",
+          "pattern" : "every",
+          "startPeriod" : 2,
+          "startWeek" : 1,
+          "weekday" : 3
+        }
+      ],
+      "name" : "体育",
+      "notes" : "",
+      "teacher" : ""
+    }
+  ],
+  "semester" : {
+    "name" : "跨平台兼容演示",
+    "periods" : [
+      {
+        "endMinute" : 525,
+        "id" : 1,
+        "startMinute" : 480
+      },
+      {
+        "endMinute" : 575,
+        "id" : 2,
+        "startMinute" : 530
+      },
+      {
+        "endMinute" : 635,
+        "id" : 3,
+        "startMinute" : 590
+      },
+      {
+        "endMinute" : 685,
+        "id" : 4,
+        "startMinute" : 640
+      },
+      {
+        "endMinute" : 735,
+        "id" : 5,
+        "startMinute" : 690
+      },
+      {
+        "endMinute" : 885,
+        "id" : 6,
+        "startMinute" : 840
+      },
+      {
+        "endMinute" : 935,
+        "id" : 7,
+        "startMinute" : 890
+      },
+      {
+        "endMinute" : 995,
+        "id" : 8,
+        "startMinute" : 950
+      },
+      {
+        "endMinute" : 1045,
+        "id" : 9,
+        "startMinute" : 1000
+      },
+      {
+        "endMinute" : 1095,
+        "id" : 10,
+        "startMinute" : 1050
+      },
+      {
+        "endMinute" : 1185,
+        "id" : 11,
+        "startMinute" : 1140
+      },
+      {
+        "endMinute" : 1235,
+        "id" : 12,
+        "startMinute" : 1190
+      },
+      {
+        "endMinute" : 1285,
+        "id" : 13,
+        "startMinute" : 1240
+      }
+    ],
+    "startDate" : "2026-09-20T16:00:00Z",
+    "weekCount" : 20
+  },
+  "version" : 1
+}
