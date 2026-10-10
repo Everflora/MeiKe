@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import '../data/schedule_store.dart';
 import '../domain/schedule.dart';
 import 'course_editor.dart';
+import 'school_import_page.dart';
 import 'theme.dart';
 
 class TimetablePage extends StatefulWidget {
@@ -90,41 +91,50 @@ class _TimetablePageState extends State<TimetablePage>
                       : null,
                   icon: const Icon(Icons.chevron_left),
                 ),
-                PopupMenuButton<int>(
-                  tooltip: '选择教学周',
-                  initialValue: selectedWeek,
-                  onSelected: (week) => setState(() => selectedWeek = week),
-                  itemBuilder: (_) => [
-                    for (var week = 1; week <= data.semester.weekCount; week++)
-                      PopupMenuItem(value: week, child: Text('第 $week 周')),
-                  ],
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Row(
-                          children: [
-                            Text(
-                              '第 $selectedWeek 周',
-                              style: const TextStyle(
-                                fontSize: 17,
-                                fontWeight: FontWeight.w700,
+                Expanded(
+                  child: PopupMenuButton<int>(
+                    tooltip: '选择教学周',
+                    initialValue: selectedWeek,
+                    onSelected: (week) => setState(() => selectedWeek = week),
+                    itemBuilder: (_) => [
+                      for (
+                        var week = 1;
+                        week <= data.semester.weekCount;
+                        week++
+                      )
+                        PopupMenuItem(value: week, child: Text('第 $week 周')),
+                    ],
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                '第 $selectedWeek 周',
+                                style: const TextStyle(
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.w700,
+                                ),
                               ),
-                            ),
-                            const Icon(Icons.keyboard_arrow_down, size: 16),
-                          ],
-                        ),
-                        Text(
-                          '${SchoolClock.shortDate(start)} – ${SchoolClock.shortDate(end)}',
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.onSurfaceVariant,
+                              const Icon(Icons.keyboard_arrow_down, size: 16),
+                            ],
                           ),
-                        ),
-                      ],
+                          Text(
+                            '${SchoolClock.shortDate(start)} – ${SchoolClock.shortDate(end)}',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -135,7 +145,13 @@ class _TimetablePageState extends State<TimetablePage>
                       : null,
                   icon: const Icon(Icons.chevron_right),
                 ),
-                const Spacer(),
+                IconButton(
+                  tooltip: '一键导入学校课表',
+                  onPressed: widget.store.canWrite && !widget.store.busy
+                      ? () => importSchoolSchedule(context, widget.store)
+                      : null,
+                  icon: const Icon(Icons.download_outlined),
+                ),
                 IconButton(
                   tooltip: '添加课程',
                   onPressed: () => editCourse(context, widget.store),
@@ -157,6 +173,14 @@ class _TimetablePageState extends State<TimetablePage>
                       subtitle: '添加第一门课程，开始你的新学期。',
                     ),
                     FilledButton.icon(
+                      onPressed: widget.store.canWrite && !widget.store.busy
+                          ? () => importSchoolSchedule(context, widget.store)
+                          : null,
+                      icon: const Icon(Icons.download_outlined),
+                      label: const Text('一键导入学校课表'),
+                    ),
+                    const SizedBox(height: 8),
+                    OutlinedButton.icon(
                       onPressed: () => editCourse(context, widget.store),
                       icon: const Icon(Icons.add),
                       label: const Text('添加第一门课'),

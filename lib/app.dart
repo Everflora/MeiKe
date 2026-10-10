@@ -3,6 +3,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'data/schedule_store.dart';
 import 'ui/courses_page.dart';
+import 'ui/discussion_page.dart';
 import 'ui/settings_page.dart';
 import 'ui/timetable_page.dart';
 import 'ui/today_page.dart';
@@ -59,6 +60,7 @@ class _Home extends StatefulWidget {
 
 class _HomeState extends State<_Home> {
   int selected = 0;
+  bool discussionOpened = false;
   @override
   Widget build(BuildContext context) => ListenableBuilder(
     listenable: widget.store,
@@ -72,7 +74,7 @@ class _HomeState extends State<_Home> {
                 content: const Text('本地课表读取失败，原文件已保留，请在设置中恢复。'),
                 actions: [
                   TextButton(
-                    onPressed: () => setState(() => selected = 3),
+                    onPressed: () => setState(() => selected = 4),
                     child: const Text('去设置'),
                   ),
                 ],
@@ -84,6 +86,9 @@ class _HomeState extends State<_Home> {
                   TimetablePage(store: widget.store),
                   TodayPage(store: widget.store),
                   CoursesPage(store: widget.store),
+                  discussionOpened
+                      ? DiscussionPage(store: widget.store)
+                      : const SizedBox(),
                   SettingsPage(store: widget.store),
                 ],
               ),
@@ -93,7 +98,10 @@ class _HomeState extends State<_Home> {
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: selected,
-        onDestinationSelected: (v) => setState(() => selected = v),
+        onDestinationSelected: (v) => setState(() {
+          selected = v;
+          if (v == 3) discussionOpened = true;
+        }),
         height: 66,
         destinations: const [
           NavigationDestination(
@@ -108,6 +116,7 @@ class _HomeState extends State<_Home> {
             icon: Icon(Icons.menu_book_rounded),
             label: '课程',
           ),
+          NavigationDestination(icon: Icon(Icons.forum_outlined), label: '讨论室'),
           NavigationDestination(icon: Icon(Icons.tune_rounded), label: '设置'),
         ],
       ),
