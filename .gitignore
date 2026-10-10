@@ -68,3 +68,6 @@ app.*.map.json
 /outputs/
 schedule-before.json
 schedule-after.json
+/.local/
+server/data/
+__pycache__/

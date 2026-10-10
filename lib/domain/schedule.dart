@@ -253,6 +253,35 @@ class ExtraMeeting {
   ExtraMeeting copy() => ExtraMeeting.fromJson(toJson());
 }
 
+class SchoolClass {
+  SchoolClass({
+    required this.termCode,
+    required this.courseCode,
+    required this.classId,
+    required this.classNumber,
+  });
+  final String termCode, courseCode, classId, classNumber;
+  List<String>? get identity => classId.isNotEmpty
+      ? ['JXBID', classId]
+      : classNumber.isNotEmpty && courseCode.isNotEmpty
+      ? ['JXBH', courseCode, classNumber]
+      : null;
+  String? get key =>
+      identity == null ? null : jsonEncode([termCode, ...identity!]);
+  factory SchoolClass.fromJson(Json j) => SchoolClass(
+    termCode: j['termCode'] as String,
+    courseCode: j['courseCode'] as String,
+    classId: j['classId'] as String,
+    classNumber: j['classNumber'] as String,
+  );
+  Json toJson() => {
+    'termCode': termCode,
+    'courseCode': courseCode,
+    'classId': classId,
+    'classNumber': classNumber,
+  };
+}
+
 class Course {
   Course({
     String? id,
@@ -261,12 +290,14 @@ class Course {
     this.location = '',
     this.color = CourseColor.jade,
     this.notes = '',
+    this.schoolClass,
     List<WeeklyMeeting>? meetings,
     List<ExtraMeeting>? extras,
   }) : id = id ?? newId(),
        meetings = meetings ?? [],
        extras = extras ?? [];
   String id, name, teacher, location, notes;
+  SchoolClass? schoolClass;
   CourseColor color;
   List<WeeklyMeeting> meetings;
   List<ExtraMeeting> extras;
@@ -277,6 +308,9 @@ class Course {
     location: j['location'] as String,
     color: CourseColor.values.byName(j['color'] as String),
     notes: j['notes'] as String,
+    schoolClass: j['schoolClass'] == null
+        ? null
+        : SchoolClass.fromJson(j['schoolClass'] as Json),
     meetings: (j['meetings'] as List)
         .map((e) => WeeklyMeeting.fromJson(e as Json))
         .toList(),
@@ -291,6 +325,7 @@ class Course {
     'location': location,
     'color': color.name,
     'notes': notes,
+    if (schoolClass != null) 'schoolClass': schoolClass!.toJson(),
     'meetings': meetings.map((m) => m.toJson()).toList(),
     'extras': extras.map((m) => m.toJson()).toList(),
   };

@@ -93,6 +93,26 @@ class ScheduleStore extends ChangeNotifier {
     await replace(candidate);
   }
 
+  Future<void> importSchool(ScheduleData candidate) async {
+    if (!canWrite || busy) throw const FormatException('请先恢复本地数据或等待当前保存完成。');
+    final error = candidate.validationError();
+    if (error != null) throw FormatException(error);
+    if (ScheduleCodec.encode(candidate).length > ScheduleCodec.maxBytes) {
+      throw const FormatException('课表数据超过 2 MB，原课表未更改。');
+    }
+    // Always preserve the pre-import data, including when the first table was empty.
+    final before = ScheduleCodec.encode(data);
+    await file.parent.create(recursive: true);
+    final backup = File(
+      '${file.parent.path}/before-school-import-${newId()}.json',
+    );
+    await backup.writeAsBytes(before, flush: true);
+    if (busy || !canWrite || !listEquals(before, ScheduleCodec.encode(data))) {
+      throw const FormatException('课表在导入过程中发生变化，请重新确认导入。');
+    }
+    await replace(candidate);
+  }
+
   Future<Uint8List> exportBytes() async =>
       canWrite ? ScheduleCodec.encode(data) : file.readAsBytes();
 }

@@ -1,0 +1,280 @@
+import 'dart:io';
+
+import 'package:flutter/material.dart';
+
+import '../data/discussion_client.dart';
+import '../data/schedule_store.dart';
+import '../domain/schedule.dart';
+import 'theme.dart';
+import 'chat_page.dart';
+import 'discussion_profile.dart';
+import 'discussion_helpers.dart';
+
+class DiscussionPage extends StatefulWidget {
+  const DiscussionPage({super.key, required this.store});
+  final ScheduleStore store;
+  @override
+  State<DiscussionPage> createState() => _DiscussionPageState();
+}
+
+class _DiscussionPageState extends State<DiscussionPage> {
+  late final DiscussionClient client;
+  bool ready = false, busy = false;
+  List<Json> terms = [];
+  String? term, error;
+
+  @override
+  void initState() {
+    super.initState();
+    client = DiscussionClient(
+      sessionFile: File(
+        '${widget.store.file.parent.path}/discussion-session.json',
+      ),
+    );
+    load();
+  }
+
+  Future<void> load() async {
+    try {
+      await client.loadSession();
+      if (client.signedIn) await client.refreshProfile();
+    } catch (_) {
+      error = '无法读取讨论身份，请重新设置昵称。';
+    }
+    if (mounted) setState(() => ready = true);
+  }
+
+  Future<void> connect() async {
+    if (busy) return;
+    if (!client.signedIn) {
+      final saved = await Navigator.of(context).push<bool>(
+        MaterialPageRoute(
+          builder: (_) => DiscussionProfilePage(client: client, creating: true),
+        ),
+      );
+      if (saved != true || !mounted) return;
+      setState(() {
+        busy = true;
+        error = null;
+      });
+      try {
+        await client.refreshProfile();
+      } catch (e) {
+        if (mounted) {
+          setState(() {
+            error = message(e);
+            busy = false;
+          });
+        }
+        return;
+      }
+    } else {
+      setState(() {
+        busy = true;
+        error = null;
+      });
+    }
+    try {
+      final available = await client.terms();
+      if (!mounted) return;
+      final imported = widget.store.data.courses
+          .map((c) => c.schoolClass?.termCode)
+          .whereType<String>()
+          .toSet();
+      final matching = available.where(
+        (t) =>
+            imported.contains(t['code']) ||
+            t['name'] == widget.store.data.semester.name,
+      );
+      setState(() {
+        terms = available;
+        term = matching.isNotEmpty
+            ? matching.first['code'] as String
+            : available.length == 1
+            ? available.first['code'] as String
+            : null;
+      });
+    } catch (e) {
+      if (mounted) setState(() => error = message(e));
+    } finally {
+      if (mounted) setState(() => busy = false);
+    }
+  }
+
+  Future<void> enter(Course course) async {
+    if (busy || term == null) return;
+    setState(() {
+      busy = true;
+      error = null;
+    });
+    try {
+      final rooms = await client.match(course, term!);
+      if (!mounted) return;
+      if (rooms.isEmpty) {
+        await showError(
+          context,
+          const FormatException('未找到对应讨论室。请核对学期、课程名称、教师、周次和节次是否与学校课表一致。'),
+        );
+        return;
+      }
+      DiscussionRoom? room = rooms.length == 1
+          ? rooms.first
+          : await showDialog<DiscussionRoom>(
+              context: context,
+              builder: (ctx) => SimpleDialog(
+                title: const Text('请选择上课班级'),
+                children: [
+                  for (final candidate in rooms)
+                    SimpleDialogOption(
+                      onPressed: () => Navigator.pop(ctx, candidate),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(candidate.classes),
+                          const SizedBox(height: 4),
+                          Text(candidate.schedule),
+                          const Divider(),
+                        ],
+                      ),
+                    ),
+                ],
+              ),
+            );
+      if (room == null || !mounted) return;
+      await Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) => ChatPage(client: client, room: room),
+        ),
+      );
+    } catch (e) {
+      if (mounted) await showError(context, e);
+    } finally {
+      if (mounted) setState(() => busy = false);
+    }
+  }
+
+  @override
+  void dispose() {
+    client.close();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final courses = widget.store.data.courses;
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  '讨论室',
+                  style: Theme.of(context).textTheme.headlineSmall,
+                ),
+              ),
+              if (client.signedIn)
+                IconButton(
+                  tooltip: '设置头像和昵称',
+                  onPressed: () async {
+                    await Navigator.of(context).push<bool>(
+                      MaterialPageRoute(
+                        builder: (_) => DiscussionProfilePage(client: client),
+                      ),
+                    );
+                    if (mounted) setState(() {});
+                  },
+                  icon: UserAvatar(
+                    client: client,
+                    userId: client.userId,
+                    name: client.nickname,
+                    version: client.avatarVersion,
+                    radius: 16,
+                  ),
+                ),
+            ],
+          ),
+        ),
+        if (busy) const LinearProgressIndicator(),
+        if (error != null)
+          Padding(padding: const EdgeInsets.all(12), child: Text(error!)),
+        if (!client.signedIn || terms.isEmpty)
+          Expanded(
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.forum_outlined, size: 52, color: accent),
+                    const SizedBox(height: 16),
+                    const Text('和同一个教学班的同学交流'),
+                    const SizedBox(height: 8),
+                    const Text(
+                      '设置昵称后，选择自己的课程进入讨论室。',
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 20),
+                    FilledButton(
+                      onPressed: ready && !busy ? connect : null,
+                      child: Text(client.signedIn ? '连接讨论室' : '设置头像和昵称'),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          )
+        else ...[
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: DropdownButtonFormField<String>(
+              initialValue: term,
+              isExpanded: true,
+              decoration: const InputDecoration(labelText: '学期'),
+              items: [
+                for (final item in terms)
+                  DropdownMenuItem(
+                    value: item['code'] as String,
+                    child: Text(
+                      item['name'] as String,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+              ],
+              onChanged: busy ? null : (value) => setState(() => term = value),
+            ),
+          ),
+          const Padding(
+            padding: EdgeInsets.all(12),
+            child: Text('按课程名称、教师、上课时间查找对应讨论室。'),
+          ),
+          Expanded(
+            child: courses.isEmpty
+                ? const Center(child: Text('先导入或添加课程，再进入讨论室。'))
+                : ListView.builder(
+                    itemCount: courses.length,
+                    itemBuilder: (context, index) {
+                      final course = courses[index];
+                      return Card(
+                        margin: const EdgeInsets.fromLTRB(12, 4, 12, 4),
+                        child: ListTile(
+                          title: Text(course.name),
+                          subtitle: Text(
+                            '${course.teacher.isEmpty ? '未填写教师' : course.teacher}\n${course.meetings.map((m) => '${m.summary} · ${m.recurrence}').join('\n')}',
+                          ),
+                          trailing: const Icon(Icons.chevron_right),
+                          isThreeLine: false,
+                          onTap: !busy && term != null
+                              ? () => enter(course)
+                              : null,
+                        ),
+                      );
+                    },
+                  ),
+          ),
+        ],
+      ],
+    );
+  }
+}
