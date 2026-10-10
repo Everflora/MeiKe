@@ -4,6 +4,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'data/schedule_store.dart';
 import 'ui/courses_page.dart';
 import 'ui/discussion_page.dart';
+import 'ui/news_page.dart';
 import 'ui/settings_page.dart';
 import 'ui/timetable_page.dart';
 import 'ui/today_page.dart';
@@ -61,6 +62,7 @@ class _Home extends StatefulWidget {
 class _HomeState extends State<_Home> {
   int selected = 0;
   bool discussionOpened = false;
+  bool newsOpened = false;
   @override
   Widget build(BuildContext context) => ListenableBuilder(
     listenable: widget.store,
@@ -74,7 +76,7 @@ class _HomeState extends State<_Home> {
                 content: const Text('本地课表读取失败，原文件已保留，请在设置中恢复。'),
                 actions: [
                   TextButton(
-                    onPressed: () => setState(() => selected = 4),
+                    onPressed: () => setState(() => selected = 5),
                     child: const Text('去设置'),
                   ),
                 ],
@@ -89,6 +91,7 @@ class _HomeState extends State<_Home> {
                   discussionOpened
                       ? DiscussionPage(store: widget.store)
                       : const SizedBox(),
+                  newsOpened ? NewsPage(store: widget.store) : const SizedBox(),
                   SettingsPage(store: widget.store),
                 ],
               ),
@@ -101,6 +104,7 @@ class _HomeState extends State<_Home> {
         onDestinationSelected: (v) => setState(() {
           selected = v;
           if (v == 3) discussionOpened = true;
+          if (v == 4) newsOpened = true;
         }),
         height: 66,
         destinations: const [
@@ -117,6 +121,10 @@ class _HomeState extends State<_Home> {
             label: '课程',
           ),
           NavigationDestination(icon: Icon(Icons.forum_outlined), label: '讨论室'),
+          NavigationDestination(
+            icon: Icon(Icons.newspaper_outlined),
+            label: '新闻',
+          ),
           NavigationDestination(icon: Icon(Icons.tune_rounded), label: '设置'),
         ],
       ),

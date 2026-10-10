@@ -146,6 +146,33 @@ dart run flutter_launcher_icons
 `--dart-define=DISCUSSION_API=https://你的地址/api/meike/` 配置。
 数据库与后端维护说明见 [server/README.md](server/README.md)。
 
+## 新闻
+
+底部「新闻」分为「劳动教育」和「教务通知」。劳动教育点击「同步」在学校网页完成登录，
+课程列表出现后会自动读取；也可点击「读取课程通知」重试。读取完整的学校
+课程表，展示项目名称、劳动类型、实施时间、地点、截止信息、选课情况和教师。
+支持搜索、地点 / 类型筛选、仅看可选课程，以及从详情打开学校页面手动选课。
+
+首次同步建立列表，后续新开课项目标记为新课程，打开详情后清除标记；满额、
+截止和离开最新列表的课程保留为历史。新闻缓存与课表文件分开保存，离线
+可以查看上次结果，读取失败不会覆盖已有新闻。显示的是最近同步结果，名额
+和报名结果以学校网页为准。本版劳动教育采用手动同步，不提供后台推送。
+账号和密码仅在学校登录网页中输入。
+
+「教务通知」接入 `https://jwc.seu.edu.cn/xxtz/list.htm`，无需登录，首次打开
+自动刷新，展示通知标题与发布日期，支持搜索、下拉刷新及加载更早通知。
+点击通知在应用内打开原文，兼容教务处栏目提供的校内与微信文章链接。
+教务通知缓存单独保存，网络失败保留上次列表。
+「教务处栏目」下拉菜单包含最新动态、教务信息、学籍管理、实践教学、
+教学研究、国际交流、文化素质教育、教师教学发展。各栏目分别读取对应的
+官方页面，独立保存缓存与分页；应用内切换保留已加载的历史页和搜索内容。
+国际交流栏目跳转至 `.psp` 页面时保持 HTTPS。
+
+课程表字段映射参考 [SEU-Labor-Course-Pusher](https://github.com/zz6zz666/SEU-Labor-Course-Pusher)，
+许可证说明见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
+网页读取测试：先按 `tool/SCHOOL_CATALOG.md` 安装本地 Playwright，再运行
+`node --test tool/labor_news_test.cjs`，可通过 `MEIKE_BROWSER_EXECUTABLE` 指定 Chromium 路径。
+
 仓库不包含 Flutter / Android SDK、构建缓存、开发者账号、签名密钥或个人课表。克隆后按上面的步骤配置开发环境。iOS 开发团队配置留空，请在自己的 Xcode 中选择签名团队。
 
 团队开发说明见 [CONTRIBUTING.md](CONTRIBUTING.md)，模块与数据规则见 [架构说明](docs/ARCHITECTURE.md)，后续功能设想见 [路线图](docs/ROADMAP.md)。
