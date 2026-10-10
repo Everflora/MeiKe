@@ -18,6 +18,7 @@ dependencies:
   characters: ^1.4.1
   webview_flutter: ^4.14.1
   webview_flutter_android: ^4.14.1
+  html: ^0.15.7
 
 dev_dependencies:
   flutter_test:
@@ -30,6 +31,7 @@ flutter:
   assets:
     - assets/app_icon.png
     - assets/school_import.js
+    - assets/labor_news.js
 
 flutter_launcher_icons:
   android: true
