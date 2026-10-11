@@ -12,50 +12,54 @@ import zlib
 NOT_HANDLED = object()
 
 
+class AvatarError(ValueError):
+    """Safe, user-facing validation error for avatar uploads."""
+
+
 def avatar_bytes(value):
     if value is None:
         return None
     if not isinstance(value, str) or len(value) > 131072:
-        raise ValueError('头像文件过大。')
+        raise AvatarError('头像文件过大。')
     try:
         data = base64.b64decode(value, validate=True)
     except (ValueError, binascii.Error):
-        raise ValueError('头像编码无效。') from None
+        raise AvatarError('头像编码无效。') from None
     if len(data) > 98304 or not data.startswith(b'\x89PNG\r\n\x1a\n'):
-        raise ValueError('请选择有效的头像图片。')
+        raise AvatarError('请选择有效的头像图片。')
     position, compressed, header, ended = 8, b'', None, False
     while position + 12 <= len(data):
         size = struct.unpack('>I', data[position:position + 4])[0]
         kind = data[position + 4:position + 8]
         end = position + 12 + size
         if end > len(data):
-            raise ValueError('头像图片不完整。')
+            raise AvatarError('头像图片不完整。')
         part = data[position + 8:position + 8 + size]
         checksum = struct.unpack('>I', data[end - 4:end])[0]
         if zlib.crc32(kind + part) & 0xffffffff != checksum:
-            raise ValueError('头像图片校验失败。')
+            raise AvatarError('头像图片校验失败。')
         if kind == b'IHDR':
             if header is not None or position != 8 or size != 13:
-                raise ValueError('头像图片头无效。')
+                raise AvatarError('头像图片头无效。')
             header = struct.unpack('>IIBBBBB', part)
         elif kind == b'IDAT':
             compressed += part
         elif kind == b'IEND':
             if size != 0 or end != len(data):
-                raise ValueError('头像图片结尾无效。')
+                raise AvatarError('头像图片结尾无效。')
             ended = True
         position = end
     if (not ended or not header or header[:3] != (128, 128, 8)
             or header[3] not in (2, 6) or header[4:] != (0, 0, 0)):
-        raise ValueError('头像需要由应用转换成 128×128 PNG 图片。')
+        raise AvatarError('头像需要由应用转换成 128×128 PNG 图片。')
     try:
         decoder = zlib.decompressobj()
         expected = 128 * (128 * (4 if header[3] == 6 else 3) + 1)
         pixels = decoder.decompress(compressed, expected + 1)
         if len(pixels) != expected or not decoder.eof or decoder.unused_data:
-            raise ValueError('头像像素数据无效。')
+            raise AvatarError('头像像素数据无效。')
     except zlib.error:
-        raise ValueError('头像像素数据无效。') from None
+        raise AvatarError('头像像素数据无效。') from None
     return data
 
 
