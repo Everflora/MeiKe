@@ -1,0 +1,71 @@
+# 课程组队实现
+
+## 项目分析
+
+- 手机端：Flutter 3.47.6 / Dart 3.13.5，Material 3；`lib/ui` 页面、`lib/data` 存储与 HTTPS 客户端、`lib/domain` 离线课程模型。学校课表、新闻缓存与讨论身份相互独立。
+- 后端：Python 3.12 标准库 `ThreadingHTTPServer`、SQLite WAL，Nginx HTTPS 代理和 systemd。`server/app.py` 处理身份与课程目录，`server/chat.py` 提供聊天和昵称头像。
+- 可复用模型：`users.id` 是令牌账户；`rooms.id` 是教学班讨论室；同一讨论室可能合并学校拆分的阶段课程。组队的 `offeringId` 使用讨论室 ID，`GroupRound` 是该室唯一的默认组队场景，内部保留 ID 用于隔离课程问卷，用户无需创建或选择活动。
+- 现有数据库没有学籍账户或班级学生名册。组队要求用户主动确认所属教学班并同意参与；这不能替代学校验证的学籍认证。API 只操作令牌所代表的本人，默认禁止跨讨论室组队。
+- 本机 `Course` 不存组队答案。个人画像、活动意向、团队与申请存服务器，继续保留离线课表功能。
+
+## 实现顺序
+
+P0：版本化题库 / 矩阵 / 权重 → 独立纯函数引擎 → 答案与组队事务 API → 讨论室入口和 7+3 问卷 → 推荐、申请、审核、退出与关闭 → 规范 A–I 和权限 / 并发测试。
+
+P1：任务技能 / 角色覆盖、显式需求与筛选 → 私密避开 → 自愿共享仅用于会面建议的空闲时段 → 完成合作后的双方同意反馈。共同时间不改变规范的规则匹配分。
+
+配置：`server/team_matching/config/rule-v1.0.json`。发布配置保留版本；服务器校验并返回问卷配置，前端不复制题库或计算信任分数。Q9、MBTI、星座不参与评分。
+
+## 完成范围和模型
+
+P0 与 P1 已实现，无新增第三方依赖。讨论室右上角「课程组队」进入；每个教学班只有一个默认组队场景，进入后自动获取，用户不填写活动名称，也不切换活动；同一课程只能加入一个团队。创建者自动成为首位成员；容量包含创建者，默认 4 人，支持 2–12 人。草稿使用 `published=false` 与 `CLOSED`，仅负责人可见；完成问卷后可发布。负责人退出转交最早加入的成员；空团队停止招募。已结束合作冻结参与成员以保存匿名反馈范围。
+
+| 表 | 用途 |
+| --- | --- |
+| team_consents | 用户主动确认教学班、同意组队与身份展示 |
+| group_rounds / team_default_rounds | 讨论室内默认的组队场景（内部标识） |
+| team_profiles | 7 道个人画像与版本、可跳过的私有 MBTI / 星座 |
+| team_preferences | 每活动的 Q1/Q2/Q7、可选 Q3/Q4 覆盖、明确线下意愿 |
+| teams / team_members | 团队需求、负责人、容量、状态与课程内唯一团队关系 |
+| team_applications | 申请、必要线下确认与审核状态 |
+| team_bans / team_avoidances | 移除后的本队限制、本人私密双向避开关系 |
+| team_availability | 用户主动授权的一周抽象半小时时段，不保存完整课表 |
+| team_feedback | 合作结束时成员快照、匿名汇总同意与个人反馈 |
+
+推荐使用所有现有成员；配置中的 0.7 均值 + 0.3 最小值保护较弱兼容关系。`null`、有效的 0、结构不适用分别处理。适用维度缺少答案会降低充分度；低于 0.65 返回 `displayScore=false`，界面不显示内部数值。规则版本随每次推荐返回，不将分数表达为成功概率。配置更新应新增版本文件，不覆写已有版本；头像昵称继续使用现有身份。
+
+## 接口与权限
+
+全部组队接口需要原讨论 Bearer 身份。身份从令牌取值，不接受请求指定他人学生身份或提交匹配分数。
+
+| 接口（`/v1/` 前缀） | 用途 |
+| --- | --- |
+| GET team-config | 版本题库、矩阵、权重与表单配置 |
+| POST team-consent | 明确确认课程归属及同意组队 |
+| GET / PUT team-profile | 只读写本人 7 题画像和可选私有标签 |
+| POST team-default-round | 经本人教学班同意后自动获取或创建默认场景 |
+| GET / POST team-rounds | 兼容旧客户端，仅返回同一个默认场景，不再创建额外活动 |
+| GET / PUT team-preferences/:roundId | 本人活动偏好、覆盖与线下意愿 |
+| GET team-list?roundId=…&recommend=true | 可申请推荐；分页 limit / offset，可按 mode / skill 筛选 |
+| POST team-list | 团队创建，创建者自动加入 |
+| GET team-detail/:id | 团队详情，不含他人原始问卷 |
+| POST team-detail/:id/{publish,close,complete} | 仅负责人发布 / 关闭招募 / 结束合作 |
+| POST team-detail/:id/{apply,leave,remove} | 本人申请 / 退出；负责人移除其他成员 |
+| GET team-detail/:id/applications | 负责人看本队申请，申请者只看本人申请 |
+| POST team-applications/:id | 负责人 accept / reject，申请者 cancel |
+| GET / POST / DELETE team-avoidances | 只读写本人私密避开关系 |
+| GET / PUT / DELETE team-availability/:roundId | 本人明确授权、确认的一周时段，可随时删除 |
+| GET team-detail/:id/meeting-times | 仅需要会面的任务；相关所有人同周授权才返回交集 |
+| GET / POST team-detail/:id/feedback | 结束合作的参与成员；先所有人同意，后收集反馈 |
+
+申请及审核均重新检查招募状态、容量、所属活动、已加入关系、移除限制、双向避开和必要线下确认。变更使用 SQLite `BEGIN IMMEDIATE`；同活动唯一成员约束和容量触发器作为数据库保护。满员错误返回 `code=TEAM_FULL`，其他失败也提供可识别代码；任何失败事务回滚。推荐在一致读快照中批量查询成员与问卷，查询次数不随团队数线性增长。
+
+问卷和标签不展示给其他成员。私密避开不会出现在他人响应中，受限制请求只返回一般「暂时无法加入」。空闲时段在手机上计算，上传前允许删改；只在需要会面的任务启用，不修改 G/T/C/K 或排序分数。撤回时间授权直接删除本人服务器时段。反馈只收集团队整体满意度、效率和再次合作意愿，所有参与者同意后才收集；汇总需至少两人全部完成，个人答案只本人可见。任一成员撤回后停止展示汇总并删除该人的反馈。
+
+## 验证与部署
+
+Python：`python -m unittest discover -s server -v`。涵盖规范 A–I、所有选项、矩阵完整性及对称、评分范围、缺失信息、Q9 / 可选标签不变分数、权限、课程隔离、持久化、重复申请、事务并发、分页与批量查询、线下确认、私密关系、时间授权和双方同意反馈。
+
+Flutter：`flutter analyze --no-pub`、`flutter test`。新增界面验收覆盖首次 10 题保存、后续仅 3 题、不覆盖画像、返回上一步、互斥多选、必须主动确认教学班、低充分度隐藏分数，以及本机课表推导匿名空闲时段。
+
+升级前使用 `server/backup_database.py` 在线备份数据库。部署 `app.py`、`teams.py` 和整个 `team_matching` 代码及配置，再初始化增量表并重启原 systemd 服务。升级不重导学校目录或清空聊天。回退应用代码时保留新增表，可继续运行旧聊天后端；需要恢复数据库时应先停服务，并通过 SQLite 在线备份文件恢复，不能在运行中直接覆盖 WAL 数据库。
