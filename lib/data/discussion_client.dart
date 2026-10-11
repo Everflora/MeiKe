@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import '../domain/schedule.dart';
+import 'chat_file.dart';
 
 Json discussionMatchRequest(Course course, String termCode) {
   if (course.name.trim().isEmpty || course.teacher.trim().isEmpty) {
@@ -201,6 +202,67 @@ class DiscussionClient {
           ))['message']
           as Json;
 
+  Future<Json> sendFile(
+    String room,
+    String name,
+    Uint8List bytes,
+    String clientId,
+  ) async {
+    if (bytes.isEmpty || bytes.length > maxChatFileBytes) {
+      throw const FormatException('请选择非空且不超过 10 MB 的文件。');
+    }
+    try {
+      return (await request(
+            'POST',
+            'v1/rooms/$room/messages',
+            body: {
+              'kind': 'file',
+              'fileName': chatFileName(name),
+              'media': base64Encode(bytes),
+              'clientId': clientId,
+            },
+          ))['message']
+          as Json;
+    } on FormatException catch (e) {
+      if (e.message == '不支持的消息类型。') {
+        throw const FormatException('文件服务暂未启用，请稍后再试。');
+      }
+      rethrow;
+    }
+  }
+
+  Future<Uint8List> downloadFile(int id, int expectedSize) async {
+    if (expectedSize < 1 || expectedSize > maxChatFileBytes) {
+      throw const FormatException('文件大小无效。');
+    }
+    try {
+      final req = await _http
+          .getUrl(base.resolve('v1/messages/$id/media'))
+          .timeout(const Duration(seconds: 15));
+      req.followRedirects = false;
+      req.headers.set(HttpHeaders.authorizationHeader, 'Bearer $_token');
+      final response = await req.close().timeout(const Duration(seconds: 60));
+      if (response.statusCode != 200) {
+        if (response.statusCode == 401) _token = '';
+        await response.timeout(const Duration(seconds: 15)).drain<void>();
+        throw FormatException(
+          response.statusCode == 404 ? '文件不存在或消息已撤回。' : '文件下载失败，请重试。',
+        );
+      }
+      final data = await readChatFile(
+        response.timeout(const Duration(seconds: 60)),
+      );
+      if (data.length != expectedSize) {
+        throw const FormatException('文件下载不完整，请重试。');
+      }
+      return data;
+    } on TimeoutException {
+      throw const FormatException('文件下载超时，请重试。');
+    } on IOException {
+      throw const FormatException('下载失败，请检查网络后重试。');
+    }
+  }
+
   Future<Json> messages(
     String room, {
     int? after,
@@ -248,7 +310,7 @@ class DiscussionClient {
         request.add(encoded);
       }
       final response = await request.close().timeout(
-        const Duration(seconds: 15),
+        Duration(seconds: body?['kind'] == 'file' ? 60 : 15),
       );
       final bytes = <int>[];
       await for (final chunk in response.timeout(const Duration(seconds: 15))) {
