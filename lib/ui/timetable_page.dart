@@ -11,6 +11,7 @@ import 'course_details.dart';
 import 'courses_page.dart';
 import 'school_import_page.dart';
 import 'theme.dart';
+import 'appearance.dart';
 
 class TimetablePage extends StatefulWidget {
   const TimetablePage({super.key, required this.store});
@@ -578,7 +579,9 @@ class _EventCard extends StatelessWidget {
         .floor()
         .clamp(1, 3);
     final foreground = active
-        ? const Color(0xFFFCFCED)
+        ? context.meike.onHero
+        : context.meike.design == MeikeTheme.ginkgo
+        ? context.meike.ink
         : event.color.foreground(context);
     return Semantics(
       label:
@@ -588,13 +591,27 @@ class _EventCard extends StatelessWidget {
       child: SizedBox(
         height: height,
         child: Material(
-          color: active ? heroGreen : event.color.surface(context),
+          color: active
+              ? context.meike.hero
+              : context.meike.design == MeikeTheme.ginkgo
+              ? context.meike.surface
+              : event.color.surface(context),
           borderRadius: BorderRadius.circular(7),
           clipBehavior: Clip.hardEdge,
           child: InkWell(
             onTap: onTap,
             child: Stack(
               children: [
+                if (context.meike.design == MeikeTheme.ginkgo)
+                  Positioned(
+                    left: 0,
+                    top: 0,
+                    bottom: 0,
+                    child: Container(
+                      width: 2,
+                      color: event.color.foreground(context),
+                    ),
+                  ),
                 if (active)
                   Positioned(
                     top: 0,
@@ -602,8 +619,8 @@ class _EventCard extends StatelessWidget {
                     child: Container(
                       width: 4,
                       height: 10,
-                      decoration: const BoxDecoration(
-                        color: gingko,
+                      decoration: BoxDecoration(
+                        color: context.meike.heroAccent,
                         borderRadius: BorderRadius.vertical(
                           bottom: Radius.circular(2),
                         ),

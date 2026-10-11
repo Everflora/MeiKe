@@ -6,6 +6,9 @@ import 'package:seu_timetable/app.dart';
 import 'package:seu_timetable/data/schedule_store.dart';
 import 'package:seu_timetable/domain/schedule.dart';
 import 'package:seu_timetable/ui/today_page.dart';
+import 'package:seu_timetable/ui/appearance.dart';
+import 'package:seu_timetable/ui/theme.dart';
+import 'package:seu_timetable/ui/settings_page.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() {
@@ -33,9 +36,62 @@ void main() {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
-    await tester.pumpWidget(SeuTimetableApp(store: store));
+    // File I/O completes on the real clock, outside the widget fake clock.
+    await tester.runAsync(() async {
+      await tester.pumpWidget(SeuTimetableApp(store: store));
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+    });
     await tester.pumpAndSettle();
   }
+
+  testWidgets('主题与显示模式分两行，银杏切换全局并在重启后保留', (tester) async {
+    await screen(tester);
+    await tester.tap(find.widgetWithText(NavigationDestination, '我的'));
+    await tester.pumpAndSettle();
+    await tester.runAsync(() async {
+      await tester.ensureVisible(find.byTooltip('选择主题'));
+      await tester.tap(find.byTooltip('选择主题'));
+      await tester.pumpAndSettle();
+      expect(find.text('银杏'), findsOneWidget);
+      expect(find.text('浅色'), findsNothing);
+      await tester.tap(find.text('银杏'));
+      await tester.pumpAndSettle();
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+      await tester.pumpAndSettle();
+    });
+    await tester.pumpAndSettle();
+    expect(
+      tester.widget<SettingsPage>(find.byType(SettingsPage)).appearance!.theme,
+      MeikeTheme.ginkgo,
+    );
+    final settingsContext = tester.element(find.text('显示模式'));
+    expect(settingsContext.meike.design, MeikeTheme.ginkgo);
+    await tester.runAsync(() async {
+      await tester.ensureVisible(find.byTooltip('选择显示模式'));
+      await tester.tap(find.byTooltip('选择显示模式'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('深色'));
+      await tester.pumpAndSettle();
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+      await tester.pumpAndSettle();
+    });
+    await tester.pumpAndSettle();
+    expect(
+      Theme.of(tester.element(find.text('显示模式'))).brightness,
+      Brightness.dark,
+    );
+    expect(tester.element(find.text('显示模式')).meike.design, MeikeTheme.ginkgo);
+    await tester.pumpWidget(const SizedBox());
+    await screen(tester, width: 320, height: 568);
+    expect(tester.element(find.text('体育')).meike.design, MeikeTheme.ginkgo);
+    expect(
+      Theme.of(tester.element(find.text('体育'))).brightness,
+      Brightness.dark,
+    );
+    expect(find.text('体育馆2楼'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox());
+  });
 
   testWidgets('七天13节首屏、单节体育地点、无本周和放大按钮', (tester) async {
     await screen(tester);

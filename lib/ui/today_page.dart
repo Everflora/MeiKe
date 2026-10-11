@@ -191,8 +191,8 @@ class _TodayPageState extends State<TodayPage> {
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
-        gradient: const LinearGradient(
-          colors: [heroGreen, Color(0xFF173E2B)],
+        gradient: LinearGradient(
+          colors: [context.meike.hero, context.meike.heroEnd],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -204,11 +204,11 @@ class _TodayPageState extends State<TodayPage> {
             top: -10,
             child: PlumMark(
               size: 140,
-              color: Colors.white.withValues(alpha: .08),
+              color: context.meike.onHero.withValues(alpha: .08),
             ),
           ),
           DefaultTextStyle(
-            style: const TextStyle(color: Colors.white, fontSize: 14),
+            style: TextStyle(color: context.meike.onHero, fontSize: 14),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -217,8 +217,8 @@ class _TodayPageState extends State<TodayPage> {
                     Container(
                       width: 6,
                       height: 6,
-                      decoration: const BoxDecoration(
-                        color: gingko,
+                      decoration: BoxDecoration(
+                        color: context.meike.heroAccent,
                         shape: BoxShape.circle,
                       ),
                     ),
@@ -270,9 +270,9 @@ class _TodayPageState extends State<TodayPage> {
                       fit: BoxFit.scaleDown,
                       child: Text(
                         '${seconds ~/ 60} 分 ${(seconds % 60).toString().padLeft(2, '0')} 秒',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 38,
-                          color: gingko,
+                          color: context.meike.heroAccent,
                           fontWeight: FontWeight.w600,
                           fontFeatures: [FontFeature.tabularFigures()],
                         ),

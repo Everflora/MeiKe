@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../domain/schedule.dart';
+import 'appearance.dart';
 
 const accent = Color(0xFF24543C);
 const canvas = Color(0xFFF7F7F0);
@@ -23,8 +24,15 @@ class MeikeColors extends ThemeExtension<MeikeColors> {
     required this.soft,
     required this.goldSoft,
     required this.goldInk,
+    this.design = MeikeTheme.plum,
+    this.hero = heroGreen,
+    this.heroEnd = const Color(0xFF173E2B),
+    this.onHero = const Color(0xFFFCFCED),
+    this.heroAccent = gingko,
   });
   final Color paper, surface, ink, muted, line, green, soft, goldSoft, goldInk;
+  final MeikeTheme design;
+  final Color hero, heroEnd, onHero, heroAccent;
   static const light = MeikeColors(
     paper: canvas,
     surface: Color(0xFFFFFFFF),
@@ -47,6 +55,38 @@ class MeikeColors extends ThemeExtension<MeikeColors> {
     goldSoft: Color(0xFF4A4127),
     goldInk: Color(0xFFEDDBA2),
   );
+  static const ginkgoLight = MeikeColors(
+    design: MeikeTheme.ginkgo,
+    paper: Color(0xFFF5F1E5),
+    surface: Color(0xFFFFFDF6),
+    ink: Color(0xFF3A3D2C),
+    muted: Color(0xFF746C59),
+    line: Color(0xFFE6DFCD),
+    green: Color(0xFF755C24),
+    soft: Color(0xFFEEE5CA),
+    goldSoft: Color(0xFFF0E2B3),
+    goldInk: Color(0xFF685418),
+    hero: Color(0xFFEEE0AE),
+    heroEnd: Color(0xFFDFCA86),
+    onHero: Color(0xFF3C341D),
+    heroAccent: Color(0xFF6B5014),
+  );
+  static const ginkgoDark = MeikeColors(
+    design: MeikeTheme.ginkgo,
+    paper: Color(0xFF201F16),
+    surface: Color(0xFF2C2A1D),
+    ink: Color(0xFFF2EDD9),
+    muted: Color(0xFFBDB49A),
+    line: Color(0xFF484331),
+    green: Color(0xFFE4CB83),
+    soft: Color(0xFF403924),
+    goldSoft: Color(0xFF51462A),
+    goldInk: Color(0xFFF0DDA6),
+    hero: Color(0xFF574B29),
+    heroEnd: Color(0xFF443B22),
+    onHero: Color(0xFFFFF5D2),
+    heroAccent: Color(0xFFF2D57F),
+  );
   @override
   MeikeColors copyWith({
     Color? paper,
@@ -58,6 +98,11 @@ class MeikeColors extends ThemeExtension<MeikeColors> {
     Color? soft,
     Color? goldSoft,
     Color? goldInk,
+    MeikeTheme? design,
+    Color? hero,
+    Color? heroEnd,
+    Color? onHero,
+    Color? heroAccent,
   }) => MeikeColors(
     paper: paper ?? this.paper,
     surface: surface ?? this.surface,
@@ -68,6 +113,11 @@ class MeikeColors extends ThemeExtension<MeikeColors> {
     soft: soft ?? this.soft,
     goldSoft: goldSoft ?? this.goldSoft,
     goldInk: goldInk ?? this.goldInk,
+    design: design ?? this.design,
+    hero: hero ?? this.hero,
+    heroEnd: heroEnd ?? this.heroEnd,
+    onHero: onHero ?? this.onHero,
+    heroAccent: heroAccent ?? this.heroAccent,
   );
   @override
   MeikeColors lerp(covariant MeikeColors? other, double t) {
@@ -82,6 +132,11 @@ class MeikeColors extends ThemeExtension<MeikeColors> {
       soft: Color.lerp(soft, other.soft, t)!,
       goldSoft: Color.lerp(goldSoft, other.goldSoft, t)!,
       goldInk: Color.lerp(goldInk, other.goldInk, t)!,
+      design: t < .5 ? design : other.design,
+      hero: Color.lerp(hero, other.hero, t)!,
+      heroEnd: Color.lerp(heroEnd, other.heroEnd, t)!,
+      onHero: Color.lerp(onHero, other.onHero, t)!,
+      heroAccent: Color.lerp(heroAccent, other.heroAccent, t)!,
     );
   }
 }
@@ -94,13 +149,18 @@ extension MeikeContext on BuildContext {
           : MeikeColors.light);
 }
 
-ThemeData meikeTheme(Brightness brightness) {
+ThemeData meikeTheme(
+  Brightness brightness, [
+  MeikeTheme design = MeikeTheme.plum,
+]) {
   final dark = brightness == Brightness.dark;
-  final p = dark ? MeikeColors.dark : MeikeColors.light;
-  final scheme = ColorScheme.fromSeed(seedColor: accent, brightness: brightness)
-      .copyWith(
+  final p = design == MeikeTheme.ginkgo
+      ? (dark ? MeikeColors.ginkgoDark : MeikeColors.ginkgoLight)
+      : (dark ? MeikeColors.dark : MeikeColors.light);
+  final scheme =
+      ColorScheme.fromSeed(seedColor: p.green, brightness: brightness).copyWith(
         primary: p.green,
-        onPrimary: dark ? heroGreen : Colors.white,
+        onPrimary: dark ? p.paper : Colors.white,
         primaryContainer: p.soft,
         onPrimaryContainer: p.ink,
         secondary: p.goldInk,
@@ -296,9 +356,60 @@ class PlumMark extends StatelessWidget {
   Widget build(BuildContext context) => ExcludeSemantics(
     child: CustomPaint(
       size: Size.square(size),
-      painter: _PlumPainter(color ?? context.meike.green),
+      painter: context.meike.design == MeikeTheme.ginkgo
+          ? _GinkgoPainter(color ?? context.meike.green)
+          : _PlumPainter(color ?? context.meike.green),
     ),
   );
+}
+
+class _GinkgoPainter extends CustomPainter {
+  const _GinkgoPainter(this.color);
+  final Color color;
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round
+      ..strokeWidth = size.width * .045;
+    final stem = Offset(size.width * .5, size.height * .72);
+    final leaf = Path()
+      ..moveTo(stem.dx, stem.dy)
+      ..quadraticBezierTo(
+        size.width * .2,
+        size.height * .6,
+        size.width * .1,
+        size.height * .27,
+      )
+      ..cubicTo(
+        size.width * .2,
+        size.height * .05,
+        size.width * .39,
+        size.height * .09,
+        size.width * .5,
+        size.height * .2,
+      )
+      ..cubicTo(
+        size.width * .61,
+        size.height * .09,
+        size.width * .8,
+        size.height * .05,
+        size.width * .9,
+        size.height * .27,
+      )
+      ..quadraticBezierTo(size.width * .8, size.height * .6, stem.dx, stem.dy)
+      ..close();
+    canvas.drawPath(leaf, paint);
+    for (final x in [.23, .38, .62, .77]) {
+      canvas.drawLine(stem, Offset(size.width * x, size.height * .3), paint);
+    }
+    canvas.drawLine(stem, Offset(size.width * .46, size.height * .94), paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _GinkgoPainter old) => old.color != color;
 }
 
 class _PlumPainter extends CustomPainter {
