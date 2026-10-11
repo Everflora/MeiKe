@@ -1,11 +1,395 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../domain/schedule.dart';
 
-const accent = Color(0xFF1F6E59);
-const canvas = Color(0xFFF3F5F2);
+const accent = Color(0xFF24543C);
+const canvas = Color(0xFFF7F7F0);
+const gingko = Color(0xFFD8BC60);
+const heroGreen = Color(0xFF204E38);
+
+/// The proposed Meike palette, not a claim about the university's official VI.
+@immutable
+class MeikeColors extends ThemeExtension<MeikeColors> {
+  const MeikeColors({
+    required this.paper,
+    required this.surface,
+    required this.ink,
+    required this.muted,
+    required this.line,
+    required this.green,
+    required this.soft,
+    required this.goldSoft,
+    required this.goldInk,
+  });
+  final Color paper, surface, ink, muted, line, green, soft, goldSoft, goldInk;
+  static const light = MeikeColors(
+    paper: canvas,
+    surface: Color(0xFFFFFFFF),
+    ink: Color(0xFF24382E),
+    muted: Color(0xFF687369),
+    line: Color(0xFFE2E6DC),
+    green: accent,
+    soft: Color(0xFFECF0E4),
+    goldSoft: Color(0xFFF2E8BD),
+    goldInk: Color(0xFF685418),
+  );
+  static const dark = MeikeColors(
+    paper: Color(0xFF111D17),
+    surface: Color(0xFF1B2B22),
+    ink: Color(0xFFEDF2E8),
+    muted: Color(0xFFABB8AA),
+    line: Color(0xFF314438),
+    green: Color(0xFFB9D49E),
+    soft: Color(0xFF283C2C),
+    goldSoft: Color(0xFF4A4127),
+    goldInk: Color(0xFFEDDBA2),
+  );
+  @override
+  MeikeColors copyWith({
+    Color? paper,
+    Color? surface,
+    Color? ink,
+    Color? muted,
+    Color? line,
+    Color? green,
+    Color? soft,
+    Color? goldSoft,
+    Color? goldInk,
+  }) => MeikeColors(
+    paper: paper ?? this.paper,
+    surface: surface ?? this.surface,
+    ink: ink ?? this.ink,
+    muted: muted ?? this.muted,
+    line: line ?? this.line,
+    green: green ?? this.green,
+    soft: soft ?? this.soft,
+    goldSoft: goldSoft ?? this.goldSoft,
+    goldInk: goldInk ?? this.goldInk,
+  );
+  @override
+  MeikeColors lerp(covariant MeikeColors? other, double t) {
+    if (other == null) return this;
+    return MeikeColors(
+      paper: Color.lerp(paper, other.paper, t)!,
+      surface: Color.lerp(surface, other.surface, t)!,
+      ink: Color.lerp(ink, other.ink, t)!,
+      muted: Color.lerp(muted, other.muted, t)!,
+      line: Color.lerp(line, other.line, t)!,
+      green: Color.lerp(green, other.green, t)!,
+      soft: Color.lerp(soft, other.soft, t)!,
+      goldSoft: Color.lerp(goldSoft, other.goldSoft, t)!,
+      goldInk: Color.lerp(goldInk, other.goldInk, t)!,
+    );
+  }
+}
+
+extension MeikeContext on BuildContext {
+  MeikeColors get meike =>
+      Theme.of(this).extension<MeikeColors>() ??
+      (Theme.of(this).brightness == Brightness.dark
+          ? MeikeColors.dark
+          : MeikeColors.light);
+}
+
+ThemeData meikeTheme(Brightness brightness) {
+  final dark = brightness == Brightness.dark;
+  final p = dark ? MeikeColors.dark : MeikeColors.light;
+  final scheme = ColorScheme.fromSeed(seedColor: accent, brightness: brightness)
+      .copyWith(
+        primary: p.green,
+        onPrimary: dark ? heroGreen : Colors.white,
+        primaryContainer: p.soft,
+        onPrimaryContainer: p.ink,
+        secondary: p.goldInk,
+        secondaryContainer: p.goldSoft,
+        onSecondaryContainer: p.goldInk,
+        surface: p.surface,
+        onSurface: p.ink,
+        onSurfaceVariant: p.muted,
+        surfaceContainerHighest: p.soft,
+        surfaceContainerHigh: p.soft,
+        surfaceContainerLow: p.paper,
+        outline: p.line,
+        outlineVariant: p.line,
+      );
+  final base = ThemeData(useMaterial3: true, colorScheme: scheme);
+  final text = base.textTheme
+      .apply(bodyColor: p.ink, displayColor: p.ink)
+      .copyWith(
+        headlineLarge: TextStyle(
+          fontSize: 30,
+          height: 1.2,
+          fontWeight: FontWeight.w600,
+          color: p.ink,
+        ),
+        headlineMedium: TextStyle(
+          fontSize: 27,
+          height: 1.25,
+          fontWeight: FontWeight.w600,
+          color: p.ink,
+        ),
+        headlineSmall: TextStyle(
+          fontSize: 24,
+          height: 1.3,
+          fontWeight: FontWeight.w600,
+          color: p.ink,
+        ),
+        titleLarge: TextStyle(
+          fontSize: 19,
+          height: 1.4,
+          fontWeight: FontWeight.w600,
+          color: p.ink,
+        ),
+        titleMedium: TextStyle(
+          fontSize: 16,
+          height: 1.4,
+          fontWeight: FontWeight.w600,
+          color: p.ink,
+        ),
+        titleSmall: TextStyle(
+          fontSize: 13,
+          height: 1.5,
+          fontWeight: FontWeight.w600,
+          color: p.muted,
+        ),
+        bodyMedium: TextStyle(fontSize: 14, height: 1.5, color: p.ink),
+        bodySmall: TextStyle(fontSize: 12, height: 1.5, color: p.muted),
+        labelSmall: TextStyle(fontSize: 11, height: 1.4, color: p.muted),
+      );
+  final buttonShape = RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(12),
+  );
+  final inputShape = OutlineInputBorder(
+    borderRadius: BorderRadius.circular(12),
+    borderSide: BorderSide.none,
+  );
+  return base.copyWith(
+    extensions: [p],
+    textTheme: text,
+    scaffoldBackgroundColor: p.paper,
+    dividerColor: p.line,
+    iconTheme: IconThemeData(color: p.green, size: 21),
+    iconButtonTheme: IconButtonThemeData(
+      style: IconButton.styleFrom(
+        minimumSize: const Size(44, 44),
+        padding: const EdgeInsets.all(8),
+      ),
+    ),
+    appBarTheme: AppBarTheme(
+      backgroundColor: p.paper,
+      foregroundColor: p.ink,
+      surfaceTintColor: Colors.transparent,
+      elevation: 0,
+      scrolledUnderElevation: 0,
+      centerTitle: false,
+      titleTextStyle: text.titleLarge,
+      systemOverlayStyle: dark
+          ? SystemUiOverlayStyle.light
+          : SystemUiOverlayStyle.dark,
+    ),
+    cardTheme: CardThemeData(
+      color: p.surface,
+      surfaceTintColor: Colors.transparent,
+      elevation: 0,
+      margin: const EdgeInsets.symmetric(vertical: 5),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+    ),
+    filledButtonTheme: FilledButtonThemeData(
+      style: FilledButton.styleFrom(
+        shape: buttonShape,
+        minimumSize: const Size(44, 44),
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+        textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+      ),
+    ),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: OutlinedButton.styleFrom(
+        shape: buttonShape,
+        minimumSize: const Size(44, 44),
+        side: BorderSide(color: p.line),
+        backgroundColor: p.surface,
+      ),
+    ),
+    textButtonTheme: TextButtonThemeData(
+      style: TextButton.styleFrom(
+        shape: buttonShape,
+        textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+      ),
+    ),
+    inputDecorationTheme: InputDecorationTheme(
+      filled: true,
+      fillColor: p.surface,
+      border: inputShape,
+      enabledBorder: inputShape,
+      focusedBorder: inputShape.copyWith(
+        borderSide: BorderSide(color: p.green, width: 1.2),
+      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+      floatingLabelStyle: TextStyle(color: p.green),
+      hintStyle: TextStyle(color: p.muted, fontSize: 14),
+    ),
+    navigationBarTheme: NavigationBarThemeData(
+      backgroundColor: p.paper,
+      surfaceTintColor: Colors.transparent,
+      indicatorColor: Colors.transparent,
+      elevation: 0,
+      height: 60,
+      iconTheme: WidgetStateProperty.resolveWith(
+        (states) => IconThemeData(
+          size: 22,
+          color: states.contains(WidgetState.selected) ? p.green : p.muted,
+        ),
+      ),
+      labelTextStyle: WidgetStateProperty.resolveWith(
+        (states) => TextStyle(
+          fontSize: 11,
+          fontWeight: states.contains(WidgetState.selected)
+              ? FontWeight.w600
+              : FontWeight.w400,
+          color: states.contains(WidgetState.selected) ? p.green : p.muted,
+        ),
+      ),
+    ),
+    chipTheme: base.chipTheme.copyWith(
+      backgroundColor: p.surface,
+      selectedColor: p.soft,
+      side: BorderSide.none,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      labelStyle: TextStyle(color: p.ink, fontSize: 12),
+      showCheckmark: false,
+    ),
+    dividerTheme: DividerThemeData(color: p.line, thickness: .6, space: 20),
+    listTileTheme: ListTileThemeData(
+      iconColor: p.green,
+      titleTextStyle: text.bodyMedium,
+      subtitleTextStyle: text.bodySmall,
+      minVerticalPadding: 10,
+    ),
+    bottomSheetTheme: BottomSheetThemeData(
+      backgroundColor: p.surface,
+      surfaceTintColor: Colors.transparent,
+      showDragHandle: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(26)),
+      ),
+    ),
+    dialogTheme: DialogThemeData(
+      backgroundColor: p.surface,
+      surfaceTintColor: Colors.transparent,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+    ),
+    snackBarTheme: SnackBarThemeData(
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    ),
+  );
+}
+
+class PlumMark extends StatelessWidget {
+  const PlumMark({super.key, this.size = 22, this.color});
+  final double size;
+  final Color? color;
+  @override
+  Widget build(BuildContext context) => ExcludeSemantics(
+    child: CustomPaint(
+      size: Size.square(size),
+      painter: _PlumPainter(color ?? context.meike.green),
+    ),
+  );
+}
+
+class _PlumPainter extends CustomPainter {
+  const _PlumPainter(this.color);
+  final Color color;
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = size.width * .052;
+    canvas.translate(size.width / 2, size.height / 2);
+    for (var i = 0; i < 5; i++) {
+      canvas.save();
+      canvas.rotate(i * math.pi * 2 / 5);
+      canvas.drawOval(
+        Rect.fromCenter(
+          center: Offset(0, -size.height * .25),
+          width: size.width * .32,
+          height: size.height * .37,
+        ),
+        paint,
+      );
+      canvas.restore();
+    }
+    canvas.drawCircle(
+      Offset.zero,
+      size.width * .085,
+      paint..style = PaintingStyle.fill,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant _PlumPainter old) => old.color != color;
+}
+
+class BrandHeader extends StatelessWidget {
+  const BrandHeader({
+    super.key,
+    required this.title,
+    this.subtitle,
+    this.trailing,
+    this.padding = const EdgeInsets.fromLTRB(20, 15, 20, 16),
+  });
+  final String title;
+  final String? subtitle;
+  final Widget? trailing;
+  final EdgeInsets padding;
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: padding,
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            const PlumMark(size: 18),
+            const SizedBox(width: 7),
+            Text(
+              '梅课',
+              style: TextStyle(
+                fontFamily: 'Songti SC',
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: context.meike.green,
+              ),
+            ),
+            const Spacer(),
+            ?trailing,
+          ],
+        ),
+        const SizedBox(height: 15),
+        Text(title, style: Theme.of(context).textTheme.headlineMedium),
+        if (subtitle != null) ...[
+          const SizedBox(height: 5),
+          Text(subtitle!, style: Theme.of(context).textTheme.bodySmall),
+        ],
+      ],
+    ),
+  );
+}
 
 extension CoursePalette on CourseColor {
+  Color surface(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark
+      ? Color.lerp(context.meike.surface, tint, .24)!
+      : pastel;
+  Color foreground(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark
+      ? Color.lerp(tint, const Color(0xFFF0F2E8), .7)!
+      : Color.lerp(tint, const Color(0xFF1C3024), .18)!;
   Color get tint => const [
     Color(0xFF1F6E59),
     Color(0xFF295CA1),
@@ -29,26 +413,26 @@ extension CoursePalette on CourseColor {
     Color(0xFF7A664A),
   ][index];
   Color get pastel => const [
-    Color(0xFFD1EBDB),
-    Color(0xFFD6E8FA),
-    Color(0xFFFCE3C4),
-    Color(0xFFE8DBF7),
-    Color(0xFFFAD9E0),
-    Color(0xFFD6F5E0),
-    Color(0xFFC7EBEB),
-    Color(0xFFCCF0FC),
-    Color(0xFFD6DBFA),
-    Color(0xFFEBE6FC),
-    Color(0xFFF0D4F2),
-    Color(0xFFFFD9CF),
-    Color(0xFFFCCECF),
-    Color(0xFFFFE3AD),
-    Color(0xFFFCF5B8),
-    Color(0xFFE3F2BD),
-    Color(0xFFDEE6C7),
-    Color(0xFFDBE8F2),
-    Color(0xFFE0CFC2),
-    Color(0xFFF5EBCF),
+    Color(0xFFDBEADD),
+    Color(0xFFE1E8EF),
+    Color(0xFFF0E5CE),
+    Color(0xFFE9E3EE),
+    Color(0xFFF1E2E7),
+    Color(0xFFE5EDD9),
+    Color(0xFFDFEAEB),
+    Color(0xFFE0EBEE),
+    Color(0xFFE3E4EF),
+    Color(0xFFE8E5F0),
+    Color(0xFFEDE4EA),
+    Color(0xFFF0E1DA),
+    Color(0xFFF1DEDD),
+    Color(0xFFF4EBCB),
+    Color(0xFFF1EDCF),
+    Color(0xFFE9EDDA),
+    Color(0xFFE6E9D7),
+    Color(0xFFE2E8EC),
+    Color(0xFFE9DFD5),
+    Color(0xFFF0E9DA),
   ][index];
 }
 
@@ -74,7 +458,7 @@ class SectionCard extends StatelessWidget {
             title,
             style: Theme.of(
               context,
-            ).textTheme.titleSmall?.copyWith(color: accent),
+            ).textTheme.titleSmall?.copyWith(color: context.meike.green),
           ),
         ),
         Card(
@@ -146,7 +530,14 @@ class EmptySchedule extends StatelessWidget {
     child: Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const Icon(Icons.menu_book_rounded, size: 54, color: accent),
+        Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: context.meike.soft,
+            borderRadius: BorderRadius.circular(24),
+          ),
+          child: const PlumMark(size: 46),
+        ),
         const SizedBox(height: 20),
         Text(
           title,

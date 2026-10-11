@@ -20,20 +20,25 @@ class _NewsSectionsState extends State<NewsPage> {
   @override
   Widget build(BuildContext context) => Column(
     children: [
+      const BrandHeader(title: '校园消息', subtitle: '把与你有关的消息，放在一起。'),
       Padding(
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
         child: Row(
           children: [
-            Text('新闻', style: Theme.of(context).textTheme.headlineSmall),
-            const SizedBox(width: 16),
             ChoiceChip(
-              label: const Text('劳动教育'),
+              label: const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8),
+                child: Text('劳动教育'),
+              ),
               selected: selected == 0,
               onSelected: (_) => setState(() => selected = 0),
             ),
             const SizedBox(width: 8),
             ChoiceChip(
-              label: const Text('教务通知'),
+              label: const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8),
+                child: Text('教务通知'),
+              ),
               selected: selected == 1,
               onSelected: (_) => setState(() {
                 selected = 1;

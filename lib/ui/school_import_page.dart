@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart' show kDebugMode;
+import 'package:flutter/foundation.dart' show kDebugMode, defaultTargetPlatform;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -49,7 +49,7 @@ class _SchoolImportPageState extends State<SchoolImportPage> {
   @override
   void initState() {
     super.initState();
-    if (kDebugMode) {
+    if (kDebugMode && defaultTargetPlatform == TargetPlatform.android) {
       AndroidWebViewController.enableDebugging(true);
     }
     controller = WebViewController()

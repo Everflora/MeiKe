@@ -212,11 +212,11 @@ class _CourseEditorState extends State<CourseEditor> {
                               width: 36,
                               height: 36,
                               decoration: BoxDecoration(
-                                color: color.pastel,
+                                color: color.surface(context),
                                 shape: BoxShape.circle,
                                 border: Border.all(
                                   color: draft.color == color
-                                      ? color.tint
+                                      ? color.foreground(context)
                                       : Colors.transparent,
                                   width: 2,
                                 ),
@@ -225,7 +225,7 @@ class _CourseEditorState extends State<CourseEditor> {
                                   ? Icon(
                                       Icons.check,
                                       size: 20,
-                                      color: color.tint,
+                                      color: color.foreground(context),
                                     )
                                   : null,
                             ),

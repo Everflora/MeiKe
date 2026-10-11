@@ -165,18 +165,11 @@ class _DiscussionPageState extends State<DiscussionPage> {
     final courses = widget.store.data.courses;
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-          child: Row(
-            children: [
-              Expanded(
-                child: Text(
-                  '讨论室',
-                  style: Theme.of(context).textTheme.headlineSmall,
-                ),
-              ),
-              if (client.signedIn)
-                IconButton(
+        BrandHeader(
+          title: '课程讨论',
+          subtitle: '同一间教室，也在这里相遇。',
+          trailing: client.signedIn
+              ? IconButton(
                   tooltip: '设置头像和昵称',
                   onPressed: () async {
                     await Navigator.of(context).push<bool>(
@@ -193,9 +186,8 @@ class _DiscussionPageState extends State<DiscussionPage> {
                     version: client.avatarVersion,
                     radius: 16,
                   ),
-                ),
-            ],
-          ),
+                )
+              : null,
         ),
         if (busy) const LinearProgressIndicator(),
         if (error != null)
@@ -208,7 +200,14 @@ class _DiscussionPageState extends State<DiscussionPage> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.forum_outlined, size: 52, color: accent),
+                    Container(
+                      padding: const EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        color: context.meike.soft,
+                        borderRadius: BorderRadius.circular(28),
+                      ),
+                      child: const PlumMark(size: 52),
+                    ),
                     const SizedBox(height: 16),
                     const Text('和同一个教学班的同学交流'),
                     const SizedBox(height: 8),
@@ -258,11 +257,29 @@ class _DiscussionPageState extends State<DiscussionPage> {
                     itemBuilder: (context, index) {
                       final course = courses[index];
                       return Card(
-                        margin: const EdgeInsets.fromLTRB(12, 4, 12, 4),
+                        margin: const EdgeInsets.fromLTRB(20, 0, 20, 10),
                         child: ListTile(
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 8,
+                          ),
+                          leading: Container(
+                            width: 44,
+                            height: 44,
+                            decoration: BoxDecoration(
+                              color: course.color.surface(context),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Icon(
+                              Icons.forum_outlined,
+                              color: course.color.foreground(context),
+                            ),
+                          ),
                           title: Text(course.name),
                           subtitle: Text(
                             '${course.teacher.isEmpty ? '未填写教师' : course.teacher}\n${course.meetings.map((m) => '${m.summary} · ${m.recurrence}').join('\n')}',
+                            maxLines: 3,
+                            overflow: TextOverflow.ellipsis,
                           ),
                           trailing: const Icon(Icons.chevron_right),
                           isThreeLine: false,

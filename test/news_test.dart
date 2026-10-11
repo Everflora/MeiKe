@@ -124,7 +124,7 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
     await tester.pumpWidget(SeuTimetableApp(store: schedule));
     await tester.pumpAndSettle();
-    await tester.tap(find.widgetWithText(NavigationDestination, '新闻'));
+    await tester.tap(find.widgetWithText(NavigationDestination, '校园'));
     await tester.pump();
     await tester.runAsync(() async {
       await Future<void>.delayed(const Duration(milliseconds: 100));
@@ -132,7 +132,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('劳动教育'), findsOneWidget);
     expect(find.text('登录并同步劳动教育'), findsOneWidget);
-    await tester.tap(find.widgetWithText(NavigationDestination, '设置'));
+    await tester.tap(find.widgetWithText(NavigationDestination, '我的'));
     await tester.pumpAndSettle();
     expect(find.text('学期 / 节次设置'), findsOneWidget);
     expect(tester.takeException(), isNull);

@@ -60,6 +60,36 @@ void main() {
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox());
   });
+  testWidgets('五项导航，课表与我的都可进入课程管理并返回', (tester) async {
+    await screen(tester);
+    expect(find.byType(NavigationDestination), findsNWidgets(5));
+    await tester.tap(find.byTooltip('课程管理'));
+    await tester.pumpAndSettle();
+    expect(find.text('所有课程'), findsOneWidget);
+    await tester.tap(find.byType(BackButton));
+    await tester.pumpAndSettle();
+    expect(find.text('13'), findsOneWidget);
+    await tester.tap(find.widgetWithText(NavigationDestination, '我的'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('课程管理'));
+    await tester.pumpAndSettle();
+    expect(find.text('所有课程'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox());
+  });
+  testWidgets('单节课程可打开完整地点，再进入原课程编辑流程', (tester) async {
+    await screen(tester);
+    await tester.tap(find.text('体育'));
+    await tester.pumpAndSettle();
+    expect(find.text('上课地点'), findsOneWidget);
+    expect(find.text('体育馆2楼'), findsNWidgets(2));
+    await tester.tap(find.text('编辑课程与上课安排'));
+    await tester.pumpAndSettle();
+    expect(find.text('编辑课程'), findsOneWidget);
+    expect(find.widgetWithText(TextFormField, '课程名称（必填）'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox());
+  });
   testWidgets('新增课程一次选周一周四，保存后确有两条安排', (tester) async {
     await screen(tester);
     await tester.tap(find.byTooltip('添加课程').first);
@@ -94,7 +124,7 @@ void main() {
   });
   testWidgets('设置页直接进入学期设置，没有课间名称展示区', (tester) async {
     await screen(tester);
-    await tester.tap(find.text('设置').last);
+    await tester.tap(find.text('我的').last);
     await tester.pumpAndSettle();
     expect(find.text('学期与作息'), findsOneWidget);
     expect(find.text('课间'), findsNothing);

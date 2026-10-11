@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import '../data/schedule_store.dart';
 import '../domain/schedule.dart';
 import 'course_editor.dart';
+import 'course_details.dart';
+import 'courses_page.dart';
 import 'school_import_page.dart';
 import 'theme.dart';
 
@@ -65,11 +67,8 @@ class _TimetablePageState extends State<TimetablePage>
     super.dispose();
   }
 
-  void open(Occurrence event) => editCourse(
-    context,
-    widget.store,
-    widget.store.data.courses.firstWhere((c) => c.id == event.courseId),
-  );
+  void open(Occurrence event) =>
+      showCourseDetails(context, widget.store, event);
   @override
   Widget build(BuildContext context) {
     final data = widget.store.data;
@@ -86,6 +85,11 @@ class _TimetablePageState extends State<TimetablePage>
               children: [
                 IconButton(
                   tooltip: '上一周',
+                  constraints: const BoxConstraints.tightFor(
+                    width: 36,
+                    height: 44,
+                  ),
+                  padding: EdgeInsets.zero,
                   onPressed: selectedWeek > 1
                       ? () => setState(() => selectedWeek--)
                       : null,
@@ -109,21 +113,24 @@ class _TimetablePageState extends State<TimetablePage>
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                '第 $selectedWeek 周',
-                                style: const TextStyle(
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.w700,
+                          FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  '第 $selectedWeek 周',
+                                  style: const TextStyle(
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
-                              ),
-                              const Icon(Icons.keyboard_arrow_down, size: 16),
-                            ],
+                                const Icon(Icons.keyboard_arrow_down, size: 16),
+                              ],
+                            ),
                           ),
                           Text(
-                            '${SchoolClock.shortDate(start)} – ${SchoolClock.shortDate(end)}',
+                            '${SchoolClock.shortDate(start)}–${SchoolClock.shortDate(end)}',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
@@ -140,22 +147,56 @@ class _TimetablePageState extends State<TimetablePage>
                 ),
                 IconButton(
                   tooltip: '下一周',
+                  constraints: const BoxConstraints.tightFor(
+                    width: 36,
+                    height: 44,
+                  ),
+                  padding: EdgeInsets.zero,
                   onPressed: selectedWeek < data.semester.weekCount
                       ? () => setState(() => selectedWeek++)
                       : null,
                   icon: const Icon(Icons.chevron_right),
                 ),
                 IconButton(
+                  tooltip: '课程管理',
+                  constraints: const BoxConstraints.tightFor(
+                    width: 36,
+                    height: 44,
+                  ),
+                  padding: EdgeInsets.zero,
+                  onPressed: () => showCourses(context, widget.store),
+                  icon: const Icon(Icons.edit_note_outlined),
+                ),
+                IconButton(
                   tooltip: '一键导入学校课表',
+                  constraints: const BoxConstraints.tightFor(
+                    width: 36,
+                    height: 44,
+                  ),
+                  padding: EdgeInsets.zero,
                   onPressed: widget.store.canWrite && !widget.store.busy
                       ? () => importSchoolSchedule(context, widget.store)
                       : null,
                   icon: const Icon(Icons.download_outlined),
                 ),
-                IconButton(
+                IconButton.filled(
                   tooltip: '添加课程',
-                  onPressed: () => editCourse(context, widget.store),
-                  icon: const Icon(Icons.add),
+                  constraints: const BoxConstraints.tightFor(
+                    width: 38,
+                    height: 38,
+                  ),
+                  style: IconButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  onPressed: widget.store.canWrite && !widget.store.busy
+                      ? () => editCourse(context, widget.store)
+                      : null,
+                  icon: Icon(
+                    Icons.add,
+                    color: Theme.of(context).colorScheme.onPrimary,
+                  ),
                 ),
               ],
             ),
@@ -206,7 +247,7 @@ class _TimetablePageState extends State<TimetablePage>
           Expanded(
             child: LayoutBuilder(
               builder: (context, constraints) {
-                const timeWidth = 42.0;
+                const timeWidth = 38.0;
                 final width = math.max(
                   1.0,
                   (constraints.maxWidth - timeWidth) / 7,
@@ -240,14 +281,14 @@ class _TimetablePageState extends State<TimetablePage>
                           height: 44,
                           child: Row(
                             children: [
-                              const SizedBox(
+                              SizedBox(
                                 width: timeWidth,
                                 child: Center(
                                   child: Text(
                                     '节次',
                                     style: TextStyle(
                                       fontSize: 10,
-                                      color: Colors.grey,
+                                      color: context.meike.muted,
                                     ),
                                   ),
                                 ),
@@ -334,7 +375,7 @@ class _TimetablePageState extends State<TimetablePage>
                                                   Text(
                                                     '${s.period}',
                                                     style: const TextStyle(
-                                                      fontSize: 10,
+                                                      fontSize: 11,
                                                       height: 1.1,
                                                       fontWeight:
                                                           FontWeight.w600,
@@ -344,10 +385,11 @@ class _TimetablePageState extends State<TimetablePage>
                                                     LessonPeriod.format(
                                                       s.start,
                                                     ),
-                                                    style: const TextStyle(
-                                                      fontSize: 8,
+                                                    style: TextStyle(
+                                                      fontSize: 9,
                                                       height: 1.2,
-                                                      color: Colors.grey,
+                                                      color:
+                                                          context.meike.muted,
                                                     ),
                                                   ),
                                                 ],
@@ -358,9 +400,9 @@ class _TimetablePageState extends State<TimetablePage>
                                                           ? '午休'
                                                           : '晚休')
                                                     : '${s.end - s.start}′',
-                                                style: const TextStyle(
-                                                  fontSize: 7,
-                                                  color: Colors.grey,
+                                                style: TextStyle(
+                                                  fontSize: 8,
+                                                  color: context.meike.muted,
                                                 ),
                                               ),
                                       ),
@@ -384,18 +426,22 @@ class _TimetablePageState extends State<TimetablePage>
                                               horizontal: 1,
                                             ),
                                             decoration: BoxDecoration(
-                                              color: s.period == null
-                                                  ? accent.withValues(
-                                                      alpha: 0.06,
-                                                    )
-                                                  : Theme.of(
-                                                      context,
-                                                    ).colorScheme.surface,
+                                              color:
+                                                  SchoolClock.day(
+                                                        SchoolClock.date(
+                                                          selectedWeek,
+                                                          day,
+                                                          data.semester,
+                                                        ),
+                                                      ) ==
+                                                      SchoolClock.day(now)
+                                                  ? context.meike.soft
+                                                        .withValues(alpha: .45)
+                                                  : context.meike.paper,
                                               border: Border(
                                                 bottom: BorderSide(
-                                                  color: Theme.of(context)
-                                                      .dividerColor
-                                                      .withValues(alpha: 0.12),
+                                                  color: context.meike.line
+                                                      .withValues(alpha: .5),
                                                   width: 0.5,
                                                 ),
                                               ),
@@ -439,6 +485,20 @@ class _TimetablePageState extends State<TimetablePage>
                                                 2,
                                           ),
                                           layout: layout,
+                                          active:
+                                              SchoolClock.day(
+                                                    SchoolClock.date(
+                                                      selectedWeek,
+                                                      day,
+                                                      data.semester,
+                                                    ),
+                                                  ) ==
+                                                  SchoolClock.day(now) &&
+                                              lane.occurrence.busyRanges.any(
+                                                (r) => r.contains(
+                                                  SchoolClock.minute(now),
+                                                ),
+                                              ),
                                           onTap: () => open(lane.occurrence),
                                         ),
                                       ),
@@ -472,7 +532,7 @@ class _DayHeader extends StatelessWidget {
       children: [
         Text(
           SchoolClock.weekdays[day - 1],
-          style: const TextStyle(fontSize: 10, color: Colors.grey),
+          style: TextStyle(fontSize: 10, color: context.meike.muted),
         ),
         const SizedBox(height: 2),
         Container(
@@ -480,15 +540,15 @@ class _DayHeader extends StatelessWidget {
           height: 24,
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: today ? accent : null,
-            shape: BoxShape.circle,
+            color: today ? gingko : null,
+            borderRadius: BorderRadius.circular(8),
           ),
           child: Text(
             '${SchoolClock.wall(date).day}',
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,
-              color: today ? Colors.white : null,
+              color: today ? const Color(0xFF24382E) : context.meike.ink,
             ),
           ),
         ),
@@ -503,18 +563,23 @@ class _EventCard extends StatelessWidget {
     required this.height,
     required this.onTap,
     this.layout,
+    this.active = false,
   });
   final Occurrence event;
   final double height;
   final VoidCallback onTap;
   final TimelineLayout? layout;
+  final bool active;
   @override
   Widget build(BuildContext context) {
-    final locationHeight = event.location.isEmpty ? 0 : (height > 70 ? 20 : 10);
+    final locationHeight = event.location.isEmpty ? 0 : (height > 70 ? 20 : 11);
     final extraHeight = event.isExtra && !event.allDay && height > 70 ? 10 : 0;
     final lines = ((height - 8 - locationHeight - extraHeight) / 11)
         .floor()
         .clamp(1, 3);
+    final foreground = active
+        ? const Color(0xFFFCFCED)
+        : event.color.foreground(context);
     return Semantics(
       label:
           '${event.name}，${SchoolClock.weekdays[event.weekday - 1]}，${event.timeLabel}，${event.location}',
@@ -523,29 +588,28 @@ class _EventCard extends StatelessWidget {
       child: SizedBox(
         height: height,
         child: Material(
-          color: event.color.pastel,
-          borderRadius: BorderRadius.circular(6),
+          color: active ? heroGreen : event.color.surface(context),
+          borderRadius: BorderRadius.circular(7),
           clipBehavior: Clip.hardEdge,
           child: InkWell(
             onTap: onTap,
             child: Stack(
               children: [
-                if (layout != null && !event.isExtra)
-                  for (final s in layout!.segments.where(
-                    (s) =>
-                        s.period == null &&
-                        s.start > event.startMinute &&
-                        s.end < event.endMinute,
-                  ))
-                    Positioned(
-                      top: s.y - layout!.position(event.startMinute) - 1,
-                      left: 0,
-                      right: 0,
-                      height: s.height,
-                      child: ColoredBox(
-                        color: event.color.tint.withValues(alpha: 0.09),
+                if (active)
+                  Positioned(
+                    top: 0,
+                    right: 5,
+                    child: Container(
+                      width: 4,
+                      height: 10,
+                      decoration: const BoxDecoration(
+                        color: gingko,
+                        borderRadius: BorderRadius.vertical(
+                          bottom: Radius.circular(2),
+                        ),
                       ),
                     ),
+                  ),
                 Padding(
                   padding: const EdgeInsets.all(3),
                   child: Column(
@@ -557,7 +621,7 @@ class _EventCard extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 8,
                             height: 1.1,
-                            color: event.color.tint,
+                            color: foreground,
                           ),
                         ),
                       Text(
@@ -565,24 +629,41 @@ class _EventCard extends StatelessWidget {
                         maxLines: lines,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          fontSize: 10,
+                          fontSize: 11,
                           height: 1.1,
                           fontWeight: FontWeight.w600,
-                          color: event.color.tint,
+                          color: foreground,
                         ),
                       ),
                       const Spacer(),
                       if (event.location.isNotEmpty)
-                        Text(
-                          event.location,
-                          maxLines: height > 70 ? 2 : 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 8,
-                            height: 1.1,
-                            color: event.color.tint,
+                        if (height <= 70)
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: FittedBox(
+                              fit: BoxFit.scaleDown,
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                event.location,
+                                style: TextStyle(
+                                  fontSize: 9,
+                                  height: 1.1,
+                                  color: foreground,
+                                ),
+                              ),
+                            ),
+                          )
+                        else
+                          Text(
+                            event.location,
+                            maxLines: height > 70 ? 2 : 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 9,
+                              height: 1.1,
+                              color: foreground,
+                            ),
                           ),
-                        ),
                     ],
                   ),
                 ),

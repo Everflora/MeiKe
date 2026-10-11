@@ -452,10 +452,13 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                 ? chatImage(item)
                 : DecoratedBox(
                     decoration: BoxDecoration(
-                      color: mine
-                          ? const Color(0xFFB7E99A)
-                          : Theme.of(context).colorScheme.surfaceContainerHigh,
-                      borderRadius: BorderRadius.circular(12),
+                      color: mine ? heroGreen : context.meike.surface,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(mine ? 16 : 5),
+                        topRight: Radius.circular(mine ? 5 : 16),
+                        bottomLeft: const Radius.circular(16),
+                        bottomRight: const Radius.circular(16),
+                      ),
                     ),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
@@ -465,9 +468,10 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                       child: Text(
                         item['body'] as String,
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 15,
+                          height: 1.5,
                           color: mine
-                              ? const Color(0xFF182414)
+                              ? const Color(0xFFFCFCED)
                               : Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
