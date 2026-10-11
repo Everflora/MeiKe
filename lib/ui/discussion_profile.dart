@@ -5,6 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 import '../data/discussion_client.dart';
+import '../data/avatar_png.dart';
 import 'discussion_helpers.dart';
 import 'theme.dart';
 
@@ -81,11 +82,12 @@ Future<Uint8List> squareAvatar(Uint8List source) async {
       try {
         final avatar = await picture.toImage(128, 128);
         try {
-          final bytes = await avatar.toByteData(format: ui.ImageByteFormat.png);
+          final bytes = await avatar.toByteData(
+            format: ui.ImageByteFormat.rawStraightRgba,
+          );
           if (bytes == null) throw const FormatException('无法读取图片。');
-          return bytes.buffer.asUint8List(
-            bytes.offsetInBytes,
-            bytes.lengthInBytes,
+          return encodeAvatarPng(
+            bytes.buffer.asUint8List(bytes.offsetInBytes, bytes.lengthInBytes),
           );
         } finally {
           avatar.dispose();

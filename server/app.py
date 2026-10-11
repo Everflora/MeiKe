@@ -320,6 +320,8 @@ class Handler(BaseHTTPRequestHandler):
             status, result = error.status, {'error': error.message}
             if error.code:
                 result['code'] = error.code
+        except chat.AvatarError as error:
+            status, result = 400, {'error': str(error), 'code': 'INVALID_AVATAR'}
         except (ValueError, TypeError, KeyError):
             status, result = 400, {'error': '请求参数无效。'}
         except Exception:
