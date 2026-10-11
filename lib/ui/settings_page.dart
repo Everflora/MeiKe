@@ -6,11 +6,14 @@ import 'package:flutter/material.dart';
 import '../data/schedule_store.dart';
 import '../domain/schedule.dart';
 import 'course_editor.dart';
+import 'courses_page.dart';
+import 'appearance.dart';
 import 'theme.dart';
 
 class SettingsPage extends StatefulWidget {
-  const SettingsPage({super.key, required this.store});
+  const SettingsPage({super.key, required this.store, this.appearance});
   final ScheduleStore store;
+  final AppearanceController? appearance;
   @override
   State<SettingsPage> createState() => _SettingsPageState();
 }
@@ -87,13 +90,11 @@ class _SettingsPageState extends State<SettingsPage> {
     return ListView(
       padding: const EdgeInsets.all(20),
       children: [
-        Text(
-          '设置',
-          style: Theme.of(
-            context,
-          ).textTheme.headlineLarge?.copyWith(fontWeight: FontWeight.bold),
+        const BrandHeader(
+          title: '我的',
+          subtitle: '把学习与生活，安排得刚刚好。',
+          padding: EdgeInsets.only(bottom: 24),
         ),
-        const SizedBox(height: 20),
         if (!widget.store.canWrite)
           SectionCard(
             title: '本地数据读取失败',
@@ -104,7 +105,18 @@ class _SettingsPageState extends State<SettingsPage> {
           children: [
             ListTile(
               contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.calendar_month, color: accent),
+              leading: const Icon(Icons.menu_book_outlined),
+              title: const Text('课程管理'),
+              subtitle: Text(
+                '${widget.store.data.courses.length} 门课程 · 每周与额外安排',
+              ),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => showCourses(context, widget.store),
+            ),
+            const Divider(),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(Icons.calendar_month_outlined),
               title: const Text('学期 / 节次设置'),
               trailing: const Icon(Icons.chevron_right),
               onTap: () => Navigator.push<void>(
@@ -121,6 +133,43 @@ class _SettingsPageState extends State<SettingsPage> {
             _setting('时间基准', '中国标准时间'),
           ],
         ),
+        if (widget.appearance != null)
+          SectionCard(
+            title: '外观',
+            children: [
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.palette_outlined),
+                title: const Text('主题'),
+                trailing: PopupMenuButton<ThemeMode>(
+                  tooltip: '切换外观',
+                  initialValue: widget.appearance!.mode,
+                  onSelected: (mode) async {
+                    try {
+                      await widget.appearance!.setMode(mode);
+                    } catch (e) {
+                      if (context.mounted) await showError(context, e);
+                    }
+                  },
+                  itemBuilder: (_) => const [
+                    PopupMenuItem(value: ThemeMode.system, child: Text('跟随系统')),
+                    PopupMenuItem(value: ThemeMode.light, child: Text('浅色')),
+                    PopupMenuItem(value: ThemeMode.dark, child: Text('深色')),
+                  ],
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 12,
+                    ),
+                    child: Text(
+                      widget.appearance!.label,
+                      style: TextStyle(color: context.meike.green),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         SectionCard(
           title: '数据备份',
           footer:
@@ -154,7 +203,7 @@ class _SettingsPageState extends State<SettingsPage> {
           ],
         ),
         Text(
-          'SEU综合课表 1.2.0 · Flutter 离线版',
+          '梅课 1.3.0 · SEU 校园课表',
           style: Theme.of(context).textTheme.bodySmall,
           textAlign: TextAlign.center,
         ),

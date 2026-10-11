@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../data/schedule_store.dart';
 import '../domain/schedule.dart';
-import 'course_editor.dart';
+import 'course_details.dart';
 import 'theme.dart';
 
 class TodayPage extends StatefulWidget {
@@ -40,25 +40,28 @@ class _TodayPageState extends State<TodayPage> {
     return ListView(
       padding: const EdgeInsets.all(20),
       children: [
-        Text(
-          '今天',
-          style: Theme.of(
-            context,
-          ).textTheme.headlineLarge?.copyWith(fontWeight: FontWeight.bold),
+        BrandHeader(
+          title: '今天',
+          subtitle: SchoolClock.fullDate(now),
+          padding: const EdgeInsets.only(bottom: 24),
         ),
-        const SizedBox(height: 6),
-        Text(
-          SchoolClock.fullDate(now),
-          style: Theme.of(context).textTheme.bodySmall,
-        ),
-        const SizedBox(height: 20),
         _hero(context, data, courses, week),
         const SizedBox(height: 24),
         Row(
           children: [
             Text('今日安排', style: Theme.of(context).textTheme.titleLarge),
             const Spacer(),
-            Text('${courses.length} 项'),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+              decoration: BoxDecoration(
+                color: context.meike.soft,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                '${courses.length} 项',
+                style: TextStyle(fontSize: 12, color: context.meike.green),
+              ),
+            ),
           ],
         ),
         const SizedBox(height: 12),
@@ -74,11 +77,7 @@ class _TodayPageState extends State<TodayPage> {
               margin: EdgeInsets.zero,
               child: InkWell(
                 borderRadius: BorderRadius.circular(18),
-                onTap: () => editCourse(
-                  context,
-                  widget.store,
-                  data.courses.firstWhere((c) => c.id == e.courseId),
-                ),
+                onTap: () => showCourseDetails(context, widget.store, e),
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Row(
@@ -88,7 +87,7 @@ class _TodayPageState extends State<TodayPage> {
                         width: 5,
                         height: 66,
                         decoration: BoxDecoration(
-                          color: e.color.pastel,
+                          color: e.color.foreground(context),
                           borderRadius: BorderRadius.circular(3),
                         ),
                       ),
@@ -102,8 +101,24 @@ class _TodayPageState extends State<TodayPage> {
                               style: Theme.of(context).textTheme.titleMedium,
                             ),
                             const SizedBox(height: 7),
-                            Text(
-                              '⌖ ${e.location.isEmpty ? '地点待定' : e.location}',
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Icon(
+                                  Icons.place_outlined,
+                                  size: 15,
+                                  color: context.meike.muted,
+                                ),
+                                const SizedBox(width: 4),
+                                Expanded(
+                                  child: Text(
+                                    e.location.isEmpty ? '地点待定' : e.location,
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.bodySmall,
+                                  ),
+                                ),
+                              ],
                             ),
                             const SizedBox(height: 6),
                             Text(
@@ -134,7 +149,10 @@ class _TodayPageState extends State<TodayPage> {
                       const SizedBox(width: 8),
                       Text(
                         e.periodLabel,
-                        style: TextStyle(color: e.color.tint, fontSize: 11),
+                        style: TextStyle(
+                          color: e.color.foreground(context),
+                          fontSize: 11,
+                        ),
                       ),
                     ],
                   ),
@@ -174,105 +192,131 @@ class _TodayPageState extends State<TodayPage> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
         gradient: const LinearGradient(
-          colors: [accent, Color(0xFF144840)],
+          colors: [heroGreen, Color(0xFF173E2B)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
       ),
-      child: DefaultTextStyle(
-        style: const TextStyle(color: Colors.white, fontSize: 14),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+      child: Stack(
+        children: [
+          Positioned(
+            right: -10,
+            top: -10,
+            child: PlumMark(
+              size: 140,
+              color: Colors.white.withValues(alpha: .08),
+            ),
+          ),
+          DefaultTextStyle(
+            style: const TextStyle(color: Colors.white, fontSize: 14),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  resting
-                      ? '休息一下'
-                      : (active != null
-                            ? '正在上课'
-                            : next != null
-                            ? '下一堂课'
-                            : '按自己的节奏'),
+                Row(
+                  children: [
+                    Container(
+                      width: 6,
+                      height: 6,
+                      decoration: const BoxDecoration(
+                        color: gingko,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      resting
+                          ? '休息一下'
+                          : (active != null
+                                ? '正在上课'
+                                : next != null
+                                ? '下一堂课'
+                                : '按自己的节奏'),
+                    ),
+                    const Spacer(),
+                    if (semesterActive) Text('第 $week 周'),
+                  ],
                 ),
-                const Spacer(),
-                if (semesterActive) Text('第 $week 周'),
+                const SizedBox(height: 18),
+                if (resting) ...[
+                  Text(
+                    gap.title,
+                    style: const TextStyle(
+                      fontSize: 27,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text('还可休息 ${gap.end - minute} 分钟'),
+                  const SizedBox(height: 12),
+                  Text('接下来 · ${next.name}'),
+                  Text('⌖ ${next.location.isEmpty ? '地点待定' : next.location}'),
+                ] else if (next != null) ...[
+                  Text(
+                    next.name,
+                    style: const TextStyle(
+                      fontSize: 27,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text('◷ ${next.timeLabel}'),
+                  const SizedBox(height: 6),
+                  Text('⌖ ${next.location.isEmpty ? '地点待定' : next.location}'),
+                  if (seconds != null) ...[
+                    const SizedBox(height: 18),
+                    Text(next.isExtra ? '距离本次安排结束' : '距离本节下课'),
+                    FittedBox(
+                      alignment: Alignment.centerLeft,
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        '${seconds ~/ 60} 分 ${(seconds % 60).toString().padLeft(2, '0')} 秒',
+                        style: const TextStyle(
+                          fontSize: 38,
+                          color: gingko,
+                          fontWeight: FontWeight.w600,
+                          fontFeatures: [FontFeature.tabularFigures()],
+                        ),
+                      ),
+                    ),
+                  ],
+                  if (minute < next.startMinute)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 12),
+                      child: Text('距离开始还有 ${next.startMinute - minute} 分钟'),
+                    ),
+                ] else if (allDay != null) ...[
+                  Text(
+                    allDay.name,
+                    style: const TextStyle(
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    '全天 · ${allDay.location.isEmpty ? '地点待定' : allDay.location}',
+                  ),
+                ] else ...[
+                  Text(
+                    week < 1
+                        ? '新学期，等你开启'
+                        : week > data.semester.weekCount
+                        ? '这一学期，辛苦啦'
+                        : courses.isEmpty
+                        ? '今天没有课程'
+                        : '今日课程已完成',
+                    style: const TextStyle(
+                      fontSize: 27,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  const Text('学习之外，也别忘了好好生活。'),
+                ],
               ],
             ),
-            const SizedBox(height: 18),
-            if (resting) ...[
-              Text(
-                gap.title,
-                style: const TextStyle(
-                  fontSize: 27,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Text('还可休息 ${gap.end - minute} 分钟'),
-              const SizedBox(height: 12),
-              Text('接下来 · ${next.name}'),
-              Text('⌖ ${next.location.isEmpty ? '地点待定' : next.location}'),
-            ] else if (next != null) ...[
-              Text(
-                next.name,
-                style: const TextStyle(
-                  fontSize: 27,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Text('◷ ${next.timeLabel}'),
-              const SizedBox(height: 6),
-              Text('⌖ ${next.location.isEmpty ? '地点待定' : next.location}'),
-              if (seconds != null) ...[
-                const SizedBox(height: 18),
-                Text(next.isExtra ? '距离本次安排结束' : '距离本节下课'),
-                Text(
-                  '${seconds ~/ 60} 分 ${(seconds % 60).toString().padLeft(2, '0')} 秒',
-                  style: const TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.w600,
-                    fontFeatures: [FontFeature.tabularFigures()],
-                  ),
-                ),
-              ],
-              if (minute < next.startMinute)
-                Padding(
-                  padding: const EdgeInsets.only(top: 12),
-                  child: Text('距离开始还有 ${next.startMinute - minute} 分钟'),
-                ),
-            ] else if (allDay != null) ...[
-              Text(
-                allDay.name,
-                style: const TextStyle(
-                  fontSize: 25,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                '全天 · ${allDay.location.isEmpty ? '地点待定' : allDay.location}',
-              ),
-            ] else ...[
-              Text(
-                week < 1
-                    ? '新学期，等你开启'
-                    : week > data.semester.weekCount
-                    ? '这一学期，辛苦啦'
-                    : courses.isEmpty
-                    ? '今天没有课程'
-                    : '今日课程已完成',
-                style: const TextStyle(
-                  fontSize: 27,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 12),
-              const Text('学习之外，也别忘了好好生活。'),
-            ],
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

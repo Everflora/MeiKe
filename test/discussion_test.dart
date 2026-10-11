@@ -100,7 +100,7 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
     await tester.pumpWidget(SeuTimetableApp(store: store));
     await tester.pumpAndSettle();
-    await tester.tap(find.widgetWithText(NavigationDestination, '讨论室'));
+    await tester.tap(find.widgetWithText(NavigationDestination, '讨论'));
     await tester.pump();
     await tester.runAsync(() async {
       await Future<void>.delayed(const Duration(milliseconds: 100));

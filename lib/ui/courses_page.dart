@@ -4,6 +4,22 @@ import '../data/schedule_store.dart';
 import 'course_editor.dart';
 import 'theme.dart';
 
+Future<void> showCourses(BuildContext context, ScheduleStore store) =>
+    Navigator.push<void>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => Scaffold(
+          appBar: AppBar(title: const Text('课程管理')),
+          body: SafeArea(
+            child: ListenableBuilder(
+              listenable: store,
+              builder: (context, _) => CoursesPage(store: store),
+            ),
+          ),
+        ),
+      ),
+    );
+
 class CoursesPage extends StatefulWidget {
   const CoursesPage({super.key, required this.store});
   final ScheduleStore store;
@@ -83,7 +99,7 @@ class _CoursesPageState extends State<CoursesPage> {
                                   width: 7,
                                   height: 26,
                                   decoration: BoxDecoration(
-                                    color: c.color.pastel,
+                                    color: c.color.foreground(context),
                                     borderRadius: BorderRadius.circular(3),
                                   ),
                                 ),
@@ -122,13 +138,13 @@ class _CoursesPageState extends State<CoursesPage> {
                                 margin: const EdgeInsets.only(top: 10),
                                 padding: const EdgeInsets.all(8),
                                 decoration: BoxDecoration(
-                                  color: c.color.pastel,
+                                  color: c.color.surface(context),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Text(
                                   '${e.title} · ${e.summary}',
                                   style: TextStyle(
-                                    color: c.color.tint,
+                                    color: c.color.foreground(context),
                                     fontSize: 12,
                                   ),
                                 ),

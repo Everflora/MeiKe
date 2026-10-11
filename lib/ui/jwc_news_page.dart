@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import '../data/jwc_news.dart';
+import 'theme.dart';
 
 class JwcNewsPanel extends StatefulWidget {
   const JwcNewsPanel({super.key, required this.file});
@@ -191,10 +192,45 @@ class _JwcNewsPanelState extends State<_JwcSectionPanel> {
                         horizontal: 16,
                         vertical: 8,
                       ),
-                      title: Text(item.title),
-                      subtitle: Padding(
-                        padding: const EdgeInsets.only(top: 8),
-                        child: Text('${item.date} · ${widget.section.label}'),
+                      title: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 7,
+                                  vertical: 3,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: context.meike.goldSoft,
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: Text(
+                                  widget.section.label,
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    color: context.meike.goldInk,
+                                  ),
+                                ),
+                              ),
+                              const Spacer(),
+                              Text(
+                                item.date,
+                                style: Theme.of(context).textTheme.bodySmall,
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            item.title,
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                        ],
+                      ),
+                      subtitle: const Padding(
+                        padding: EdgeInsets.only(top: 9),
+                        child: Text('东南大学教务处 · 查看原文'),
                       ),
                       trailing: const Icon(Icons.chevron_right),
                       onTap: () => Navigator.of(context).push<void>(
