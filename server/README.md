@@ -17,7 +17,7 @@ identities 表同时保存完整匹配身份和来源 ID，共 8,102 条。
 | course_records | 原课程记录，完整保留本次抓取的班级和排课字段 |
 | users | 讨论身份、昵称、头像 PNG BLOB、头像版本与身份令牌哈希 |
 | messages | 聊天消息、发送标识、撤回状态；包含迁移的原帖子和回复 |
-| message_media | 图片/表情包文件 BLOB 与实际 MIME 类型，按消息 ID 关联 |
+| message_media | 图片/表情包/聊天文件 BLOB 与响应类型，按消息 ID 关联 |
 | saved_stickers | 当前讨论身份的私有表情包收藏、文件与去重摘要 |
 | message_events | 新消息、撤回、头像和昵称更新事件，供客户端增量接收 |
 | message_reports | 聊天消息举报 |
@@ -109,3 +109,7 @@ curl --fail https://106.14.199.134/api/meike/health
 
 后端数据库与匹配业务测试：`python3 -m unittest discover -s server -p 'test_*.py'`。
 线上验证只创建测试身份并读取匹配结果，没有向真实教学班发布测试帖子。
+
+## 聊天文件
+
+1.4.0 新增文件消息（单个 10 MiB），支持系统文件选择、发送确认、鉴权下载保存及撤回。接口、兼容迁移、Nginx 上限和部署顺序见 [文件与表情包说明](../docs/CHAT_FILES.md)。此说明不代表线上已部署。

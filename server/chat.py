@@ -9,6 +9,7 @@ import time
 import zlib
 import chat_media
 import chat_stickers
+import chat_files
 
 
 NOT_HANDLED = object()
@@ -98,7 +99,8 @@ def initialize(db):
     columns = {row['name'] for row in db.execute('PRAGMA table_info(messages)')}
     for name, definition in [('kind', "TEXT NOT NULL DEFAULT 'text'"),
                              ('media_width', 'INTEGER'), ('media_height', 'INTEGER'),
-                             ('media_hash', "TEXT NOT NULL DEFAULT ''")]:
+                             ('media_hash', "TEXT NOT NULL DEFAULT ''"),
+                             ('file_name', 'TEXT'), ('file_size', 'INTEGER')]:
         if name not in columns:
             db.execute(f'ALTER TABLE messages ADD COLUMN {name} {definition}')
     db.execute('''CREATE TABLE IF NOT EXISTS message_media (
@@ -133,8 +135,10 @@ def message(row, user):
             'created': row['created'], 'recalled': bool(row['recalled']),
             'mine': row['user_id'] == user['id'], 'clientId': row['client_id'],
             'kind': row['kind'],
-            'media': None if row['recalled'] or row['kind'] == 'text' else {
-                'width': row['media_width'], 'height': row['media_height']}}
+            'media': None if row['recalled'] or row['kind'] not in ('image', 'sticker') else {
+                'width': row['media_width'], 'height': row['media_height']},
+            'file': {'name': row['file_name'], 'size': row['file_size']}
+                if not row['recalled'] and row['kind'] == 'file' else None}
 
 
 SELECT_MESSAGE = 'SELECT m.*,u.name,u.avatar_version FROM messages m JOIN users u ON u.id=m.user_id '
@@ -167,12 +171,13 @@ def route(db, user, method, path, query, body, error, bounded):
         return row['avatar']
     media_match = re.fullmatch(r'/v1/messages/(\d+)/media', path)
     if method == 'GET' and media_match:
-        row = db.execute('''SELECT a.data,a.mime FROM message_media a
+        row = db.execute('''SELECT a.data,a.mime,m.kind,m.file_name FROM message_media a
             JOIN messages m ON m.id=a.message_id WHERE m.id=? AND m.recalled=0''',
                          (int(media_match[1]),)).fetchone()
         if not row:
-            raise error(404, '图片不存在或消息已撤回。')
-        return chat_media.MediaBytes(row['data'], row['mime'])
+            raise error(404, '附件不存在或消息已撤回。')
+        return (chat_files.FileBytes(row['data'], row['file_name']) if row['kind'] == 'file'
+                else chat_media.MediaBytes(row['data'], row['mime']))
     room_match = re.fullmatch(r'/v1/rooms/([a-f0-9]{64})/messages', path)
     if room_match:
         room = room_match[1]
@@ -209,10 +214,16 @@ def route(db, user, method, path, query, body, error, bounded):
                     'before': rows[-1]['id'] if len(rows) == 50 else None}
         if method == 'POST':
             kind = body.get('kind', 'text')
-            if kind not in ('text', 'image', 'sticker'):
+            if kind not in ('text', 'image', 'sticker', 'file'):
                 raise error(400, '不支持的消息类型。')
             media, width, height, mime, media_hash = None, None, None, None, ''
-            if kind != 'text':
+            file_name = None
+            if kind == 'file':
+                media, file_name = chat_files.parse(body, error)
+                mime = 'application/octet-stream'
+                media_hash = hashlib.sha256(media).hexdigest()
+                content = '[文件] ' + file_name
+            elif kind != 'text':
                 if 'stickerId' in body:
                     if kind != 'sticker' or 'media' in body or not isinstance(body['stickerId'], str):
                         raise error(400, '表情包发送参数无效。')
@@ -244,9 +255,9 @@ def route(db, user, method, path, query, body, error, bounded):
                 used = db.execute('''SELECT COALESCE(SUM(length(a.data)),0) FROM message_media a
                     JOIN messages m ON m.id=a.message_id WHERE m.user_id=? AND m.created>?''', (user['id'], now - 86400)).fetchone()[0]
                 if recent_media >= 10 or used + len(media) > 100 * 1024 * 1024:
-                    raise error(429, '图片发送过多，请稍后再试。')
-            inserted = db.execute('''INSERT INTO messages(room_id,user_id,body,created,client_id,kind,media_width,media_height,media_hash)
-                VALUES (?,?,?,?,?,?,?,?,?)''', (room, user['id'], content, now, client_id, kind, width, height, media_hash))
+                    raise error(429, '附件发送过多，请稍后再试。')
+            inserted = db.execute('''INSERT INTO messages(room_id,user_id,body,created,client_id,kind,media_width,media_height,media_hash,file_name,file_size)
+                VALUES (?,?,?,?,?,?,?,?,?,?,?)''', (room, user['id'], content, now, client_id, kind, width, height, media_hash, file_name, len(media) if kind == 'file' else None))
             if media:
                 db.execute('INSERT INTO message_media VALUES (?,?,?)', (inserted.lastrowid, media, mime))
             db.execute('INSERT INTO message_events(room_id,message_id) VALUES (?,?)', (room, inserted.lastrowid))
