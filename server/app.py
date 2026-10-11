@@ -13,6 +13,7 @@ from urllib.parse import parse_qs, urlsplit
 from matching import match_records
 import chat
 import chat_media
+import chat_files
 import teams
 
 
@@ -299,8 +300,8 @@ class Handler(BaseHTTPRequestHandler):
             body = {}
             if self.command in ('POST', 'PUT', 'DELETE'):
                 length = int(self.headers.get('Content-Length', '0'))
-                limit = (chat_media.MAX_REQUEST if self.command == 'POST' and
-                         (parsed.path == '/v1/stickers' or re.fullmatch(r'/v1/rooms/[a-f0-9]{64}/messages', parsed.path))
+                limit = (chat_files.MAX_REQUEST if self.command == 'POST' and re.fullmatch(r'/v1/rooms/[a-f0-9]{64}/messages', parsed.path)
+                         else chat_media.MAX_REQUEST if self.command == 'POST' and parsed.path == '/v1/stickers'
                          else 150000 if parsed.path in ('/v1/profile', '/v1/sessions') else 20000)
                 if length < 0 or length > limit:
                     self.close_connection = True
@@ -338,6 +339,8 @@ class Handler(BaseHTTPRequestHandler):
         encoded = result if binary else json.dumps(result, ensure_ascii=False).encode()
         self.send_response(status)
         self.send_header('Content-Type', getattr(result, 'content_type', 'image/png') if binary else 'application/json; charset=utf-8')
+        if binary and hasattr(result, 'content_disposition'):
+            self.send_header('Content-Disposition', result.content_disposition)
         self.send_header('Content-Length', str(len(encoded)))
         self.send_header('Cache-Control', 'no-store')
         self.send_header('X-Content-Type-Options', 'nosniff')
