@@ -1,0 +1,269 @@
+<div id="meike-design-directions">
+  <div class="viz-carousel viz-dotted-background" aria-label="梅课界面设计方向" data-previous-label="上一个方向" data-next-label="下一个方向">
+    <section data-variant="青梅书页" aria-label="青梅书页界面方案">
+      <div class="mk-stage"><div class="mk-phone mk-book" id="meike-book" aria-label="青梅书页"></div></div>
+    </section>
+    <section data-variant="银杏书签" aria-label="银杏书签界面方案" hidden>
+      <div class="mk-stage"><div class="mk-phone mk-garden" id="meike-garden" aria-label="银杏书签"></div></div>
+    </section>
+  </div>
+</div>
+<style>
+  #meike-design-directions .mk-stage{display:flex;justify-content:center;padding:24px 10px 28px;min-height:890px;box-sizing:border-box}
+  #meike-design-directions .mk-phone{--mk-bg:light-dark(#F7F7F0,#111D17);--mk-surface:light-dark(#FFFFFF,#1B2B22);--mk-ink:light-dark(#24382E,#EDF2E8);--mk-muted:light-dark(#687369,#ABB8AA);--mk-line:light-dark(#E2E6DC,#314438);--mk-green:light-dark(#24543C,#B9D49E);--mk-active:light-dark(#24543C,#B9D49E);--mk-active-ink:light-dark(#FFFFFF,#183324);--mk-gold:light-dark(#D8BC60,#D8BC60);--mk-gold-soft:light-dark(#F2E8BD,#4A4127);--mk-gold-ink:light-dark(#685418,#EDDBA2);--mk-soft:light-dark(#ECF0E4,#283C2C);--mk-hero:#204E38;--mk-hero-ink:#FCFCED;--mk-hero-muted:#D1DFBF;--mk-sage:light-dark(#E5EDD9,#2D422F);--mk-sage-ink:light-dark(#344F26,#CDDFC0);--mk-amber:light-dark(#F4EBCB,#473F26);--mk-amber-ink:light-dark(#6C5720,#E7D6A5);--mk-blue:light-dark(#E1EAEB,#2D3C3F);--mk-blue-ink:light-dark(#35565B,#C4DCDD);--mk-plum:light-dark(#EDE4EA,#41303D);--mk-plum-ink:light-dark(#6A4B62,#DCC6D6);--mk-mint:light-dark(#DBEADD,#293F35);--mk-mint-ink:light-dark(#28543E,#C4DDCF);--mk-course-radius:7px;--mk-shadow:light-dark(#17332017,#00000038);width:410px;max-width:100%;height:826px;border-radius:34px;overflow:hidden;position:relative;display:flex;flex-direction:column;background:var(--mk-bg);color:var(--mk-ink);box-shadow:0 20px 65px var(--mk-shadow),0 0 0 1px var(--mk-line);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;font-size:14px;line-height:1.5;isolation:isolate}
+  #meike-design-directions .mk-phone *{box-sizing:border-box}
+  #meike-design-directions .mk-phone [hidden]{display:none!important}
+  #meike-design-directions .mk-phone button,#meike-design-directions .mk-phone input,#meike-design-directions .mk-phone textarea,#meike-design-directions .mk-phone select{font:inherit;color:inherit}
+  #meike-design-directions .mk-phone button{border:0;cursor:var(--cursor-interactive,pointer)}
+  #meike-design-directions .mk-phone button:focus-visible,#meike-design-directions .mk-phone input:focus-visible,#meike-design-directions .mk-phone textarea:focus-visible{outline:2px solid var(--mk-green);outline-offset:3px}
+  #meike-design-directions .mk-phone svg{flex:none}
+  #meike-design-directions .mk-phone svg.lucide{width:var(--mk-icon-size,18px)!important;height:var(--mk-icon-size,18px)!important}
+  #meike-design-directions .mk-status-icons{--mk-icon-size:13px}
+  #meike-design-directions .mk-icon{--mk-icon-size:19px}
+  #meike-design-directions .mk-week{--mk-icon-size:13px}
+  #meike-design-directions .mk-wordmark{--mk-icon-size:20px}
+  #meike-design-directions .mk-nav-button{--mk-icon-size:21px}
+  #meike-design-directions .mk-hero-location,#meike-design-directions .mk-note{--mk-icon-size:14px}
+  #meike-design-directions .mk-hero-flower{--mk-icon-size:205px}
+  #meike-design-directions .mk-room-icon{--mk-icon-size:20px}
+  #meike-design-directions .mk-status{height:38px;padding:12px 26px 0;display:flex;align-items:center;justify-content:space-between;font-size:12px;font-weight:650;flex:none}
+  #meike-design-directions .mk-status-icons{display:flex;gap:5px;align-items:center}
+  #meike-design-directions .mk-status-icons svg{width:14px;height:14px}
+  #meike-design-directions .mk-top{display:flex;align-items:center;gap:5px;padding:7px 14px 10px;min-height:60px;flex:none}
+  #meike-design-directions .mk-top-title{flex:1;min-width:0}
+  #meike-design-directions .mk-week{display:flex;align-items:center;gap:5px;background:transparent;padding:0;color:var(--mk-ink);font-size:19px!important;font-weight:650!important;letter-spacing:-.5px;min-height:28px}
+  #meike-design-directions .mk-week svg{width:13px;height:13px}
+  #meike-design-directions .mk-date{font-size:11px;color:var(--mk-muted);letter-spacing:.4px;margin-top:1px;font-variant-numeric:tabular-nums}
+  #meike-design-directions .mk-icon{width:38px;height:40px;display:grid;place-items:center;flex:none;border-radius:12px;background:transparent;color:var(--mk-green)!important;padding:0}
+  #meike-design-directions .mk-icon svg{width:19px;height:19px;stroke-width:1.7}
+  #meike-design-directions .mk-add{background:var(--mk-green);color:var(--mk-active-ink)!important;width:38px;height:38px;border-radius:13px;margin-left:3px}
+  #meike-design-directions .mk-kicker{font-size:11px;letter-spacing:1.6px;color:var(--mk-muted)}
+  #meike-design-directions .mk-wordmark{font-family:"Songti SC","STSong",serif;font-size:21px;font-weight:700;letter-spacing:2px;display:flex;gap:7px;align-items:center;color:var(--mk-green)}
+  #meike-design-directions .mk-wordmark svg{width:20px;height:20px;stroke-width:1.4}
+  #meike-design-directions .mk-main{flex:1;min-height:0;display:flex;flex-direction:column;position:relative}
+  #meike-design-directions .mk-week-strip{display:none}
+  #meike-design-directions .mk-calendar{padding:0 12px 0 8px;display:flex;flex-direction:column;flex:1;min-height:0}
+  #meike-design-directions .mk-days{display:grid;grid-template-columns:32px repeat(7,minmax(0,1fr));height:43px;flex:none;align-items:start}
+  #meike-design-directions .mk-month{font-size:11px;color:var(--mk-muted);padding-top:17px;text-align:center}
+  #meike-design-directions .mk-day{text-align:center;font-size:11px;color:var(--mk-muted);display:flex;flex-direction:column;align-items:center;gap:1px}
+  #meike-design-directions .mk-day b{font-size:14px;font-weight:550;width:27px;height:26px;display:grid;place-items:center;color:var(--mk-ink);border-radius:9px;font-variant-numeric:tabular-nums}
+  #meike-design-directions .mk-day.mk-is-today b{background:var(--mk-gold);color:#293926}
+  #meike-design-directions .mk-day.mk-is-today{color:var(--mk-green)}
+  #meike-design-directions .mk-grid{display:grid;grid-template-columns:32px repeat(7,minmax(0,1fr));flex:1;min-height:0;position:relative}
+  #meike-design-directions .mk-row{grid-column:2/-1;border-bottom:1px solid var(--mk-line);opacity:.52;pointer-events:none}
+  #meike-design-directions .mk-today-wash{grid-row:1/-1;background:var(--mk-soft);opacity:.6;pointer-events:none;border-radius:8px}
+  #meike-design-directions .mk-time{font-variant-numeric:tabular-nums;font-size:11px;color:var(--mk-muted);padding-top:1px;line-height:1.4;display:flex;align-items:center;flex-direction:column;justify-content:center}
+  #meike-design-directions .mk-time b{font-weight:550;font-size:12px;color:var(--mk-ink)}
+  #meike-design-directions .mk-time small{font-size:11px;letter-spacing:-.5px}
+  #meike-design-directions .mk-break{grid-column:1/-1;display:flex;align-items:center;padding-left:35px;gap:8px;color:var(--mk-muted);font-size:10px;letter-spacing:2px;pointer-events:none}
+  #meike-design-directions .mk-break:after{content:"";height:1px;flex:1;background:var(--mk-line);opacity:.6}
+  #meike-design-directions .mk-course{z-index:2;min-width:0;background:var(--mk-c-bg);color:var(--mk-c-ink)!important;border-radius:var(--mk-course-radius);margin:1px 2px;padding:6px 4px!important;display:flex;flex-direction:column;align-items:flex-start;text-align:left;gap:3px;position:relative;overflow:hidden}
+  #meike-design-directions .mk-course:before{content:"";position:absolute;left:0;top:7px;bottom:7px;width:2px;border-radius:2px;background:var(--mk-c-ink);opacity:.27}
+  #meike-design-directions .mk-course-name{font-size:11px;font-weight:600;line-height:1.25;word-break:break-all;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;letter-spacing:-.3px;flex-shrink:0}
+  #meike-design-directions .mk-course-room{font-size:11px;line-height:1.2;white-space:normal;word-break:break-all;width:100%;margin-top:auto;letter-spacing:-.5px;flex-shrink:0}
+  #meike-design-directions .mk-room-full{display:none}
+  #meike-design-directions .mk-room-compact{display:inline}
+  #meike-design-directions .mk-course.mk-short{padding-top:3px!important;padding-bottom:3px!important;gap:0;justify-content:space-between}
+  #meike-design-directions .mk-course.mk-short .mk-course-name{-webkit-line-clamp:1}
+  #meike-design-directions .mk-course-tag{font-size:11px;border-bottom:1px solid currentColor;padding-bottom:3px;margin-bottom:3px;opacity:.85}
+  #meike-design-directions .mk-course.mk-current{background:var(--mk-green);color:var(--mk-active-ink)!important}
+  #meike-design-directions .mk-course.mk-current:after{content:"";position:absolute;top:0;right:7px;width:5px;height:12px;background:var(--mk-gold);clip-path:polygon(0 0,100% 0,100% 100%,50% 76%,0 100%)}
+  #meike-design-directions .mk-course.mk-current:before{background:var(--mk-gold);opacity:1}
+  #meike-design-directions .mk-nowline{grid-column:5/6;z-index:3;align-self:center;border-top:2px solid var(--mk-gold);margin:0 1px;pointer-events:none;position:relative}
+  #meike-design-directions .mk-nowline:before{content:"";width:5px;height:5px;border-radius:50%;position:absolute;top:-3px;left:-2px;background:var(--mk-gold)}
+  #meike-design-directions .mk-calendar-foot{height:24px;display:flex;align-items:center;justify-content:flex-end;gap:6px;padding-right:4px;font-size:10px;color:var(--mk-muted);flex:none}
+  #meike-design-directions .mk-tiny-dot{width:4px;height:4px;border-radius:50%;background:var(--mk-gold)}
+  #meike-design-directions .mk-nav{display:flex;gap:2px;align-items:center;justify-content:space-around;margin:0 12px;height:62px;padding:5px 2px 0;border-top:1px solid var(--mk-line);flex:none}
+  #meike-design-directions .mk-nav-button{flex:1;min-width:0;background:transparent;position:relative;border-radius:13px;display:flex;align-items:center;flex-direction:column;gap:4px;font-size:11px!important;color:var(--mk-muted)!important;padding:6px 0;min-height:51px}
+  #meike-design-directions .mk-nav-button svg{width:21px;height:21px;stroke-width:1.55}
+  #meike-design-directions .mk-nav-button[aria-current="page"]{color:var(--mk-green)!important;font-weight:650}
+  #meike-design-directions .mk-nav-button[aria-current="page"]:after{content:"";position:absolute;top:1px;right:calc(50% - 16px);width:5px;height:5px;border-radius:50%;background:var(--mk-gold)}
+  #meike-design-directions .mk-home-bar{height:16px;display:grid;place-items:center;flex:none}
+  #meike-design-directions .mk-home-bar:before{content:"";width:108px;height:4px;border-radius:4px;background:var(--mk-ink);opacity:.7}
+  #meike-design-directions .mk-garden{--mk-bg:light-dark(#ECEFE5,#142119);--mk-course-radius:5px}
+  #meike-design-directions .mk-garden .mk-status{background:var(--mk-hero);color:var(--mk-hero-ink)}
+  #meike-design-directions .mk-garden .mk-top{background:var(--mk-hero);color:var(--mk-hero-ink);padding:7px 18px 14px;min-height:63px}
+  #meike-design-directions .mk-garden .mk-top .mk-wordmark{color:var(--mk-hero-ink)}
+  #meike-design-directions .mk-garden .mk-top .mk-kicker{color:var(--mk-hero-muted)}
+  #meike-design-directions .mk-garden .mk-top .mk-icon{color:var(--mk-hero-ink)!important}
+  #meike-design-directions .mk-garden .mk-top .mk-add{background:var(--mk-gold);color:#293926!important}
+  #meike-design-directions .mk-garden .mk-calendar{margin:10px 9px 4px;background:var(--mk-surface);padding:8px 5px 0;border-radius:17px;box-shadow:0 3px 10px var(--mk-shadow)}
+  #meike-design-directions .mk-garden .mk-week-strip{display:flex;align-items:center;justify-content:space-between;padding:0 3px 7px;gap:8px}
+  #meike-design-directions .mk-garden .mk-week-strip .mk-week{font-size:15px!important}
+  #meike-design-directions .mk-garden .mk-week-strip .mk-date{margin-left:auto;margin-right:3px}
+  #meike-design-directions .mk-garden .mk-course{background:var(--mk-surface);border-left:2px solid var(--mk-c-ink);box-shadow:0 0 0 1px var(--mk-line);margin:2px;color:var(--mk-ink)!important;padding:3px 2px!important;gap:2px}
+  #meike-design-directions .mk-garden .mk-course:before{display:none}
+  #meike-design-directions .mk-garden .mk-course .mk-course-room{color:var(--mk-muted)}
+  #meike-design-directions .mk-garden .mk-course.mk-current{background:var(--mk-gold-soft);border-left-color:var(--mk-gold-ink)}
+  #meike-design-directions .mk-garden .mk-nav{border:0;border-radius:19px;background:var(--mk-surface);margin:0 12px 2px;height:59px;padding:1px 4px;box-shadow:0 3px 12px var(--mk-shadow)}
+  #meike-design-directions .mk-page{padding:7px 21px 10px;min-height:0;flex:1;overflow:hidden}
+  #meike-design-directions .mk-page-header{display:flex;align-items:center;justify-content:space-between;margin:7px 0 17px}
+  #meike-design-directions .mk-page-title{font-size:25px;font-weight:650;letter-spacing:-.7px;margin:0;line-height:1.25}
+  #meike-design-directions .mk-subtitle{font-size:12px;color:var(--mk-muted);margin-top:5px}
+  #meike-design-directions .mk-pill{display:inline-flex;align-items:center;gap:5px;background:var(--mk-soft);color:var(--mk-green);border-radius:7px;padding:4px 8px;font-size:11px;white-space:nowrap}
+  #meike-design-directions .mk-hero{background:var(--mk-hero);color:var(--mk-hero-ink);border-radius:23px;padding:22px 23px;position:relative;overflow:hidden;margin-bottom:24px;min-height:230px}
+  #meike-design-directions .mk-hero-top{display:flex;justify-content:space-between;align-items:center;color:var(--mk-hero-muted);font-size:12px;position:relative;z-index:1}
+  #meike-design-directions .mk-live{display:flex;align-items:center;gap:7px}
+  #meike-design-directions .mk-live:before{content:"";width:5px;height:5px;border-radius:50%;background:var(--mk-gold)}
+  #meike-design-directions .mk-hero h3{font-size:24px;line-height:1.3;font-weight:600;margin:20px 0 7px;color:inherit;position:relative;z-index:1}
+  #meike-design-directions .mk-hero-location{font-size:13px;color:var(--mk-hero-muted);display:flex;gap:7px;align-items:center}
+  #meike-design-directions .mk-hero-location svg{width:14px;height:14px}
+  #meike-design-directions .mk-countdown{margin-top:24px;position:relative;z-index:1;display:flex;gap:8px;align-items:baseline}
+  #meike-design-directions .mk-countdown strong{font-size:42px;font-weight:500;letter-spacing:-1.5px;font-variant-numeric:tabular-nums;color:var(--mk-gold);line-height:1}
+  #meike-design-directions .mk-countdown span{font-size:11px;color:var(--mk-hero-muted);line-height:1.6}
+  #meike-design-directions .mk-hero-flower{position:absolute;right:-36px;bottom:-26px;color:var(--mk-hero-ink);opacity:.055;pointer-events:none}
+  #meike-design-directions .mk-hero-flower svg{width:205px;height:205px;stroke-width:.8}
+  #meike-design-directions .mk-section-title{display:flex;justify-content:space-between;align-items:center;margin:18px 0 12px;font-size:15px;font-weight:600}
+  #meike-design-directions .mk-section-title small{font-weight:400;font-size:11px;color:var(--mk-muted)}
+  #meike-design-directions .mk-agenda{display:grid;grid-template-columns:44px 1fr;gap:10px;margin-bottom:13px;align-items:center}
+  #meike-design-directions .mk-agenda-time{font-size:12px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--mk-ink)}
+  #meike-design-directions .mk-agenda-time span{display:block;font-weight:400;font-size:10px;color:var(--mk-muted)}
+  #meike-design-directions .mk-agenda-card{padding:14px 16px;background:var(--mk-surface);border-radius:15px;text-align:left;border-left:3px solid var(--mk-line)!important;min-width:0}
+  #meike-design-directions .mk-agenda-card b{display:block;font-size:14px;font-weight:600}
+  #meike-design-directions .mk-agenda-card small{display:block;color:var(--mk-muted);margin-top:4px;font-size:11px}
+  #meike-design-directions .mk-note{display:flex;align-items:center;gap:7px;color:var(--mk-muted);font-size:11px;padding:8px 0}
+  #meike-design-directions .mk-note svg{width:14px;height:14px}
+  #meike-design-directions .mk-tabline{display:flex;gap:20px;border-bottom:1px solid var(--mk-line);margin-bottom:16px}
+  #meike-design-directions .mk-tabline button{position:relative;background:transparent;padding:0 0 11px;color:var(--mk-muted);font-size:13px}
+  #meike-design-directions .mk-tabline button[aria-selected="true"]{color:var(--mk-green);font-weight:650}
+  #meike-design-directions .mk-tabline button[aria-selected="true"]:after{content:"";position:absolute;bottom:-1px;height:3px;border-radius:3px;left:1px;right:1px;background:var(--mk-gold)}
+  #meike-design-directions .mk-chat-room{display:flex;align-items:center;gap:12px;background:transparent;width:100%;padding:18px 0;border-bottom:1px solid var(--mk-line)!important;text-align:left}
+  #meike-design-directions .mk-room-icon{height:44px;width:44px;border-radius:14px;background:var(--mk-c-bg);color:var(--mk-c-ink);display:grid;place-items:center;flex:none}
+  #meike-design-directions .mk-room-icon svg{width:20px;height:20px;stroke-width:1.6}
+  #meike-design-directions .mk-room-copy{flex:1;min-width:0}
+  #meike-design-directions .mk-room-copy b{display:block;font-size:15px;font-weight:600}
+  #meike-design-directions .mk-room-copy p{margin:4px 0 0;color:var(--mk-muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #meike-design-directions .mk-room-meta{display:flex;flex-direction:column;align-items:end;gap:8px;font-size:10px;color:var(--mk-muted)}
+  #meike-design-directions .mk-unread{display:grid;place-items:center;background:var(--mk-gold-soft);color:var(--mk-gold-ink);font-size:10px;min-width:19px;height:19px;border-radius:6px}
+  #meike-design-directions .mk-callout{padding:18px 19px;border-radius:16px;background:var(--mk-soft);margin-top:22px;font-size:12px;color:var(--mk-muted);line-height:1.8}
+  #meike-design-directions .mk-callout strong{display:block;font-weight:600;font-size:14px;color:var(--mk-green);margin-bottom:5px}
+  #meike-design-directions .mk-news-item{padding:18px 0;border-bottom:1px solid var(--mk-line)!important;background:transparent;width:100%;text-align:left;display:block}
+  #meike-design-directions .mk-news-item .mk-news-meta{font-size:10px;color:var(--mk-muted);display:flex;align-items:center;gap:8px;margin-bottom:7px}
+  #meike-design-directions .mk-news-item h3{font-size:16px;font-weight:550;line-height:1.65;color:var(--mk-ink);margin:0 0 8px}
+  #meike-design-directions .mk-news-item p{font-size:11px;color:var(--mk-muted);margin:0}
+  #meike-design-directions .mk-news-label{color:var(--mk-gold-ink);background:var(--mk-gold-soft);padding:2px 5px;border-radius:4px}
+  #meike-design-directions .mk-profile{display:flex;align-items:center;gap:13px;padding:12px 0 24px}
+  #meike-design-directions .mk-avatar{width:53px;height:53px;display:grid;place-items:center;border-radius:18px;background:var(--mk-green);color:var(--mk-active-ink);font-family:"Songti SC",serif;font-size:25px}
+  #meike-design-directions .mk-settings-group{background:var(--mk-surface);border-radius:17px;padding:0 14px;margin-bottom:18px}
+  #meike-design-directions .mk-settings-row{display:flex;align-items:center;gap:11px;min-height:54px;background:transparent;width:100%;text-align:left;border-bottom:1px solid var(--mk-line)!important;font-size:13px}
+  #meike-design-directions .mk-settings-row:last-child{border-bottom:0!important}
+  #meike-design-directions .mk-settings-row svg{width:18px;height:18px;color:var(--mk-green)}
+  #meike-design-directions .mk-settings-row small{margin-left:auto;color:var(--mk-muted);font-size:11px}
+  #meike-design-directions .mk-brand-signature{text-align:center;margin-top:25px;color:var(--mk-muted);font-size:11px;letter-spacing:1px}
+  #meike-design-directions .mk-brand-signature .mk-wordmark{justify-content:center;margin-bottom:6px}
+  #meike-design-directions .mk-overlay{position:absolute;inset:0;z-index:20;background:light-dark(#15261D50,#00000080);display:flex;flex-direction:column;justify-content:flex-end;padding-top:75px}
+  #meike-design-directions .mk-sheet{background:var(--mk-surface);border-radius:26px 26px 0 0;padding:10px 23px 25px;box-shadow:0 -10px 60px var(--mk-shadow);max-height:100%;overflow:auto}
+  #meike-design-directions .mk-handle{width:30px;height:4px;border-radius:4px;background:var(--mk-line);margin:0 auto 14px}
+  #meike-design-directions .mk-sheet-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:13px;gap:12px}
+  #meike-design-directions .mk-sheet-header h3{font-size:19px;line-height:1.4;margin:0;color:var(--mk-ink);font-weight:600}
+  #meike-design-directions .mk-sheet p{font-size:13px;line-height:1.9;color:var(--mk-muted);margin:7px 0}
+  #meike-design-directions .mk-details{display:grid;grid-template-columns:55px 1fr;gap:13px 10px;font-size:13px;margin:21px 0 26px}
+  #meike-design-directions .mk-details dt{color:var(--mk-muted)}
+  #meike-design-directions .mk-details dd{margin:0}
+  #meike-design-directions .mk-primary{background:var(--mk-green);color:var(--mk-active-ink)!important;border-radius:13px;min-height:44px;padding:10px 17px;font-size:14px!important;font-weight:550!important}
+  #meike-design-directions .mk-secondary{background:var(--mk-soft);color:var(--mk-green)!important;border-radius:13px;min-height:44px;padding:10px 17px;font-size:14px!important}
+  #meike-design-directions .mk-actions{display:flex;gap:10px;margin-top:18px}
+  #meike-design-directions .mk-actions>*{flex:1}
+  #meike-design-directions .mk-field{display:flex;flex-direction:column;gap:6px;margin:14px 0;font-size:12px;color:var(--mk-muted)}
+  #meike-design-directions .mk-field input,#meike-design-directions .mk-field textarea,#meike-design-directions .mk-field select{border:1px solid var(--mk-line);border-radius:11px;padding:11px 12px;background:var(--mk-bg);color:var(--mk-ink);width:100%;font-size:16px}
+  #meike-design-directions .mk-swatches{display:flex;gap:13px;margin:9px 0 20px}
+  #meike-design-directions .mk-swatch{width:31px;height:31px;border-radius:50%;background:var(--mk-c-bg);position:relative}
+  #meike-design-directions .mk-swatch[aria-pressed="true"]:after{content:"";position:absolute;inset:-4px;border:1.5px solid var(--mk-c-ink);border-radius:50%}
+  #meike-design-directions .mk-chat-preview{padding:0 0 10px;display:flex;flex-direction:column;gap:16px}
+  #meike-design-directions .mk-bubble{padding:11px 14px;border-radius:4px 15px 15px;background:var(--mk-bg);font-size:13px;line-height:1.8;max-width:86%;align-self:flex-start}
+  #meike-design-directions .mk-bubble.self{background:var(--mk-green);color:var(--mk-active-ink);border-radius:15px 4px 15px 15px;align-self:flex-end}
+  #meike-design-directions .mk-chat-name{font-size:10px;color:var(--mk-muted);margin-bottom:-10px}
+  #meike-design-directions .mk-composer{display:flex;gap:8px;align-items:center;margin-top:20px}
+  #meike-design-directions .mk-composer input{width:100%;min-width:0;background:var(--mk-bg);border:1px solid var(--mk-line);border-radius:13px;padding:11px 12px;font-size:14px}
+  #meike-design-directions .mk-composer button{width:44px;height:44px;flex:none;padding:0;display:grid;place-items:center}
+  #meike-design-directions .mk-toast{position:absolute;bottom:91px;left:23px;right:23px;background:var(--mk-green);color:var(--mk-active-ink);padding:10px 14px;border-radius:12px;font-size:12px;z-index:30;box-shadow:0 8px 22px var(--mk-shadow)}
+  @media(max-width:380px){#meike-design-directions .mk-stage{padding:18px 5px 24px;min-height:884px}#meike-design-directions .mk-phone{border-radius:27px}#meike-design-directions .mk-top{padding-left:10px;padding-right:10px;gap:2px}#meike-design-directions .mk-icon{width:33px}#meike-design-directions .mk-add{width:35px}#meike-design-directions .mk-calendar{padding-right:7px;padding-left:4px}#meike-design-directions .mk-course{margin-left:1px;margin-right:1px;padding-left:3px!important;padding-right:2px!important}#meike-design-directions .mk-course-name{font-size:11px}#meike-design-directions .mk-page{padding-left:17px;padding-right:17px}#meike-design-directions .mk-hero{padding:20px;min-height:218px}#meike-design-directions .mk-countdown strong{font-size:38px}#meike-design-directions .mk-page-title{font-size:23px}}
+  @media(max-width:380px){#meike-design-directions .mk-room-full{display:none}#meike-design-directions .mk-room-compact{display:inline}#meike-design-directions .mk-date{font-size:10px;letter-spacing:0;white-space:nowrap}#meike-design-directions .mk-week{font-size:17px!important}}
+</style>
+<script>
+(() => {
+ const root=document.getElementById('meike-design-directions');
+ const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const icon=name=>`<i data-lucide="${name}" aria-hidden="true"></i>`;
+ const names=['课表','今天','讨论','校园','我的'];
+ const navIcons=['calendar-days','sun','messages-square','newspaper','user-round'];
+ const baseCourses=[
+ {id:'database',name:'数据库原理',day:1,from:3,to:5,room:'教三 · 302',short:'教3-302',color:'sage'},
+ {id:'compiler',name:'编译原理',day:2,from:3,to:4,room:'教三 · 501',short:'教3-501',color:'blue'},
+ {id:'architecture',name:'计算机系统结构',day:2,from:6,to:7,room:'教四 · 101',short:'教4-101',color:'plum'},
+ {id:'pe',name:'体育',day:3,from:2,to:2,room:'体育馆 2 楼',short:'体育馆2F',color:'mint'},
+ {id:'data',name:'大数据处理',day:3,from:3,to:4,room:'教三 · 304',short:'教3-304',color:'amber'},
+ {id:'network',name:'计算机网络',day:4,from:3,to:5,room:'教三 · 402',short:'教3-402',color:'sage'},
+ {id:'thinking',name:'批判性思维',day:4,from:6,to:7,room:'教一 · 404',short:'教1-404',color:'mint'},
+ {id:'data2',name:'大数据处理',day:4,from:8,to:9,room:'教三 · 304',short:'教3-304',color:'amber'},
+ {id:'compiler2',name:'编译原理',day:5,from:3,to:5,room:'教三 · 501',short:'教3-501',color:'blue'},
+ {id:'lab',name:'计算机网络实验',day:7,from:1,to:10,room:'实验楼 · 301',short:'实验301',color:'plum',extra:true}
+ ];
+ const clocks=['08:00','08:50','09:50','10:40','11:30','14:00','14:50','15:50','16:40','17:30','19:00','19:50','20:40'];
+ const endClocks=['08:45','09:35','10:35','11:25','12:15','14:45','15:35','16:35','17:25','18:15','19:45','20:35','21:25'];
+ const palette=['sage','amber','blue','plum','mint'];
+ const states=[];
+ function colorStyle(c){return `--mk-c-bg:var(--mk-${c});--mk-c-ink:var(--mk-${c}-ink)`;}
+ function icons(){if(globalThis.lucide) lucide.createIcons({attrs:{width:18,height:18}});}
+ function persist(){const modelContent={product:'梅课',preview:'青梅书页 / 银杏书签',pages:states.map(s=>({direction:s.look==='book'?'青梅书页':'银杏书签',page:names[s.page]}))};window.openai?.setWidgetState?.({modelContent,privateContent:{pages:states.map(s=>s.page)}})?.catch(()=>{});}
+ function savedPages(){const v=window.openai?.widgetState?.privateContent?.pages;return Array.isArray(v)?v:[];}
+ function restore(value){const pages=value?.privateContent?.pages;if(!Array.isArray(pages))return;states.forEach((s,i)=>{if(Number.isInteger(pages[i])&&pages[i]>=0&&pages[i]<5){s.page=pages[i];render(s);}});}
+ function dates(s){const start=new Date(Date.UTC(2026,9,12+(s.week-4)*7));return Array.from({length:7},(_,i)=>{const d=new Date(start);d.setUTCDate(start.getUTCDate()+i);return d;});}
+ function range(s){const ds=dates(s);return `${ds[0].getUTCMonth()+1}.${ds[0].getUTCDate()}–${ds[6].getUTCMonth()+1}.${ds[6].getUTCDate()}`;}
+ function weekButton(s){return `<button class="mk-week" data-action="weeks" aria-label="选择教学周">第 ${s.week} 周 ${icon('chevron-down')}</button>`;}
+ function top(s){
+  if(s.look==='garden')return `<header class="mk-top"><div class="mk-top-title"><div class="mk-wordmark">${icon('flower')}梅课</div><div class="mk-kicker">MEIKE · SOUTHEAST</div></div><button class="mk-icon" data-action="manage" aria-label="课程管理">${icon('notebook-pen')}</button><button class="mk-icon" data-action="import" aria-label="导入学校课表">${icon('download')}</button><button class="mk-icon mk-add" data-action="add" aria-label="添加课程">${icon('plus')}</button></header>`;
+  if(s.page!==0)return `<header class="mk-top"><div class="mk-top-title"><div class="mk-wordmark">${icon('flower')}梅课</div></div><span class="mk-kicker">第 ${s.week} 周</span><button class="mk-icon" data-action="manage" aria-label="课程管理">${icon('notebook-pen')}</button></header>`;
+  return `<header class="mk-top"><button class="mk-icon" data-action="prev" aria-label="上一周">${icon('chevron-left')}</button><div class="mk-top-title">${weekButton(s)}<div class="mk-date">${range(s)}</div></div><button class="mk-icon" data-action="next" aria-label="下一周">${icon('chevron-right')}</button><button class="mk-icon" data-action="manage" aria-label="课程管理">${icon('notebook-pen')}</button><button class="mk-icon" data-action="import" aria-label="导入学校课表">${icon('download')}</button><button class="mk-icon mk-add" data-action="add" aria-label="添加课程">${icon('plus')}</button></header>`;
+ }
+ function timetable(s){
+  let rows=[],positions=[],row=1,grid='';
+  for(let p=1;p<=13;p++){
+   positions[p]=row;rows.push('minmax(0,1fr)');
+   grid+=`<div class="mk-row" style="grid-row:${row}"></div><div class="mk-time" style="grid-row:${row};grid-column:1"><b>${p}</b><small>${clocks[p-1]}</small></div>`;row++;
+   if(p<13){const rest=p===5?'午休':p===10?'晚休':'';rows.push(rest?'18px':(p===2||p===7)?'8px':'4px');if(rest)grid+=`<div class="mk-break" style="grid-row:${row}">${rest}</div>`;row++;}
+  }
+  s.courses.forEach(c=>{
+   const isCurrent=s.week===4&&c.id==='network';
+   grid+=`<button class="mk-course ${c.from===c.to?'mk-short':''} ${isCurrent?'mk-current':''}" data-course="${c.id}" style="${colorStyle(c.color)};grid-column:${c.day+1};grid-row:${positions[c.from]} / ${positions[c.to]+1}" aria-label="${esc(c.name)}，周${'一二三四五六日'[c.day-1]}，${clocks[c.from-1]}至${endClocks[c.to-1]}，${esc(c.room)}">${c.extra?'<span class="mk-course-tag">单次</span>':''}<span class="mk-course-name">${esc(c.name)}</span><span class="mk-course-room"><span class="mk-room-full">${esc(c.short)}</span><span class="mk-room-compact">${esc(c.id==='pe'?'馆2F':c.short.replace('教','').replace('实验','实'))}</span></span></button>`;
+  });
+  if(s.week===4)grid+=`<div class="mk-nowline" style="grid-row:${positions[3]}" aria-hidden="true"></div>`;
+  const ds=dates(s);
+  return `<div class="mk-calendar"><div class="mk-week-strip"><button class="mk-icon" data-action="prev" aria-label="上一周">${icon('chevron-left')}</button>${weekButton(s)}<span class="mk-date">${range(s)}</span><button class="mk-icon" data-action="next" aria-label="下一周">${icon('chevron-right')}</button></div><div class="mk-days"><div class="mk-month">${ds[0].getUTCMonth()+1}月</div>${ds.map((d,i)=>`<div class="mk-day ${i===3&&s.week===4?'mk-is-today':''}"><span>${['一','二','三','四','五','六','日'][i]}</span><b>${d.getUTCDate()}</b></div>`).join('')}</div><div class="mk-grid" style="grid-template-rows:${rows.join(' ')}">${s.week===4?'<div class="mk-today-wash" style="grid-column:5"></div>':''}${grid}</div><div class="mk-calendar-foot"><span class="mk-tiny-dot"></span>课程与消息均为设计示例</div></div>`;
+ }
+ function today(s){return `<div class="mk-page"><div class="mk-page-header"><div><h2 class="mk-page-title">今天，慢慢来。</h2><div class="mk-subtitle">10 月 15 日 · 星期四</div></div><span class="mk-pill">秋学期</span></div><div class="mk-hero"><div class="mk-hero-top"><span class="mk-live">正在上课</span><span>第 3 节</span></div><h3>计算机网络</h3><div class="mk-hero-location">${icon('map-pin')}教三 · 402<span>09:50—12:15</span></div><div class="mk-countdown"><strong>23<span style="font-size:17px;color:var(--mk-gold);margin-left:4px;letter-spacing:0">分</span></strong><span>距离本节下课<br>10:35 休息 5 分钟</span></div><div class="mk-hero-flower">${icon('flower')}</div></div><div class="mk-section-title">接下来的安排<small>还有 2 门课</small></div><div class="mk-agenda"><div class="mk-agenda-time">14:00<span>15:35</span></div><button class="mk-agenda-card" data-course="thinking"><b>批判性思维</b><small>教一 · 404　/　第 6–7 节</small></button></div><div class="mk-agenda"><div class="mk-agenda-time">15:50<span>17:25</span></div><button class="mk-agenda-card" data-course="data2"><b>大数据处理</b><small>教三 · 304　/　第 8–9 节</small></button></div><div class="mk-note">${icon('coffee')}12:15 — 14:00，给自己一段午休。</div></div>`;}
+ function discussion(s){const rooms=[['network','计算机网络','实验分组的同学们，我们在这里碰面。','10:06',2,'network'],['database','数据库原理','第三次作业的提交时间是周五。','昨天',0,'database'],['compiler','编译原理','这周一起讨论一下语法分析？','昨天',0,'compiler']];return `<div class="mk-page"><div class="mk-page-header"><div><h2 class="mk-page-title">课程讨论</h2><div class="mk-subtitle">同一间教室，也在这里相遇。</div></div><span class="mk-pill">第 4 周</span></div><div class="mk-tabline"><button aria-selected="true" data-action="rooms">我的课程</button><button aria-selected="false" data-action="profile">讨论身份</button></div>${rooms.map(([id,name,body,time,unread])=>{const c=s.courses.find(c=>c.id===id);return `<button class="mk-chat-room" data-room="${id}"><span class="mk-room-icon" style="${colorStyle(c.color)}">${icon(id==='network'?'network':id==='database'?'database':'code-xml')}</span><span class="mk-room-copy"><b>${name}</b><p>${body}</p></span><span class="mk-room-meta"><span>${time}</span>${unread?`<span class="mk-unread">${unread}</span>`:''}</span></button>`;}).join('')}<div class="mk-callout"><strong>从一门课，认识更多同学。</strong>课程讨论按教学班聚在一起。<br>这里只展示界面示例，消息不会发送到服务器。</div></div>`;}
+ function campus(s){return `<div class="mk-page"><div class="mk-page-header"><div><h2 class="mk-page-title">校园消息</h2><div class="mk-subtitle">把与你有关的消息，放在一起。</div></div><button class="mk-icon" data-action="refresh" aria-label="刷新新闻">${icon('rotate-cw')}</button></div><div class="mk-tabline"><button data-news="academic" aria-selected="${s.news==='academic'}">教务通知</button><button data-news="labor" aria-selected="${s.news==='labor'}">劳动教育</button></div>${s.news==='academic'?`<span class="mk-pill">最新动态 ${icon('chevron-down')}</span><button class="mk-news-item" data-article="教室开放安排"><div class="mk-news-meta"><span class="mk-news-label">教学服务</span><span>10 月 10 日</span></div><h3>秋季学期公共教室<br>开放安排通知</h3><p>东南大学教务处　${'·'}　查看原文</p></button><button class="mk-news-item" data-article="实践教学安排"><div class="mk-news-meta"><span>实践教学</span><span>10 月 9 日 · 示例</span></div><h3>关于本学期实验课程<br>与实践教学安排的通知</h3><p>东南大学教务处</p></button><button class="mk-news-item" data-article="选课安排"><div class="mk-news-meta"><span>选课信息</span><span>10 月 8 日 · 示例</span></div><h3>请查收你的新学期选课日历</h3><p>东南大学教务处</p></button>`:`<div class="mk-note">${icon('sliders-horizontal')}全部地点　·　仅看可选</div><button class="mk-news-item" data-article="校园植物养护"><div class="mk-news-meta"><span class="mk-news-label">可选 · 示例</span><span>九龙湖校区</span></div><h3>校园植物养护与实践</h3><p>10 月 17 日　09:00—11:00</p></button><button class="mk-news-item" data-article="图书整理"><div class="mk-news-meta"><span class="mk-news-label">可选 · 示例</span><span>四牌楼校区</span></div><h3>图书整理与空间维护</h3><p>10 月 18 日　14:00—16:00</p></button><div class="mk-actions"><button class="mk-secondary" data-action="labor">同步学校信息</button></div>`}</div>`;}
+ function mine(s){const rows=[['学期与作息','第 4 周 / 秋学期','calendar-range','settings'],['课程管理','10 项示例安排','notebook-pen','manage'],['导入与备份','本机课表','hard-drive','backup'],['外观','跟随系统','palette','appearance']];return `<div class="mk-page"><div class="mk-profile"><div class="mk-avatar">梅</div><div><h2 class="mk-page-title" style="font-size:22px">梅同学</h2><div class="mk-subtitle">在东南，认真过好每一天。</div></div></div><div class="mk-settings-group">${rows.map(([label,value,i,a])=>`<button class="mk-settings-row" data-action="${a}">${icon(i)}<span>${label}</span><small>${value}</small>${icon('chevron-right')}</button>`).join('')}</div><div class="mk-settings-group"><button class="mk-settings-row" data-action="profile">${icon('user-round')}讨论身份<small>头像与昵称</small>${icon('chevron-right')}</button><button class="mk-settings-row" data-action="about">${icon('flower')}关于梅课<small>MEIKE</small>${icon('chevron-right')}</button></div><div class="mk-brand-signature"><div class="mk-wordmark">${icon('flower')}梅课</div>每一课，都有新的生长。</div></div>`;}
+ function render(s){s.phone.innerHTML=`<div class="mk-status"><span>10:12</span><span class="mk-status-icons">${icon('signal')}${icon('wifi')}${icon('battery-full')}</span></div>${top(s)}<main class="mk-main">${[timetable,today,discussion,campus,mine][s.page](s)}</main><nav class="mk-nav" aria-label="主要页面">${names.map((n,i)=>`<button class="mk-nav-button" data-page="${i}" ${i===s.page?'aria-current="page"':''}>${icon(navIcons[i])}<span>${n}</span></button>`).join('')}</nav><div class="mk-home-bar" aria-hidden="true"></div><div class="mk-overlay" hidden></div><div class="mk-toast" role="status" hidden></div>`;icons();}
+ function toast(s,text){const el=s.phone.querySelector('.mk-toast');el.textContent=text;el.hidden=false;clearTimeout(s.toastTimer);s.toastTimer=setTimeout(()=>el.hidden=true,2600);}
+ function close(s){s.phone.querySelector('.mk-overlay').hidden=true;if(s.lastFocus?.isConnected)s.lastFocus.focus({preventScroll:true});}
+ function sheet(s,title,body){const overlay=s.phone.querySelector('.mk-overlay');if(overlay.hidden)s.lastFocus=document.activeElement;overlay.hidden=false;overlay.innerHTML=`<section class="mk-sheet" role="dialog" aria-modal="true" aria-label="${esc(title)}"><div class="mk-handle"></div><div class="mk-sheet-header"><h3>${esc(title)}</h3><button class="mk-icon" data-action="close" aria-label="关闭">${icon('x')}</button></div>${body}</section>`;icons();overlay.querySelector('[data-action="close"]').focus({preventScroll:true});}
+ function detail(s,id){const c=s.courses.find(x=>x.id===id);if(!c)return;sheet(s,c.name,`<span class="mk-pill" style="${colorStyle(c.color)};background:var(--mk-c-bg);color:var(--mk-c-ink)">${c.extra?'额外实验':'常规课程'}</span><dl class="mk-details"><dt>地点</dt><dd>${esc(c.room)}</dd><dt>时间</dt><dd>周${'一二三四五六日'[c.day-1]}　${clocks[c.from-1]}—${endClocks[c.to-1]}</dd><dt>周次</dt><dd>${c.extra?'第 4 周 · 单次安排':'第 1—16 周 · 每周'}</dd><dt>教师</dt><dd>示例教师</dd></dl><div class="mk-actions"><button class="mk-secondary" data-edit="${id}">编辑课程</button><button class="mk-primary" data-room="${id}">课程讨论</button></div>`);}
+ function editor(s,id){const old=s.courses.find(x=>x.id===id);s.editing=id;s.editColor=old?.color||'sage';sheet(s,old?'编辑课程':'添加课程',`<label class="mk-field">课程名称<input data-input="name" maxlength="30" value="${esc(old?.name||'')}" placeholder="例如：计算机网络"></label><label class="mk-field">上课地点<input data-input="room" maxlength="30" value="${esc(old?.room||'')}" placeholder="例如：教三 · 402"></label><div class="mk-field">课程颜色</div><div class="mk-swatches">${palette.map((c,i)=>`<button class="mk-swatch" style="${colorStyle(c)}" data-color="${c}" aria-label="${['青梅','银杏','湖蓝','梅灰','嫩叶'][i]}" aria-pressed="${c===s.editColor}"></button>`).join('')}</div><button class="mk-settings-row" data-action="meeting">${icon('calendar-days')}每周安排<small>${old?`周${'一二三四五六日'[old.day-1]} · ${old.from}—${old.to} 节`:'周六 · 第 6—7 节'}</small></button><div class="mk-note">${icon('info')}设计预览中的编辑只保留在当前画面。</div><div class="mk-actions"><button class="mk-secondary" data-action="close">取消</button><button class="mk-primary" data-action="save">保存</button></div>`);}
+ function room(s,id){const c=s.courses.find(c=>c.id===id);const name=c?.name||'课程讨论';s.roomId=id;sheet(s,name,`<div class="mk-note">${icon('users')}同一教学班 · 示例会话</div><div class="mk-chat-preview"><div class="mk-chat-name">林同学</div><div class="mk-bubble">这周实验的准备资料，大家都找到了吗？</div><div class="mk-bubble self">找到了，一起整理一下吧。</div><div class="mk-chat-name">林同学</div><div class="mk-bubble">好，我们下课后讨论。</div></div><div class="mk-composer"><input aria-label="本地预览消息" maxlength="100" placeholder="写下你的想法…"><button class="mk-primary" type="button" data-action="send-preview" aria-label="发送本地预览消息">${icon('arrow-up')}</button></div><div class="mk-note">仅本地预览，不向真实讨论室发送。</div>`);}
+ function manage(s){sheet(s,'课程管理',`<p>课程集中管理，周课表保持清爽。</p>${s.courses.slice(0,7).map(c=>`<button class="mk-settings-row" data-course="${c.id}"><span>${esc(c.name)}</span><small>周${'一二三四五六日'[c.day-1]}</small>${icon('chevron-right')}</button>`).join('')}<div class="mk-actions"><button class="mk-primary" data-action="add">添加课程</button></div>`);}
+ function action(s,a){
+  if(a==='send-preview'){const input=s.phone.querySelector('.mk-composer input');if(!input||!input.value.trim())return;const bubble=document.createElement('div');bubble.className='mk-bubble self';bubble.textContent=input.value.trim();s.phone.querySelector('.mk-chat-preview').appendChild(bubble);input.value='';toast(s,'消息只添加到当前预览');return;}
+  if(a==='close'){close(s);return;}if(a==='add'){editor(s);return;}if(a==='manage'){manage(s);return;}
+  if(a==='prev'||a==='next'){s.week=Math.min(20,Math.max(1,s.week+(a==='next'?1:-1)));render(s);return;}
+  if(a==='weeks'){sheet(s,'选择教学周',`<label class="mk-field">当前查看<select data-select="week">${Array.from({length:20},(_,i)=>`<option value="${i+1}" ${i+1===s.week?'selected':''}>第 ${i+1} 周${i===3?' · 示例当前周':''}</option>`).join('')}</select></label><div class="mk-actions"><button class="mk-primary" data-action="choose-week">查看课表</button></div>`);return;}
+  if(a==='choose-week'){s.week=Number(s.phone.querySelector('[data-select="week"]').value);render(s);return;}
+  if(a==='save'){const n=s.phone.querySelector('[data-input="name"]').value.trim(),r=s.phone.querySelector('[data-input="room"]').value.trim();if(!n){toast(s,'请填写课程名称');return;}const c=s.courses.find(x=>x.id===s.editing);if(c){Object.assign(c,{name:n,room:r||'教室待定',short:r||'待定',color:s.editColor});}else{s.courses.push({id:'new-'+Date.now(),name:n,room:r||'教室待定',short:r||'待定',color:s.editColor,day:6,from:6,to:7});}s.page=0;render(s);toast(s,'已保存到这份设计预览');return;}
+  if(a==='refresh'){toast(s,'已展示示例新闻');return;}
+  if(a==='appearance'){sheet(s,'外观',`<p>白天是温润的书页，夜晚是安静的深绿。</p><div class="mk-actions"><button class="mk-secondary" data-action="theme-light">浅色</button><button class="mk-secondary" data-action="theme-dark">深色</button><button class="mk-secondary" data-action="theme-system">系统</button></div><div class="mk-actions"><button class="mk-primary" data-action="close">完成</button></div>`);return;}
+  if(a.startsWith('theme-')){const theme=a.slice(6);s.phone.style.colorScheme=theme==='system'?'':theme;toast(s,theme==='system'?'已跟随系统外观':theme==='dark'?'已切换深色外观':'已切换浅色外观');return;}
+  if(a==='profile'){sheet(s,'讨论身份',`<label class="mk-field">昵称<input value="梅同学" aria-label="示例昵称"></label><p>一份身份用于所有课程讨论。此处为界面展示。</p><div class="mk-actions"><button class="mk-primary" data-action="close">完成</button></div>`);return;}
+  const descriptions={import:['导入学校课表','在学校网页完成登录，读取课表后先预览，再确认导入。该流程在这份设计预览中不连接学校系统。'],labor:['同步劳动教育','正式应用保留学校登录与同步流程。此处用于查看黄绿主题的界面风格。'],backup:['导入与备份','已有的本地导入、导出和数据恢复功能继续保留。'],settings:['学期与作息','在这里管理开学日期、教学周和每日节次。'],meeting:['课程安排','支持一周多次、单双周和额外实验。完整编辑流程沿用已有功能。'],about:['梅课','深绿的秩序、银杏黄的活力、梅花的轻巧。让每一课都有新的生长。'],rooms:['课程讨论','选择自己的课程，和同一个教学班的同学交流。']};
+  const d=descriptions[a];if(d)sheet(s,d[0],`<p>${d[1]}</p><div class="mk-actions"><button class="mk-primary" data-action="close">知道了</button></div>`);
+ }
+ ['book','garden'].forEach((look,i)=>{
+  const saved=savedPages()[i];
+  const s={phone:root.querySelector('#meike-'+look),look,page:Number.isInteger(saved)&&saved>=0&&saved<5?saved:0,week:4,news:'academic',courses:baseCourses.map(c=>({...c})),radius:look==='book'?7:5,green:'#24543C'};states.push(s);render(s);
+  s.phone.addEventListener('click',e=>{const btn=e.target.closest('button');if(!btn){if(e.target.classList.contains('mk-overlay'))close(s);return;}if(btn.dataset.page!==undefined){s.page=Number(btn.dataset.page);render(s);persist();}else if(btn.dataset.course){detail(s,btn.dataset.course);}else if(btn.dataset.edit){editor(s,btn.dataset.edit);}else if(btn.dataset.room){room(s,btn.dataset.room);}else if(btn.dataset.news){s.news=btn.dataset.news;render(s);}else if(btn.dataset.article){sheet(s,btn.dataset.article,'<p>通知正文在应用内打开。设计预览展示信息层级与阅读样式，实际内容以学校发布为准。</p><div class="mk-actions"><button class="mk-primary" data-action="close">返回列表</button></div>');}else if(btn.dataset.color){s.editColor=btn.dataset.color;s.phone.querySelectorAll('[data-color]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.color===s.editColor)));}else if(btn.dataset.action){action(s,btn.dataset.action);}});
+  s.phone.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches('.mk-composer input')){e.preventDefault();action(s,'send-preview');return;}const o=s.phone.querySelector('.mk-overlay');if(o.hidden)return;if(e.key==='Escape'){e.preventDefault();close(s);}if(e.key==='Tab'){const f=[...o.querySelectorAll('button,input,textarea,select')].filter(n=>!n.disabled);const first=f[0],last=f[f.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}});
+  if(globalThis.Tweak){const t=new Tweak({container:s.phone,onChange:()=>{s.phone.style.setProperty('--mk-course-radius',s.radius+'px');s.phone.style.setProperty('--mk-green',`light-dark(${s.green},#B9D49E)`);}});t.addSlider(s,'radius',{label:'课程卡片圆角',min:3,max:12,unit:'px'});t.addColorPicker(s,'green',{label:'深绿色',reference:'--mk-green'});}
+ });
+ window.addEventListener('openai:set_globals',e=>restore(e.detail?.globals?.widgetState));
+})();
+</script>

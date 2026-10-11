@@ -9,6 +9,7 @@ import 'package:seu_timetable/ui/today_page.dart';
 import 'package:seu_timetable/ui/appearance.dart';
 import 'package:seu_timetable/ui/theme.dart';
 import 'package:seu_timetable/ui/settings_page.dart';
+import 'package:seu_timetable/ui/timetable_page.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() {
@@ -89,6 +90,78 @@ void main() {
       Brightness.dark,
     );
     expect(find.text('体育馆2楼'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  testWidgets('银杏布局有品牌顶栏、独立周次面板和悬浮底栏；青梅不变', (tester) async {
+    final appearance = AppearanceController(File('${dir.path}/appearance.txt'));
+    await tester.runAsync(() async {
+      await appearance.setTheme(MeikeTheme.ginkgo);
+      await appearance.setMode(ThemeMode.light);
+    });
+    appearance.dispose();
+    tester.view.padding = const FakeViewPadding(top: 47, bottom: 34);
+    addTearDown(tester.view.resetPadding);
+    await screen(tester);
+    expect(find.byKey(const ValueKey('ginkgo-brand-header')), findsOneWidget);
+    expect(find.byKey(const ValueKey('ginkgo-calendar-panel')), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('ginkgo-floating-navigation')),
+      findsOneWidget,
+    );
+    expect(find.text('MEIKE · SOUTHEAST'), findsOneWidget);
+    expect(
+      tester
+          .widget<ColoredBox>(
+            find
+                .descendant(
+                  of: find.byType(TimetablePage),
+                  matching: find.byType(ColoredBox),
+                )
+                .first,
+          )
+          .color,
+      MeikeColors.ginkgoLight.paper,
+    );
+    final panel = tester.getRect(
+      find
+          .descendant(
+            of: find.byKey(const ValueKey('ginkgo-calendar-panel')),
+            matching: find.byType(DecoratedBox),
+          )
+          .first,
+    );
+    final header = tester.getRect(
+      find.byKey(const ValueKey('ginkgo-brand-header')),
+    );
+    expect(panel.top, greaterThan(header.bottom));
+    expect(panel.left, greaterThan(header.left));
+    expect(tester.getRect(find.byTooltip('选择教学周')).top, greaterThan(panel.top));
+    expect(tester.getRect(find.byTooltip('添加课程')).bottom, lessThan(panel.top));
+    expect(
+      tester.getRect(find.text('13')).bottom,
+      lessThan(tester.getRect(find.byType(NavigationBar)).top),
+    );
+    expect(
+      find.descendant(
+        of: find.widgetWithText(NavigationDestination, '校园'),
+        matching: find.byType(CampusIcon),
+      ),
+      findsWidgets,
+    );
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox());
+    await tester.runAsync(() async {
+      final restored = AppearanceController(File('${dir.path}/appearance.txt'));
+      await restored.load();
+      await restored.setTheme(MeikeTheme.plum);
+      restored.dispose();
+    });
+    await screen(tester);
+    expect(find.byKey(const ValueKey('ginkgo-calendar-panel')), findsNothing);
+    expect(find.text('MEIKE · SOUTHEAST'), findsNothing);
+    expect(find.text('周日'), findsOneWidget);
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox());
   });

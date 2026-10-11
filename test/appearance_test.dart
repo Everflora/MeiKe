@@ -89,6 +89,7 @@ void main() {
                 for (final pair in [
                   (p.ink, p.paper),
                   (p.muted, p.surface),
+                  (p.goldInk, p.goldSoft),
                   (p.onHero, p.hero),
                   (p.onHero, p.heroEnd),
                   (p.heroAccent, p.hero),
