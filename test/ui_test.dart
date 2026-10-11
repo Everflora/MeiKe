@@ -10,6 +10,7 @@ import 'package:seu_timetable/ui/appearance.dart';
 import 'package:seu_timetable/ui/theme.dart';
 import 'package:seu_timetable/ui/settings_page.dart';
 import 'package:seu_timetable/ui/timetable_page.dart';
+import 'package:seu_timetable/data/jwc_news.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() {
@@ -188,6 +189,74 @@ void main() {
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox());
+  });
+
+  testWidgets('教务栏目首次进入、选择及失去焦点后始终显示绿色边框', (tester) async {
+    for (final theme in MeikeTheme.values) {
+      final appearance = AppearanceController(
+        File('${dir.path}/appearance.txt'),
+      );
+      await tester.runAsync(() async {
+        await appearance.setTheme(theme);
+      });
+      appearance.dispose();
+      await screen(tester);
+      await tester.runAsync(() async {
+        await tester.tap(find.widgetWithText(NavigationDestination, '校园'));
+        await tester.pump();
+        await tester.tap(find.widgetWithText(ChoiceChip, '教务通知'));
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+      });
+      await tester.pumpAndSettle();
+
+      InputDecorator selector() => tester.widget<InputDecorator>(
+        find.descendant(
+          of: find.byType(DropdownButtonFormField<JwcSection>),
+          matching: find.byType(InputDecorator),
+        ),
+      );
+      void checkBorder() {
+        final decorator = selector();
+        final enabled = decorator.decoration.enabledBorder!;
+        final focused = decorator.decoration.focusedBorder!;
+        expect(enabled.borderSide.style, BorderStyle.solid);
+        expect(enabled.borderSide.width, greaterThan(0));
+        expect(enabled, focused);
+        expect(
+          enabled.borderSide.color,
+          tester
+              .element(find.byType(DropdownButtonFormField<JwcSection>))
+              .meike
+              .green,
+        );
+        expect(tester.takeException(), isNull);
+      }
+
+      expect(selector().isFocused, isFalse);
+      checkBorder();
+      await tester.runAsync(() async {
+        await tester.tap(find.byType(DropdownButtonFormField<JwcSection>));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('实践教学').last);
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+      });
+      await tester.pumpAndSettle();
+      expect(
+        tester
+            .widget<DropdownButtonFormField<JwcSection>>(
+              find.byType(DropdownButtonFormField<JwcSection>),
+            )
+            .initialValue,
+        JwcSection.practice,
+      );
+      checkBorder();
+      await tester.tap(find.byType(TextField));
+      await tester.pumpAndSettle();
+      expect(selector().isFocused, isFalse);
+      checkBorder();
+      FocusManager.instance.primaryFocus?.unfocus();
+      await tester.pumpWidget(const SizedBox());
+    }
   });
   testWidgets('五项导航，课表与我的都可进入课程管理并返回', (tester) async {
     await screen(tester);
