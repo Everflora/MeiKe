@@ -49,7 +49,33 @@ class _StickerPanelState extends State<StickerPanel> {
       error = null;
     });
     try {
-      final file = await FilePicker.pickFile(type: FileType.image);
+      final fromFiles = await showModalBottomSheet<bool>(
+        context: context,
+        builder: (ctx) => SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.photo_library_outlined),
+                title: const Text('从相册添加'),
+                onTap: () => Navigator.pop(ctx, false),
+              ),
+              ListTile(
+                leading: const Icon(Icons.folder_open_outlined),
+                title: const Text('从文件添加图片 / GIF'),
+                onTap: () => Navigator.pop(ctx, true),
+              ),
+            ],
+          ),
+        ),
+      );
+      if (fromFiles == null) return;
+      final file = await FilePicker.pickFile(
+        type: fromFiles ? FileType.custom : FileType.image,
+        allowedExtensions: fromFiles
+            ? ['gif', 'png', 'jpg', 'jpeg', 'webp']
+            : null,
+      );
       if (file == null) return;
       final buffer = BytesBuilder(copy: false);
       await for (final chunk in file.readAsByteStream()) {

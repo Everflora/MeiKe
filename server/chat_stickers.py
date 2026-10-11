@@ -38,7 +38,7 @@ def route(db, user, method, path, body, error):
                     raise error(400, '消息标识无效。')
                 source = db.execute('''SELECT a.data,a.mime,m.media_width,m.media_height
                     FROM message_media a JOIN messages m ON m.id=a.message_id
-                    WHERE m.id=? AND m.recalled=0''', (mid,)).fetchone()
+                    WHERE m.id=? AND m.recalled=0 AND m.kind IN ('image','sticker')''', (mid,)).fetchone()
                 if not source:
                     raise error(404, '图片不存在或消息已撤回。')
                 data, mime, width, height = source
