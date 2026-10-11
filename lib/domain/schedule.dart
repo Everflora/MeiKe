@@ -757,6 +757,7 @@ class TimelineLayout {
     List<LessonPeriod> periods, {
     List<Occurrence> occurrences = const [],
     double? fittingHeight,
+    bool compact = false,
   }) {
     final timed = occurrences.where((e) => !e.allDay);
     var cursor = periods.first.startMinute;
@@ -769,17 +770,28 @@ class TimelineLayout {
     final result = <TimelineSegment>[];
     for (final p in periods) {
       if (p.startMinute > cursor) {
-        final h = p.startMinute - cursor > 20 ? 38.0 : 22.0;
+        final gap = p.startMinute - cursor;
+        final h = compact
+            ? (gap > 20
+                  ? 18.0
+                  : gap >= 15
+                  ? 8.0
+                  : 4.0)
+            : (gap > 20 ? 38.0 : 22.0);
         result.add(TimelineSegment(cursor, p.startMinute, null, y, h));
         y += h;
       }
-      result.add(TimelineSegment(p.startMinute, p.endMinute, p.id, y, 68));
-      y += 68;
+      final lessonHeight = compact ? 52.0 : 68.0;
+      result.add(
+        TimelineSegment(p.startMinute, p.endMinute, p.id, y, lessonHeight),
+      );
+      y += lessonHeight;
       cursor = p.endMinute;
     }
     if (cursor < upper) {
-      result.add(TimelineSegment(cursor, upper, null, y, 68));
-      y += 68;
+      final extraHeight = compact ? 52.0 : 68.0;
+      result.add(TimelineSegment(cursor, upper, null, y, extraHeight));
+      y += extraHeight;
     }
     final scale = fittingHeight == null
         ? 1.0

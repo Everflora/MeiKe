@@ -1,9 +1,9 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../domain/schedule.dart';
+import 'appearance.dart';
+import 'brand_wordmark.dart';
 
 const accent = Color(0xFF24543C);
 const canvas = Color(0xFFF7F7F0);
@@ -23,8 +23,15 @@ class MeikeColors extends ThemeExtension<MeikeColors> {
     required this.soft,
     required this.goldSoft,
     required this.goldInk,
+    this.design = MeikeTheme.plum,
+    this.hero = heroGreen,
+    this.heroEnd = const Color(0xFF173E2B),
+    this.onHero = const Color(0xFFFCFCED),
+    this.heroAccent = gingko,
   });
   final Color paper, surface, ink, muted, line, green, soft, goldSoft, goldInk;
+  final MeikeTheme design;
+  final Color hero, heroEnd, onHero, heroAccent;
   static const light = MeikeColors(
     paper: canvas,
     surface: Color(0xFFFFFFFF),
@@ -47,6 +54,30 @@ class MeikeColors extends ThemeExtension<MeikeColors> {
     goldSoft: Color(0xFF4A4127),
     goldInk: Color(0xFFEDDBA2),
   );
+  static const ginkgoLight = MeikeColors(
+    design: MeikeTheme.ginkgo,
+    paper: Color(0xFFECEFE5),
+    surface: Colors.white,
+    ink: Color(0xFF24382E),
+    muted: Color(0xFF687369),
+    line: Color(0xFFE2E6DC),
+    green: accent,
+    soft: Color(0xFFECF0E4),
+    goldSoft: Color(0xFFF2E8BD),
+    goldInk: Color(0xFF685418),
+  );
+  static const ginkgoDark = MeikeColors(
+    design: MeikeTheme.ginkgo,
+    paper: Color(0xFF142119),
+    surface: Color(0xFF1B2B22),
+    ink: Color(0xFFEDF2E8),
+    muted: Color(0xFFABB8AA),
+    line: Color(0xFF314438),
+    green: Color(0xFFB9D49E),
+    soft: Color(0xFF283C2C),
+    goldSoft: Color(0xFF4A4127),
+    goldInk: Color(0xFFEDDBA2),
+  );
   @override
   MeikeColors copyWith({
     Color? paper,
@@ -58,6 +89,11 @@ class MeikeColors extends ThemeExtension<MeikeColors> {
     Color? soft,
     Color? goldSoft,
     Color? goldInk,
+    MeikeTheme? design,
+    Color? hero,
+    Color? heroEnd,
+    Color? onHero,
+    Color? heroAccent,
   }) => MeikeColors(
     paper: paper ?? this.paper,
     surface: surface ?? this.surface,
@@ -68,6 +104,11 @@ class MeikeColors extends ThemeExtension<MeikeColors> {
     soft: soft ?? this.soft,
     goldSoft: goldSoft ?? this.goldSoft,
     goldInk: goldInk ?? this.goldInk,
+    design: design ?? this.design,
+    hero: hero ?? this.hero,
+    heroEnd: heroEnd ?? this.heroEnd,
+    onHero: onHero ?? this.onHero,
+    heroAccent: heroAccent ?? this.heroAccent,
   );
   @override
   MeikeColors lerp(covariant MeikeColors? other, double t) {
@@ -82,6 +123,11 @@ class MeikeColors extends ThemeExtension<MeikeColors> {
       soft: Color.lerp(soft, other.soft, t)!,
       goldSoft: Color.lerp(goldSoft, other.goldSoft, t)!,
       goldInk: Color.lerp(goldInk, other.goldInk, t)!,
+      design: t < .5 ? design : other.design,
+      hero: Color.lerp(hero, other.hero, t)!,
+      heroEnd: Color.lerp(heroEnd, other.heroEnd, t)!,
+      onHero: Color.lerp(onHero, other.onHero, t)!,
+      heroAccent: Color.lerp(heroAccent, other.heroAccent, t)!,
     );
   }
 }
@@ -94,13 +140,18 @@ extension MeikeContext on BuildContext {
           : MeikeColors.light);
 }
 
-ThemeData meikeTheme(Brightness brightness) {
+ThemeData meikeTheme(
+  Brightness brightness, [
+  MeikeTheme design = MeikeTheme.plum,
+]) {
   final dark = brightness == Brightness.dark;
-  final p = dark ? MeikeColors.dark : MeikeColors.light;
-  final scheme = ColorScheme.fromSeed(seedColor: accent, brightness: brightness)
-      .copyWith(
+  final p = design == MeikeTheme.ginkgo
+      ? (dark ? MeikeColors.ginkgoDark : MeikeColors.ginkgoLight)
+      : (dark ? MeikeColors.dark : MeikeColors.light);
+  final scheme =
+      ColorScheme.fromSeed(seedColor: p.green, brightness: brightness).copyWith(
         primary: p.green,
-        onPrimary: dark ? heroGreen : Colors.white,
+        onPrimary: dark ? p.paper : Colors.white,
         primaryContainer: p.soft,
         onPrimaryContainer: p.ink,
         secondary: p.goldInk,
@@ -309,26 +360,44 @@ class _PlumPainter extends CustomPainter {
     final paint = Paint()
       ..color = color
       ..style = PaintingStyle.stroke
-      ..strokeWidth = size.width * .052;
-    canvas.translate(size.width / 2, size.height / 2);
-    for (var i = 0; i < 5; i++) {
-      canvas.save();
-      canvas.rotate(i * math.pi * 2 / 5);
-      canvas.drawOval(
-        Rect.fromCenter(
-          center: Offset(0, -size.height * .25),
-          width: size.width * .32,
-          height: size.height * .37,
-        ),
-        paint,
+      ..strokeWidth = 1.4
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
+    canvas.scale(size.width / 24);
+    // Same Lucide Flower contour and stamens used by the design preview.
+    final petals = Path()..moveTo(12, 16.5);
+    for (final end in const [
+      Offset(7.5, 12),
+      Offset(12, 7.5),
+      Offset(16.5, 12),
+      Offset(12, 16.5),
+    ]) {
+      petals.arcToPoint(
+        end,
+        radius: const Radius.circular(4.5),
+        largeArc: true,
       );
-      canvas.restore();
     }
-    canvas.drawCircle(
-      Offset.zero,
-      size.width * .085,
-      paint..style = PaintingStyle.fill,
-    );
+    canvas.drawPath(petals, paint);
+    canvas.drawCircle(const Offset(12, 12), 3, paint);
+    final stamens = Path()
+      ..moveTo(12, 7.5)
+      ..lineTo(12, 9)
+      ..moveTo(7.5, 12)
+      ..lineTo(9, 12)
+      ..moveTo(16.5, 12)
+      ..lineTo(15, 12)
+      ..moveTo(12, 16.5)
+      ..lineTo(12, 15)
+      ..moveTo(8, 8)
+      ..lineTo(9.88, 9.88)
+      ..moveTo(14.12, 9.88)
+      ..lineTo(16, 8)
+      ..moveTo(8, 16)
+      ..lineTo(9.88, 14.12)
+      ..moveTo(14.12, 14.12)
+      ..lineTo(16, 16);
+    canvas.drawPath(stamens, paint);
   }
 
   @override
@@ -353,24 +422,19 @@ class BrandHeader extends StatelessWidget {
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            const PlumMark(size: 18),
-            const SizedBox(width: 7),
-            Text(
-              '梅课',
-              style: TextStyle(
-                fontFamily: 'Songti SC',
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: context.meike.green,
-              ),
-            ),
-            const Spacer(),
-            ?trailing,
-          ],
-        ),
-        const SizedBox(height: 15),
+        if (context.meike.design != MeikeTheme.ginkgo) ...[
+          Row(
+            children: [
+              const PlumMark(size: 20),
+              const SizedBox(width: 7),
+              MeikeWordmark(color: context.meike.green),
+              const Spacer(),
+              ?trailing,
+            ],
+          ),
+          const SizedBox(height: 15),
+        ] else if (trailing != null)
+          Align(alignment: Alignment.centerRight, child: trailing),
         Text(title, style: Theme.of(context).textTheme.headlineMedium),
         if (subtitle != null) ...[
           const SizedBox(height: 5),
@@ -553,4 +617,56 @@ class EmptySchedule extends StatelessWidget {
       ],
     ),
   );
+}
+
+/// Outline newspaper mark matching the campus icon in the design reference.
+class CampusIcon extends StatelessWidget {
+  const CampusIcon({super.key});
+  @override
+  Widget build(BuildContext context) => CustomPaint(
+    size: const Size.square(22),
+    painter: _CampusPainter(IconTheme.of(context).color ?? context.meike.green),
+  );
+}
+
+class _CampusPainter extends CustomPainter {
+  const _CampusPainter(this.color);
+  final Color color;
+  @override
+  void paint(Canvas canvas, Size size) {
+    canvas.scale(size.width / 24, size.height / 24);
+    final pen = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.7
+      ..strokeJoin = StrokeJoin.round
+      ..strokeCap = StrokeCap.round;
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        const Rect.fromLTWH(6, 2, 15, 20),
+        const Radius.circular(2),
+      ),
+      pen,
+    );
+    canvas.drawPath(
+      Path()
+        ..moveTo(6, 6)
+        ..lineTo(3, 6)
+        ..lineTo(3, 19)
+        ..quadraticBezierTo(3, 22, 6, 22),
+      pen,
+    );
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        const Rect.fromLTWH(10, 6, 7, 5),
+        const Radius.circular(1),
+      ),
+      pen,
+    );
+    canvas.drawLine(const Offset(10, 15), const Offset(17, 15), pen);
+    canvas.drawLine(const Offset(10, 18), const Offset(16, 18), pen);
+  }
+
+  @override
+  bool shouldRepaint(covariant _CampusPainter old) => old.color != color;
 }

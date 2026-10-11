@@ -22,9 +22,11 @@ class _JwcSectionsState extends State<JwcNewsPanel> {
         child: DropdownButtonFormField<JwcSection>(
           initialValue: selected,
           isExpanded: true,
-          decoration: const InputDecoration(
+          decoration: InputDecoration(
             labelText: '教务处栏目',
-            border: OutlineInputBorder(),
+            border: _sectionBorder(context),
+            enabledBorder: _sectionBorder(context),
+            focusedBorder: _sectionBorder(context),
           ),
           items: [
             for (final section in JwcSection.values)
@@ -56,6 +58,11 @@ class _JwcSectionsState extends State<JwcNewsPanel> {
         ),
       ),
     ],
+  );
+
+  OutlineInputBorder _sectionBorder(BuildContext context) => OutlineInputBorder(
+    borderRadius: BorderRadius.circular(12),
+    borderSide: BorderSide(color: context.meike.green, width: 1.2),
   );
 }
 

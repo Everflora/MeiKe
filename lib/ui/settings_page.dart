@@ -141,8 +141,39 @@ class _SettingsPageState extends State<SettingsPage> {
                 contentPadding: EdgeInsets.zero,
                 leading: const Icon(Icons.palette_outlined),
                 title: const Text('主题'),
+                trailing: PopupMenuButton<MeikeTheme>(
+                  tooltip: '选择主题',
+                  initialValue: widget.appearance!.theme,
+                  onSelected: (theme) async {
+                    try {
+                      await widget.appearance!.setTheme(theme);
+                    } catch (e) {
+                      if (context.mounted) await showError(context, e);
+                    }
+                  },
+                  itemBuilder: (_) => [
+                    for (final theme in MeikeTheme.values)
+                      PopupMenuItem(value: theme, child: Text(theme.label)),
+                  ],
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 12,
+                    ),
+                    child: Text(
+                      widget.appearance!.theme.label,
+                      style: TextStyle(color: context.meike.green),
+                    ),
+                  ),
+                ),
+              ),
+              const Divider(),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.brightness_6_outlined),
+                title: const Text('显示模式'),
                 trailing: PopupMenuButton<ThemeMode>(
-                  tooltip: '切换外观',
+                  tooltip: '选择显示模式',
                   initialValue: widget.appearance!.mode,
                   onSelected: (mode) async {
                     try {
@@ -203,7 +234,7 @@ class _SettingsPageState extends State<SettingsPage> {
           ],
         ),
         Text(
-          '梅课 1.3.0 · SEU 校园课表',
+          '梅课 1.3.1 · SEU 校园课表',
           style: Theme.of(context).textTheme.bodySmall,
           textAlign: TextAlign.center,
         ),

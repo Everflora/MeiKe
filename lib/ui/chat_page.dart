@@ -452,7 +452,7 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                 ? chatImage(item)
                 : DecoratedBox(
                     decoration: BoxDecoration(
-                      color: mine ? heroGreen : context.meike.surface,
+                      color: mine ? context.meike.hero : context.meike.surface,
                       borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(mine ? 16 : 5),
                         topRight: Radius.circular(mine ? 5 : 16),
@@ -471,7 +471,7 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                           fontSize: 15,
                           height: 1.5,
                           color: mine
-                              ? const Color(0xFFFCFCED)
+                              ? context.meike.onHero
                               : Theme.of(context).colorScheme.onSurface,
                         ),
                       ),

@@ -6,6 +6,11 @@ import 'package:seu_timetable/app.dart';
 import 'package:seu_timetable/data/schedule_store.dart';
 import 'package:seu_timetable/domain/schedule.dart';
 import 'package:seu_timetable/ui/today_page.dart';
+import 'package:seu_timetable/ui/appearance.dart';
+import 'package:seu_timetable/ui/theme.dart';
+import 'package:seu_timetable/ui/settings_page.dart';
+import 'package:seu_timetable/ui/timetable_page.dart';
+import 'package:seu_timetable/data/jwc_news.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() {
@@ -33,9 +38,134 @@ void main() {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
-    await tester.pumpWidget(SeuTimetableApp(store: store));
+    // File I/O completes on the real clock, outside the widget fake clock.
+    await tester.runAsync(() async {
+      await tester.pumpWidget(SeuTimetableApp(store: store));
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+    });
     await tester.pumpAndSettle();
   }
+
+  testWidgets('主题与显示模式分两行，银杏切换全局并在重启后保留', (tester) async {
+    await screen(tester);
+    await tester.tap(find.widgetWithText(NavigationDestination, '我的'));
+    await tester.pumpAndSettle();
+    await tester.runAsync(() async {
+      await tester.ensureVisible(find.byTooltip('选择主题'));
+      await tester.tap(find.byTooltip('选择主题'));
+      await tester.pumpAndSettle();
+      expect(find.text('银杏'), findsOneWidget);
+      expect(find.text('浅色'), findsNothing);
+      await tester.tap(find.text('银杏'));
+      await tester.pumpAndSettle();
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+      await tester.pumpAndSettle();
+    });
+    await tester.pumpAndSettle();
+    expect(
+      tester.widget<SettingsPage>(find.byType(SettingsPage)).appearance!.theme,
+      MeikeTheme.ginkgo,
+    );
+    final settingsContext = tester.element(find.text('显示模式'));
+    expect(settingsContext.meike.design, MeikeTheme.ginkgo);
+    await tester.runAsync(() async {
+      await tester.ensureVisible(find.byTooltip('选择显示模式'));
+      await tester.tap(find.byTooltip('选择显示模式'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('深色'));
+      await tester.pumpAndSettle();
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+      await tester.pumpAndSettle();
+    });
+    await tester.pumpAndSettle();
+    expect(
+      Theme.of(tester.element(find.text('显示模式'))).brightness,
+      Brightness.dark,
+    );
+    expect(tester.element(find.text('显示模式')).meike.design, MeikeTheme.ginkgo);
+    await tester.pumpWidget(const SizedBox());
+    await screen(tester, width: 320, height: 568);
+    expect(tester.element(find.text('体育')).meike.design, MeikeTheme.ginkgo);
+    expect(
+      Theme.of(tester.element(find.text('体育'))).brightness,
+      Brightness.dark,
+    );
+    expect(find.text('体育馆2楼'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  testWidgets('银杏布局有品牌顶栏、独立周次面板和悬浮底栏；青梅不变', (tester) async {
+    final appearance = AppearanceController(File('${dir.path}/appearance.txt'));
+    await tester.runAsync(() async {
+      await appearance.setTheme(MeikeTheme.ginkgo);
+      await appearance.setMode(ThemeMode.light);
+    });
+    appearance.dispose();
+    tester.view.padding = const FakeViewPadding(top: 47, bottom: 34);
+    addTearDown(tester.view.resetPadding);
+    await screen(tester);
+    expect(find.byKey(const ValueKey('ginkgo-brand-header')), findsOneWidget);
+    expect(find.byKey(const ValueKey('ginkgo-calendar-panel')), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('ginkgo-floating-navigation')),
+      findsOneWidget,
+    );
+    expect(find.text('MEIKE · SOUTHEAST'), findsOneWidget);
+    expect(
+      tester
+          .widget<ColoredBox>(
+            find
+                .descendant(
+                  of: find.byType(TimetablePage),
+                  matching: find.byType(ColoredBox),
+                )
+                .first,
+          )
+          .color,
+      MeikeColors.ginkgoLight.paper,
+    );
+    final panel = tester.getRect(
+      find
+          .descendant(
+            of: find.byKey(const ValueKey('ginkgo-calendar-panel')),
+            matching: find.byType(DecoratedBox),
+          )
+          .first,
+    );
+    final header = tester.getRect(
+      find.byKey(const ValueKey('ginkgo-brand-header')),
+    );
+    expect(panel.top, greaterThan(header.bottom));
+    expect(panel.left, greaterThan(header.left));
+    expect(tester.getRect(find.byTooltip('选择教学周')).top, greaterThan(panel.top));
+    expect(tester.getRect(find.byTooltip('添加课程')).bottom, lessThan(panel.top));
+    expect(
+      tester.getRect(find.text('13')).bottom,
+      lessThan(tester.getRect(find.byType(NavigationBar)).top),
+    );
+    expect(
+      find.descendant(
+        of: find.widgetWithText(NavigationDestination, '校园'),
+        matching: find.byType(CampusIcon),
+      ),
+      findsWidgets,
+    );
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox());
+    await tester.runAsync(() async {
+      final restored = AppearanceController(File('${dir.path}/appearance.txt'));
+      await restored.load();
+      await restored.setTheme(MeikeTheme.plum);
+      restored.dispose();
+    });
+    await screen(tester);
+    expect(find.byKey(const ValueKey('ginkgo-calendar-panel')), findsNothing);
+    expect(find.text('MEIKE · SOUTHEAST'), findsNothing);
+    expect(find.text('周日'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox());
+  });
 
   testWidgets('七天13节首屏、单节体育地点、无本周和放大按钮', (tester) async {
     await screen(tester);
@@ -59,6 +189,74 @@ void main() {
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox());
+  });
+
+  testWidgets('教务栏目首次进入、选择及失去焦点后始终显示绿色边框', (tester) async {
+    for (final theme in MeikeTheme.values) {
+      final appearance = AppearanceController(
+        File('${dir.path}/appearance.txt'),
+      );
+      await tester.runAsync(() async {
+        await appearance.setTheme(theme);
+      });
+      appearance.dispose();
+      await screen(tester);
+      await tester.runAsync(() async {
+        await tester.tap(find.widgetWithText(NavigationDestination, '校园'));
+        await tester.pump();
+        await tester.tap(find.widgetWithText(ChoiceChip, '教务通知'));
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+      });
+      await tester.pumpAndSettle();
+
+      InputDecorator selector() => tester.widget<InputDecorator>(
+        find.descendant(
+          of: find.byType(DropdownButtonFormField<JwcSection>),
+          matching: find.byType(InputDecorator),
+        ),
+      );
+      void checkBorder() {
+        final decorator = selector();
+        final enabled = decorator.decoration.enabledBorder!;
+        final focused = decorator.decoration.focusedBorder!;
+        expect(enabled.borderSide.style, BorderStyle.solid);
+        expect(enabled.borderSide.width, greaterThan(0));
+        expect(enabled, focused);
+        expect(
+          enabled.borderSide.color,
+          tester
+              .element(find.byType(DropdownButtonFormField<JwcSection>))
+              .meike
+              .green,
+        );
+        expect(tester.takeException(), isNull);
+      }
+
+      expect(selector().isFocused, isFalse);
+      checkBorder();
+      await tester.runAsync(() async {
+        await tester.tap(find.byType(DropdownButtonFormField<JwcSection>));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('实践教学').last);
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+      });
+      await tester.pumpAndSettle();
+      expect(
+        tester
+            .widget<DropdownButtonFormField<JwcSection>>(
+              find.byType(DropdownButtonFormField<JwcSection>),
+            )
+            .initialValue,
+        JwcSection.practice,
+      );
+      checkBorder();
+      await tester.tap(find.byType(TextField));
+      await tester.pumpAndSettle();
+      expect(selector().isFocused, isFalse);
+      checkBorder();
+      FocusManager.instance.primaryFocus?.unfocus();
+      await tester.pumpWidget(const SizedBox());
+    }
   });
   testWidgets('五项导航，课表与我的都可进入课程管理并返回', (tester) async {
     await screen(tester);
