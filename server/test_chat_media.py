@@ -16,6 +16,12 @@ def gif_image(frames=1):
             + b'\x2c\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02\x44\x01\x00' * frames + b'\x3b')
 
 
+def large_gif():
+    original = gif_image(2)
+    comments = b'\x21\xfe' + (b'\xff' + b'x' * 255) * (4 * 1024 * 1024 // 256) + b'\x00'
+    return original[:-1] + comments + original[-1:]
+
+
 def encoded(data):
     return base64.b64encode(data).decode()
 
@@ -34,6 +40,18 @@ class MediaValidationTests(unittest.TestCase):
     def test_png_and_animated_gif(self):
         self.assertEqual(parse(encoded(png_avatar()))[1:], (128, 128, 'image/png'))
         self.assertEqual(parse(encoded(gif_image(2)))[1:], (1, 1, 'image/gif'))
+
+    def test_large_gif_limit_and_static_png_limit_are_separate(self):
+        large = large_gif()
+        self.assertGreater(len(large), MAX_BYTES)
+        self.assertEqual(parse(encoded(large)), (large, 1, 1, 'image/gif'))
+        from unittest.mock import patch
+        with patch('chat_media.MAX_GIF_BYTES', len(large) - 1):
+            with self.assertRaises(MediaError):
+                parse(encoded(large))
+        with patch('chat_media.MAX_BYTES', len(png_avatar()) - 1):
+            with self.assertRaises(MediaError):
+                parse(encoded(png_avatar()))
 
     def test_size_corruption_truncation_and_dimensions(self):
         bad_png = bytearray(png_avatar())

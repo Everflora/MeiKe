@@ -3,7 +3,7 @@ import 'dart:ui' as ui;
 
 import 'avatar_png.dart';
 
-const maxChatImageBytes = 3 * 1024 * 1024;
+const maxChatGifBytes = 10 * 1024 * 1024;
 
 /// Photos are scaled without cropping; GIF bytes are kept to preserve animation.
 Future<Uint8List> prepareChatImage(Uint8List source) async {
@@ -15,8 +15,11 @@ Future<Uint8List> prepareChatImage(Uint8List source) async {
       (String.fromCharCodes(source.sublist(0, 6)) == 'GIF89a' ||
           String.fromCharCodes(source.sublist(0, 6)) == 'GIF87a');
   if (gif) {
-    if (source.length > maxChatImageBytes || source.length < 13) {
-      throw const FormatException('GIF 表情包不能超过 3 MB。');
+    if (source.length > maxChatGifBytes) {
+      throw const FormatException('GIF 表情包不能超过 10 MB。');
+    }
+    if (source.length < 13) {
+      throw const FormatException('GIF 数据不完整。');
     }
     final header = ByteData.sublistView(source);
     final width = header.getUint16(6, Endian.little);
