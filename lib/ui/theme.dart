@@ -1,10 +1,9 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../domain/schedule.dart';
 import 'appearance.dart';
+import 'brand_wordmark.dart';
 
 const accent = Color(0xFF24543C);
 const canvas = Color(0xFFF7F7F0);
@@ -361,26 +360,44 @@ class _PlumPainter extends CustomPainter {
     final paint = Paint()
       ..color = color
       ..style = PaintingStyle.stroke
-      ..strokeWidth = size.width * .052;
-    canvas.translate(size.width / 2, size.height / 2);
-    for (var i = 0; i < 5; i++) {
-      canvas.save();
-      canvas.rotate(i * math.pi * 2 / 5);
-      canvas.drawOval(
-        Rect.fromCenter(
-          center: Offset(0, -size.height * .25),
-          width: size.width * .32,
-          height: size.height * .37,
-        ),
-        paint,
+      ..strokeWidth = 1.4
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
+    canvas.scale(size.width / 24);
+    // Same Lucide Flower contour and stamens used by the design preview.
+    final petals = Path()..moveTo(12, 16.5);
+    for (final end in const [
+      Offset(7.5, 12),
+      Offset(12, 7.5),
+      Offset(16.5, 12),
+      Offset(12, 16.5),
+    ]) {
+      petals.arcToPoint(
+        end,
+        radius: const Radius.circular(4.5),
+        largeArc: true,
       );
-      canvas.restore();
     }
-    canvas.drawCircle(
-      Offset.zero,
-      size.width * .085,
-      paint..style = PaintingStyle.fill,
-    );
+    canvas.drawPath(petals, paint);
+    canvas.drawCircle(const Offset(12, 12), 3, paint);
+    final stamens = Path()
+      ..moveTo(12, 7.5)
+      ..lineTo(12, 9)
+      ..moveTo(7.5, 12)
+      ..lineTo(9, 12)
+      ..moveTo(16.5, 12)
+      ..lineTo(15, 12)
+      ..moveTo(12, 16.5)
+      ..lineTo(12, 15)
+      ..moveTo(8, 8)
+      ..lineTo(9.88, 9.88)
+      ..moveTo(14.12, 9.88)
+      ..lineTo(16, 8)
+      ..moveTo(8, 16)
+      ..lineTo(9.88, 14.12)
+      ..moveTo(14.12, 14.12)
+      ..lineTo(16, 16);
+    canvas.drawPath(stamens, paint);
   }
 
   @override
@@ -408,17 +425,9 @@ class BrandHeader extends StatelessWidget {
         if (context.meike.design != MeikeTheme.ginkgo) ...[
           Row(
             children: [
-              const PlumMark(size: 18),
+              const PlumMark(size: 20),
               const SizedBox(width: 7),
-              Text(
-                '梅课',
-                style: TextStyle(
-                  fontFamily: 'Songti SC',
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: context.meike.green,
-                ),
-              ),
+              MeikeWordmark(color: context.meike.green),
               const Spacer(),
               ?trailing,
             ],

@@ -4,6 +4,7 @@ import 'course_editor.dart';
 import 'courses_page.dart';
 import 'school_import_page.dart';
 import 'theme.dart';
+import 'brand_wordmark.dart';
 
 class GinkgoHeader extends StatelessWidget {
   const GinkgoHeader({super.key, required this.store});
@@ -12,7 +13,7 @@ class GinkgoHeader extends StatelessWidget {
   Widget build(BuildContext context) => Container(
     key: const ValueKey('ginkgo-brand-header'),
     color: context.meike.hero,
-    padding: const EdgeInsets.fromLTRB(16, 6, 14, 16),
+    padding: const EdgeInsets.fromLTRB(18, 7, 18, 14),
     child: Row(
       children: [
         Expanded(
@@ -21,25 +22,18 @@ class GinkgoHeader extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  PlumMark(size: 21, color: context.meike.onHero),
-                  const SizedBox(width: 8),
-                  Text(
-                    '梅课',
-                    style: TextStyle(
-                      fontFamily: 'Songti SC',
-                      fontSize: 24,
-                      color: context.meike.onHero,
-                    ),
-                  ),
+                  PlumMark(size: 20, color: context.meike.onHero),
+                  const SizedBox(width: 7),
+                  MeikeWordmark(color: context.meike.onHero),
                 ],
               ),
-              const SizedBox(height: 3),
               Text(
                 'MEIKE · SOUTHEAST',
                 maxLines: 1,
                 style: TextStyle(
-                  fontSize: 9,
-                  letterSpacing: 1.5,
+                  fontSize: 11,
+                  height: 1.5,
+                  letterSpacing: 1.6,
                   color: const Color(0xFFD1DFBF),
                 ),
               ),
