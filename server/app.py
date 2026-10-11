@@ -11,11 +11,13 @@ from pathlib import Path
 from urllib.parse import parse_qs, urlsplit
 from matching import match_records
 import chat
+import teams
 
 
 class ApiError(Exception):
-    def __init__(self, status, message):
+    def __init__(self, status, message, code=None):
         self.status, self.message = status, message
+        self.code = code
 
 
 def bounded(value, name, limit, required=True):
@@ -67,6 +69,7 @@ class Database:
                 PRIMARY KEY(post_id, user_id));
             ''')
             chat.initialize(db)
+            teams.initialize(db)
 
     @contextmanager
     def connect(self):
@@ -186,6 +189,9 @@ class Database:
             user = db.execute('SELECT id,name,avatar_version FROM users WHERE token_hash=?', (digest(token),)).fetchone()
             if not user:
                 raise ApiError(401, '讨论室登录已失效，请重新设置昵称。')
+            result = teams.route(db, user, method, path, query, body, ApiError, bounded)
+            if result is not teams.NOT_HANDLED:
+                return result
             result = chat.route(db, user, method, path, query, body, ApiError, bounded)
             if result is not chat.NOT_HANDLED:
                 return result
@@ -289,11 +295,11 @@ class Handler(BaseHTTPRequestHandler):
         try:
             parsed = urlsplit(self.path)
             body = {}
-            if self.command == 'POST':
+            if self.command in ('POST', 'PUT', 'DELETE'):
                 length = int(self.headers.get('Content-Length', '0'))
                 if length < 0 or length > (150000 if parsed.path in ('/v1/profile', '/v1/sessions') else 20000):
                     raise ApiError(413, '请求内容过大。')
-                body = json.loads(self.rfile.read(length))
+                body = json.loads(self.rfile.read(length)) if length else {}
                 if not isinstance(body, dict):
                     raise ApiError(400, '请求应为 JSON 对象。')
             if self.command == 'POST' and parsed.path == '/v1/sessions':
@@ -312,6 +318,8 @@ class Handler(BaseHTTPRequestHandler):
             result = self.server.database.route(self.command, parsed.path, parse_qs(parsed.query), body, token)
         except ApiError as error:
             status, result = error.status, {'error': error.message}
+            if error.code:
+                result['code'] = error.code
         except (ValueError, TypeError, KeyError):
             status, result = 400, {'error': '请求参数无效。'}
         except Exception:
@@ -326,7 +334,7 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(encoded)
 
-    do_GET = do_POST = do_DELETE = handle_api
+    do_GET = do_POST = do_PUT = do_DELETE = handle_api
 
 
 def main():

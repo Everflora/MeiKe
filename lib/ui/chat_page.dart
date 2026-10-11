@@ -5,6 +5,8 @@ import '../domain/schedule.dart';
 import 'discussion_helpers.dart';
 import 'discussion_profile.dart';
 import 'theme.dart';
+import '../data/schedule_store.dart';
+import 'team_page.dart';
 
 List<Json> mergeChatMessages(List<Json> current, List<Json> updates) {
   final merged = {for (final item in current) item['id'] as int: item};
@@ -16,9 +18,15 @@ List<Json> mergeChatMessages(List<Json> current, List<Json> updates) {
 }
 
 class ChatPage extends StatefulWidget {
-  const ChatPage({super.key, required this.client, required this.room});
+  const ChatPage({
+    super.key,
+    required this.client,
+    required this.room,
+    this.store,
+  });
   final DiscussionClient client;
   final DiscussionRoom room;
+  final ScheduleStore? store;
   @override
   State<ChatPage> createState() => _ChatPageState();
 }
@@ -354,6 +362,20 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
         ],
       ),
       actions: [
+        IconButton(
+          tooltip: '课程组队',
+          icon: const Icon(Icons.groups_outlined),
+          onPressed: () => Navigator.push<void>(
+            context,
+            MaterialPageRoute(
+              builder: (_) => TeamPage(
+                client: widget.client,
+                room: widget.room,
+                store: widget.store,
+              ),
+            ),
+          ),
+        ),
         IconButton(
           tooltip: '群信息',
           icon: const Icon(Icons.info_outline),

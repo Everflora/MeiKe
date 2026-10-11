@@ -143,7 +143,8 @@ class _DiscussionPageState extends State<DiscussionPage> {
       if (room == null || !mounted) return;
       await Navigator.of(context).push(
         MaterialPageRoute<void>(
-          builder: (_) => ChatPage(client: client, room: room),
+          builder: (_) =>
+              ChatPage(client: client, room: room, store: widget.store),
         ),
       );
     } catch (e) {

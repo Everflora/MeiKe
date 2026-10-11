@@ -21,6 +21,13 @@ identities 表同时保存完整匹配身份和来源 ID，共 8,102 条。
 | message_reports | 聊天消息举报 |
 | posts | 保留旧版本的帖子及回复，新增旧帖子同步到聊天消息 |
 | reports | 旧版本帖子举报 |
+| team_consents / group_rounds / team_default_rounds | 主动组队同意与教学班内默认组队场景 |
+| team_profiles / team_preferences | 私有个人画像、活动意向和本次覆盖 |
+| teams / team_members / team_applications | 团队、成员唯一关系及申请审核 |
+| team_bans / team_avoidances | 本队移除限制与私密避开 |
+| team_availability / team_feedback | 自愿抽象空闲时间与双方同意的匿名反馈 |
+
+课程组队复用当前 Bearer 身份，匹配规则由独立 `team_matching` 模块和版本 JSON 配置提供。新表自动增量初始化，升级前在线备份，不重新导入课程或覆盖聊天数据。接口、边界和权限见 [课程组队实施说明](../docs/TEAM_MATCHING_IMPLEMENTATION.md)。
 
 认定规则遵循用户指定：同学期内，课程名、老师集合、上课班级集合相同就
 归入同一讨论室，不要求教学班 ID 或排课时间相同。669 条匹配字段不齐全
