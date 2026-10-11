@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import '../data/schedule_store.dart';
 import '../domain/schedule.dart';
 import 'course_editor.dart';
+import 'classroom_label.dart';
 import 'course_details.dart';
 import 'courses_page.dart';
 import 'school_import_page.dart';
@@ -815,33 +816,15 @@ class _EventCard extends StatelessWidget {
                       ),
                       const Spacer(),
                       if (event.location.isNotEmpty)
-                        if (height <= 70)
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: FittedBox(
-                              fit: BoxFit.scaleDown,
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                                event.location,
-                                style: TextStyle(
-                                  fontSize: 9,
-                                  height: 1.1,
-                                  color: foreground,
-                                ),
-                              ),
-                            ),
-                          )
-                        else
-                          Text(
-                            event.location,
-                            maxLines: height > 70 ? 2 : 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontSize: 9,
-                              height: 1.1,
-                              color: foreground,
-                            ),
+                        ClassroomLabel(
+                          event.location,
+                          maxLines: height > 70 ? 2 : 1,
+                          style: TextStyle(
+                            fontSize: 9,
+                            height: 1.1,
+                            color: foreground,
                           ),
+                        ),
                     ],
                   ),
                 ),

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../data/schedule_store.dart';
 import '../domain/schedule.dart';
 import 'course_details.dart';
+import 'classroom_label.dart';
 import 'theme.dart';
 
 class TodayPage extends StatefulWidget {
@@ -111,7 +112,7 @@ class _TodayPageState extends State<TodayPage> {
                                 ),
                                 const SizedBox(width: 4),
                                 Expanded(
-                                  child: Text(
+                                  child: ClassroomLabel(
                                     e.location.isEmpty ? '地点待定' : e.location,
                                     style: Theme.of(
                                       context,
@@ -249,7 +250,10 @@ class _TodayPageState extends State<TodayPage> {
                   Text('还可休息 ${gap.end - minute} 分钟'),
                   const SizedBox(height: 12),
                   Text('接下来 · ${next.name}'),
-                  Text('⌖ ${next.location.isEmpty ? '地点待定' : next.location}'),
+                  ClassroomLabel(
+                    '⌖ ${next.location.isEmpty ? '地点待定' : next.location}',
+                    maxLines: 1,
+                  ),
                 ] else if (next != null) ...[
                   Text(
                     next.name,
@@ -261,7 +265,10 @@ class _TodayPageState extends State<TodayPage> {
                   const SizedBox(height: 12),
                   Text('◷ ${next.timeLabel}'),
                   const SizedBox(height: 6),
-                  Text('⌖ ${next.location.isEmpty ? '地点待定' : next.location}'),
+                  ClassroomLabel(
+                    '⌖ ${next.location.isEmpty ? '地点待定' : next.location}',
+                    maxLines: 1,
+                  ),
                   if (seconds != null) ...[
                     const SizedBox(height: 18),
                     Text(next.isExtra ? '距离本次安排结束' : '距离本节下课'),
@@ -293,8 +300,9 @@ class _TodayPageState extends State<TodayPage> {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  Text(
+                  ClassroomLabel(
                     '全天 · ${allDay.location.isEmpty ? '地点待定' : allDay.location}',
+                    maxLines: 1,
                   ),
                 ] else ...[
                   Text(
