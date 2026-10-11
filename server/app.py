@@ -2,6 +2,7 @@
 import argparse
 import hashlib
 import json
+import re
 import secrets
 import sqlite3
 import time
@@ -11,6 +12,7 @@ from pathlib import Path
 from urllib.parse import parse_qs, urlsplit
 from matching import match_records
 import chat
+import chat_media
 import teams
 
 
@@ -297,7 +299,11 @@ class Handler(BaseHTTPRequestHandler):
             body = {}
             if self.command in ('POST', 'PUT', 'DELETE'):
                 length = int(self.headers.get('Content-Length', '0'))
-                if length < 0 or length > (150000 if parsed.path in ('/v1/profile', '/v1/sessions') else 20000):
+                limit = (chat_media.MAX_REQUEST if self.command == 'POST' and
+                         (parsed.path == '/v1/stickers' or re.fullmatch(r'/v1/rooms/[a-f0-9]{64}/messages', parsed.path))
+                         else 150000 if parsed.path in ('/v1/profile', '/v1/sessions') else 20000)
+                if length < 0 or length > limit:
+                    self.close_connection = True
                     raise ApiError(413, '请求内容过大。')
                 body = json.loads(self.rfile.read(length)) if length else {}
                 if not isinstance(body, dict):
@@ -322,6 +328,8 @@ class Handler(BaseHTTPRequestHandler):
                 result['code'] = error.code
         except chat.AvatarError as error:
             status, result = 400, {'error': str(error), 'code': 'INVALID_AVATAR'}
+        except chat_media.MediaError as error:
+            status, result = 400, {'error': str(error), 'code': 'INVALID_MEDIA'}
         except (ValueError, TypeError, KeyError):
             status, result = 400, {'error': '请求参数无效。'}
         except Exception:
@@ -329,7 +337,7 @@ class Handler(BaseHTTPRequestHandler):
         binary = isinstance(result, bytes)
         encoded = result if binary else json.dumps(result, ensure_ascii=False).encode()
         self.send_response(status)
-        self.send_header('Content-Type', 'image/png' if binary else 'application/json; charset=utf-8')
+        self.send_header('Content-Type', getattr(result, 'content_type', 'image/png') if binary else 'application/json; charset=utf-8')
         self.send_header('Content-Length', str(len(encoded)))
         self.send_header('Cache-Control', 'no-store')
         self.send_header('X-Content-Type-Options', 'nosniff')

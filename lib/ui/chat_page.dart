@@ -1,4 +1,7 @@
 import 'dart:async';
+import 'dart:typed_data';
+import 'package:file_picker/file_picker.dart';
+import '../data/chat_image.dart';
 import 'package:flutter/material.dart';
 import '../data/discussion_client.dart';
 import '../domain/schedule.dart';
@@ -7,6 +10,7 @@ import 'discussion_profile.dart';
 import 'theme.dart';
 import '../data/schedule_store.dart';
 import 'team_page.dart';
+import 'sticker_panel.dart';
 
 List<Json> mergeChatMessages(List<Json> current, List<Json> updates) {
   final merged = {for (final item in current) item['id'] as int: item};
@@ -39,6 +43,10 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
   bool loading = true, sending = false, historyBusy = false;
   bool active = true, polling = false, connected = false;
   String? error, draftId, draftBody;
+  Uint8List? attachment;
+  Json? pendingSticker;
+  String? attachmentId;
+  bool attachmentSticker = false;
   @override
   void initState() {
     super.initState();
@@ -151,6 +159,14 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
   }
 
   Future<void> send() async {
+    if (pendingSticker != null) {
+      await sendSavedSticker();
+      return;
+    }
+    if (attachment != null) {
+      await sendAttachment();
+      return;
+    }
     final body = input.text.trim();
     if (sending || body.isEmpty) return;
     if (draftBody != body || draftId == null) {
@@ -182,6 +198,155 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
     }
   }
 
+  Future<void> pickAttachment(bool sticker) async {
+    if (sending || loading) return;
+    setState(() {
+      sending = true;
+      error = null;
+    });
+    try {
+      final file = await FilePicker.pickFile(type: FileType.image);
+      if (file == null) return;
+      final builder = BytesBuilder(copy: false);
+      await for (final chunk in file.readAsByteStream()) {
+        if (builder.length + chunk.length > 15 * 1024 * 1024) {
+          throw const FormatException('请选择小于 15 MB 的图片。');
+        }
+        builder.add(chunk);
+      }
+      final prepared = await prepareChatImage(builder.takeBytes());
+      if (mounted) {
+        setState(() {
+          pendingSticker = null;
+          attachment = prepared;
+          attachmentSticker = sticker;
+          attachmentId = newId();
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(
+          () => error = e is FormatException ? e.message : '图片无法打开，请选择另一张图片。',
+        );
+      }
+    } finally {
+      if (mounted) setState(() => sending = false);
+    }
+  }
+
+  Future<void> sendAttachment() async {
+    if (sending || attachment == null) return;
+    setState(() {
+      sending = true;
+      error = null;
+    });
+    try {
+      final sent = await widget.client.sendImage(
+        widget.room.id,
+        attachment!,
+        attachmentId!,
+        sticker: attachmentSticker,
+      );
+      if (!mounted) return;
+      setState(() {
+        messages = mergeChatMessages(messages, [sent]);
+        attachment = null;
+        attachmentId = null;
+      });
+      toBottom();
+    } catch (e) {
+      if (mounted) setState(() => error = message(e));
+    } finally {
+      if (mounted) setState(() => sending = false);
+    }
+  }
+
+  Future<void> stickerPanel() async {
+    FocusScope.of(context).unfocus();
+    final selected = await showModalBottomSheet<Json>(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => StickerPanel(client: widget.client),
+    );
+    if (!mounted || selected == null) return;
+    setState(() {
+      attachment = null;
+      pendingSticker = selected;
+      attachmentId = newId();
+    });
+    await sendSavedSticker();
+  }
+
+  Future<void> sendSavedSticker() async {
+    if (sending || pendingSticker == null) return;
+    setState(() {
+      sending = true;
+      error = null;
+    });
+    try {
+      final sent = await widget.client.sendSticker(
+        widget.room.id,
+        pendingSticker!['id'] as String,
+        attachmentId!,
+      );
+      if (!mounted) return;
+      setState(() {
+        messages = mergeChatMessages(messages, [sent]);
+        pendingSticker = null;
+        attachmentId = null;
+      });
+      toBottom();
+    } catch (e) {
+      if (mounted) setState(() => error = message(e));
+    } finally {
+      if (mounted) setState(() => sending = false);
+    }
+  }
+
+  Widget chatImage(Json item, {bool full = false}) {
+    final media = item['media'] as Json;
+    final width = (media['width'] as num).toDouble();
+    final height = (media['height'] as num).toDouble();
+    final image = Image.network(
+      widget.client.messageImageUrl(item['id'] as int),
+      headers: widget.client.imageHeaders,
+      fit: BoxFit.contain,
+      loadingBuilder: (_, child, progress) => progress == null
+          ? child
+          : const Center(child: CircularProgressIndicator()),
+      errorBuilder: (_, _, _) => const Center(child: Text('图片加载失败')),
+    );
+    if (full) return image;
+    final maxSide = item['kind'] == 'sticker' ? 140.0 : 220.0;
+    final scale = maxSide / (width > height ? width : height);
+    return Semantics(
+      label: item['kind'] == 'sticker' ? '表情包消息' : '图片消息',
+      button: true,
+      child: GestureDetector(
+        onTap: () => Navigator.push<void>(
+          context,
+          MaterialPageRoute(
+            builder: (_) => Scaffold(
+              appBar: AppBar(title: const Text('查看图片')),
+              body: Center(
+                child: InteractiveViewer(
+                  minScale: 0.5,
+                  maxScale: 5,
+                  child: chatImage(item, full: true),
+                ),
+              ),
+            ),
+          ),
+        ),
+        child: SizedBox(
+          width: width * scale,
+          height: height * scale,
+          child: image,
+        ),
+      ),
+    );
+  }
+
   Future<void> editProfile() async {
     await Navigator.of(context).push<bool>(
       MaterialPageRoute(
@@ -199,6 +364,12 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            if (item['media'] != null)
+              ListTile(
+                leading: const Icon(Icons.add_photo_alternate_outlined),
+                title: const Text('添加到表情包'),
+                onTap: () => Navigator.pop(ctx, 'save-sticker'),
+              ),
             if (item['mine'] == true)
               ListTile(
                 leading: const Icon(Icons.undo),
@@ -216,7 +387,14 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
     );
     if (!mounted || action == null) return;
     try {
-      if (action == 'recall') {
+      if (action == 'save-sticker') {
+        await widget.client.addSticker(messageId: item['id'] as int);
+        if (mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('已添加到表情包')));
+        }
+      } else if (action == 'recall') {
         if (!await confirm(context, '撤回消息？', '其他同学将看到消息已撤回。', action: '撤回')) {
           return;
         }
@@ -270,29 +448,31 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
           const SizedBox(height: 4),
           GestureDetector(
             onLongPress: () => actions(item),
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: mine
-                    ? const Color(0xFFB7E99A)
-                    : Theme.of(context).colorScheme.surfaceContainerHigh,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 10,
-                ),
-                child: Text(
-                  item['body'] as String,
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: mine
-                        ? const Color(0xFF182414)
-                        : Theme.of(context).colorScheme.onSurface,
+            child: item['media'] != null
+                ? chatImage(item)
+                : DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: mine
+                          ? const Color(0xFFB7E99A)
+                          : Theme.of(context).colorScheme.surfaceContainerHigh,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 10,
+                      ),
+                      child: Text(
+                        item['body'] as String,
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: mine
+                              ? const Color(0xFF182414)
+                              : Theme.of(context).colorScheme.onSurface,
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-              ),
-            ),
           ),
         ],
       ),
@@ -462,6 +642,62 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
             ],
           ),
         ),
+        if (pendingSticker != null)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Row(
+              children: [
+                Image.network(
+                  widget.client.stickerImageUrl(
+                    pendingSticker!['id'] as String,
+                  ),
+                  headers: widget.client.imageHeaders,
+                  width: 64,
+                  height: 64,
+                  fit: BoxFit.contain,
+                  errorBuilder: (_, _, _) =>
+                      const Icon(Icons.broken_image_outlined),
+                ),
+                const Expanded(child: Text('表情包待发送，点发送重试')),
+                IconButton(
+                  tooltip: '取消表情包',
+                  onPressed: sending
+                      ? null
+                      : () => setState(() {
+                          pendingSticker = null;
+                          attachmentId = null;
+                        }),
+                  icon: const Icon(Icons.close),
+                ),
+              ],
+            ),
+          ),
+        if (attachment != null)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Row(
+              children: [
+                Image.memory(
+                  attachment!,
+                  width: 80,
+                  height: 80,
+                  fit: BoxFit.contain,
+                ),
+                const SizedBox(width: 12),
+                Expanded(child: Text(attachmentSticker ? '表情包待发送' : '图片待发送')),
+                IconButton(
+                  tooltip: '取消图片',
+                  onPressed: sending
+                      ? null
+                      : () => setState(() {
+                          attachment = null;
+                          attachmentId = null;
+                        }),
+                  icon: const Icon(Icons.close),
+                ),
+              ],
+            ),
+          ),
         SafeArea(
           top: false,
           child: ColoredBox(
@@ -471,10 +707,26 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
+                  IconButton(
+                    tooltip: '图片',
+                    onPressed: sending || loading
+                        ? null
+                        : () => pickAttachment(false),
+                    icon: const Icon(Icons.image_outlined),
+                  ),
+                  IconButton(
+                    tooltip: '表情',
+                    onPressed: sending || loading ? null : stickerPanel,
+                    icon: const Icon(Icons.emoji_emotions_outlined),
+                  ),
                   Expanded(
                     child: TextField(
                       controller: input,
-                      enabled: !sending && !loading,
+                      enabled:
+                          !sending &&
+                          !loading &&
+                          attachment == null &&
+                          pendingSticker == null,
                       minLines: 1,
                       maxLines: 5,
                       maxLength: 3000,

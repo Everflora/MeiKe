@@ -148,6 +148,58 @@ class DiscussionClient {
   Map<String, String> get imageHeaders => {'Authorization': 'Bearer $_token'};
   String avatarUrl(String id, String version) =>
       base.resolve('v1/users/$id/avatar?version=$version').toString();
+  String messageImageUrl(int id) =>
+      base.resolve('v1/messages/$id/media').toString();
+  String stickerImageUrl(String id) =>
+      base.resolve('v1/stickers/$id/media').toString();
+  Future<List<Json>> savedStickers() async =>
+      ((await request('GET', 'v1/stickers'))['stickers'] as List).cast<Json>();
+  Future<Json> addSticker({Uint8List? bytes, int? messageId}) async =>
+      (await request(
+            'POST',
+            'v1/stickers',
+            body: {
+              if (bytes != null) 'media': base64Encode(bytes),
+              'messageId': ?messageId,
+            },
+          ))['sticker']
+          as Json;
+  Future<void> removeSticker(String id) async {
+    await request('DELETE', 'v1/stickers/$id');
+  }
+
+  Future<Json> sendSticker(
+    String room,
+    String stickerId,
+    String clientId,
+  ) async =>
+      (await request(
+            'POST',
+            'v1/rooms/$room/messages',
+            body: {
+              'kind': 'sticker',
+              'stickerId': stickerId,
+              'clientId': clientId,
+            },
+          ))['message']
+          as Json;
+
+  Future<Json> sendImage(
+    String room,
+    Uint8List bytes,
+    String clientId, {
+    bool sticker = false,
+  }) async =>
+      (await request(
+            'POST',
+            'v1/rooms/$room/messages',
+            body: {
+              'clientId': clientId,
+              'kind': sticker ? 'sticker' : 'image',
+              'media': base64Encode(bytes),
+            },
+          ))['message']
+          as Json;
 
   Future<Json> messages(
     String room, {
@@ -191,7 +243,9 @@ class DiscussionClient {
       }
       if (body != null) {
         request.headers.contentType = ContentType.json;
-        request.add(utf8.encode(jsonEncode(body)));
+        final encoded = utf8.encode(jsonEncode(body));
+        request.contentLength = encoded.length;
+        request.add(encoded);
       }
       final response = await request.close().timeout(
         const Duration(seconds: 15),

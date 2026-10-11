@@ -9,6 +9,7 @@ from pathlib import Path
 
 from app import Database, Server
 from test_chat import png_avatar
+from test_chat_media import gif_image, encoded, large_png
 
 
 class AvatarHttpTests(unittest.TestCase):
@@ -45,6 +46,38 @@ class AvatarHttpTests(unittest.TestCase):
                 self.assertTrue(profile['avatarVersion'])
                 status, error = request('/v1/sessions', {'name': '测试昵称', 'avatar': 'invalid base64'})
                 self.assertEqual((status, error['error']), (400, '头像编码无效。'))
+                database.import_catalog([{'termCode': 'TEST', 'name': '媒体测试', 'identity': ['JXBID', 'MEDIA-TEST']}])
+                _, resolved = request('/v1/rooms/resolve', {'termCode': 'TEST', 'identity': ['JXBID', 'MEDIA-TEST']}, token)
+                path = '/v1/rooms/' + resolved['room']['roomKey'] + '/messages'
+                status, sent = request(path, {'kind': 'sticker', 'media': encoded(gif_image(2)), 'clientId': 'HTTP-GIF'}, token)
+                self.assertEqual(status, 200)
+                media_path = f"/v1/messages/{sent['message']['id']}/media"
+                connection.request('GET', media_path, headers={'Authorization': 'Bearer ' + token})
+                response = connection.getresponse()
+                self.assertEqual(response.status, 200)
+                self.assertEqual(response.getheader('Content-Type'), 'image/gif')
+                self.assertEqual(response.read(), gif_image(2))
+                status, error = request(path, {'kind': 'image', 'media': encoded(b'bad'), 'clientId': 'HTTP-BAD'}, token)
+                self.assertEqual((status, error['code']), (400, 'INVALID_MEDIA'))
+                large = large_png()
+                self.assertGreater(len(large), 150000)
+                status, sent = request(path, {'kind': 'image', 'media': encoded(large), 'clientId': 'HTTP-LARGE'}, token)
+                self.assertEqual(status, 200)
+                connection.request('GET', f"/v1/messages/{sent['message']['id']}/media", headers={'Authorization': 'Bearer ' + token})
+                response = connection.getresponse()
+                self.assertEqual(response.status, 200)
+                self.assertEqual(response.getheader('Content-Type'), 'image/png')
+                self.assertEqual(response.read(), large)
+                status, saved = request('/v1/stickers', {'media': encoded(large)}, token)
+                self.assertEqual(status, 200)
+                sid = saved['sticker']['id']
+                status, sent = request(path, {'kind': 'sticker', 'stickerId': sid, 'clientId': 'HTTP-SAVED'}, token)
+                self.assertEqual(status, 200)
+                connection.request('GET', '/v1/stickers/' + sid + '/media', headers={'Authorization': 'Bearer ' + token})
+                response = connection.getresponse()
+                self.assertEqual(response.status, 200)
+                self.assertEqual(response.read(), large)
+
             finally:
                 connection.close()
                 server.shutdown()
