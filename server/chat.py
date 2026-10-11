@@ -7,6 +7,8 @@ import re
 import struct
 import time
 import zlib
+import chat_media
+import chat_stickers
 
 
 NOT_HANDLED = object()
@@ -93,6 +95,16 @@ def initialize(db):
           user_id TEXT NOT NULL REFERENCES users(id), reason TEXT NOT NULL,
           PRIMARY KEY(message_id, user_id));
     ''')
+    columns = {row['name'] for row in db.execute('PRAGMA table_info(messages)')}
+    for name, definition in [('kind', "TEXT NOT NULL DEFAULT 'text'"),
+                             ('media_width', 'INTEGER'), ('media_height', 'INTEGER'),
+                             ('media_hash', "TEXT NOT NULL DEFAULT ''")]:
+        if name not in columns:
+            db.execute(f'ALTER TABLE messages ADD COLUMN {name} {definition}')
+    db.execute('''CREATE TABLE IF NOT EXISTS message_media (
+        message_id INTEGER PRIMARY KEY REFERENCES messages(id) ON DELETE CASCADE,
+        data BLOB NOT NULL, mime TEXT NOT NULL)''')
+    chat_stickers.initialize(db)
     for post in db.execute('SELECT * FROM posts ORDER BY id').fetchall():
         mirror_post(db, post)
 
@@ -119,13 +131,19 @@ def message(row, user):
     return {'id': row['id'], 'userId': row['user_id'], 'name': row['name'],
             'avatarVersion': row['avatar_version'], 'body': '' if row['recalled'] else row['body'],
             'created': row['created'], 'recalled': bool(row['recalled']),
-            'mine': row['user_id'] == user['id'], 'clientId': row['client_id']}
+            'mine': row['user_id'] == user['id'], 'clientId': row['client_id'],
+            'kind': row['kind'],
+            'media': None if row['recalled'] or row['kind'] == 'text' else {
+                'width': row['media_width'], 'height': row['media_height']}}
 
 
 SELECT_MESSAGE = 'SELECT m.*,u.name,u.avatar_version FROM messages m JOIN users u ON u.id=m.user_id '
 
 
 def route(db, user, method, path, query, body, error, bounded):
+    saved = chat_stickers.route(db, user, method, path, body, error)
+    if saved is not chat_stickers.NOT_HANDLED:
+        return saved
     if path == '/v1/profile':
         if method == 'GET':
             return profile(user)
@@ -147,6 +165,14 @@ def route(db, user, method, path, query, body, error, bounded):
         if not row or not row['avatar'] or query.get('version', [row['avatar_version']])[0] != row['avatar_version']:
             raise error(404, '头像不存在或已更新。')
         return row['avatar']
+    media_match = re.fullmatch(r'/v1/messages/(\d+)/media', path)
+    if method == 'GET' and media_match:
+        row = db.execute('''SELECT a.data,a.mime FROM message_media a
+            JOIN messages m ON m.id=a.message_id WHERE m.id=? AND m.recalled=0''',
+                         (int(media_match[1]),)).fetchone()
+        if not row:
+            raise error(404, '图片不存在或消息已撤回。')
+        return chat_media.MediaBytes(row['data'], row['mime'])
     room_match = re.fullmatch(r'/v1/rooms/([a-f0-9]{64})/messages', path)
     if room_match:
         room = room_match[1]
@@ -182,19 +208,47 @@ def route(db, user, method, path, query, body, error, bounded):
                     'cursor': rows[0]['cursor'] if rows else 0,
                     'before': rows[-1]['id'] if len(rows) == 50 else None}
         if method == 'POST':
-            content = bounded(body.get('body'), '消息', 3000)
+            kind = body.get('kind', 'text')
+            if kind not in ('text', 'image', 'sticker'):
+                raise error(400, '不支持的消息类型。')
+            media, width, height, mime, media_hash = None, None, None, None, ''
+            if kind != 'text':
+                if 'stickerId' in body:
+                    if kind != 'sticker' or 'media' in body or not isinstance(body['stickerId'], str):
+                        raise error(400, '表情包发送参数无效。')
+                    saved = db.execute('SELECT data,width,height,mime FROM saved_stickers WHERE id=? AND user_id=?', (body['stickerId'], user['id'])).fetchone()
+                    if not saved:
+                        raise error(404, '表情包不存在或已移除。')
+                    media, width, height, mime = saved
+                else:
+                    media, width, height, mime = chat_media.parse(body.get('media'))
+                media_hash = hashlib.sha256(media).hexdigest()
+                content = '[表情包]' if kind == 'sticker' else '[图片]'
+            else:
+                if 'media' in body or 'stickerId' in body:
+                    raise error(400, '文字消息不能包含图片。')
+                content = bounded(body.get('body'), '消息', 3000)
             client_id = bounded(body.get('clientId'), '发送标识', 80)
+            db.execute('BEGIN IMMEDIATE')
             existing = db.execute(SELECT_MESSAGE + 'WHERE m.user_id=? AND m.client_id=?', (user['id'], client_id)).fetchone()
             if existing:
-                if existing['room_id'] != room or existing['body'] != content:
+                if existing['room_id'] != room or existing['body'] != content or existing['kind'] != kind or existing['media_hash'] != media_hash:
                     raise error(409, '发送标识已用于其他消息。')
                 return {'message': message(existing, user)}
             now = int(time.time())
             recent = db.execute('SELECT COUNT(*) FROM messages WHERE user_id=? AND created>?', (user['id'], now - 60)).fetchone()[0]
             if recent >= 60:
                 raise error(429, '发送太频繁，请稍后再试。')
-            inserted = db.execute('INSERT INTO messages(room_id,user_id,body,created,client_id) VALUES (?,?,?,?,?)',
-                                  (room, user['id'], content, now, client_id))
+            if media:
+                recent_media = db.execute("SELECT COUNT(*) FROM messages WHERE user_id=? AND kind!='text' AND created>?", (user['id'], now - 60)).fetchone()[0]
+                used = db.execute('''SELECT COALESCE(SUM(length(a.data)),0) FROM message_media a
+                    JOIN messages m ON m.id=a.message_id WHERE m.user_id=? AND m.created>?''', (user['id'], now - 86400)).fetchone()[0]
+                if recent_media >= 10 or used + len(media) > 100 * 1024 * 1024:
+                    raise error(429, '图片发送过多，请稍后再试。')
+            inserted = db.execute('''INSERT INTO messages(room_id,user_id,body,created,client_id,kind,media_width,media_height,media_hash)
+                VALUES (?,?,?,?,?,?,?,?,?)''', (room, user['id'], content, now, client_id, kind, width, height, media_hash))
+            if media:
+                db.execute('INSERT INTO message_media VALUES (?,?,?)', (inserted.lastrowid, media, mime))
             db.execute('INSERT INTO message_events(room_id,message_id) VALUES (?,?)', (room, inserted.lastrowid))
             return {'message': message(db.execute(SELECT_MESSAGE + 'WHERE m.id=?', (inserted.lastrowid,)).fetchone(), user)}
     action = re.fullmatch(r'/v1/messages/(\d+)(/report)?', path)
@@ -206,6 +260,7 @@ def route(db, user, method, path, query, body, error, bounded):
             if old['user_id'] != user['id']:
                 raise error(403, '只能撤回自己发送的消息。')
             db.execute('UPDATE messages SET recalled=1 WHERE id=?', (old['id'],))
+            db.execute('DELETE FROM message_media WHERE message_id=?', (old['id'],))
             db.execute('INSERT INTO message_events(room_id,message_id) VALUES (?,?)', (old['room_id'], old['id']))
             return {'ok': True}
         if method == 'POST' and action[2]:

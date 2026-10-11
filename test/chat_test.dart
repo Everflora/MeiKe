@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -24,6 +25,31 @@ class FakeChat extends DiscussionClient {
   FakeChat() : super(sessionFile: File('unused-session.json'));
   final polls = <Completer<Json>>[];
   String? sent;
+  int? collected;
+  @override
+  Future<List<Json>> savedStickers() async => [
+    {'id': 'saved-demo', 'width': 128, 'height': 128},
+  ];
+  @override
+  Future<Json> sendSticker(
+    String room,
+    String stickerId,
+    String clientId,
+  ) async {
+    sent = stickerId;
+    return {
+      ...item(2, body: '[表情包]', mine: true),
+      'kind': 'sticker',
+      'media': {'width': 128, 'height': 128},
+    };
+  }
+
+  @override
+  Future<Json> addSticker({Uint8List? bytes, int? messageId}) async {
+    collected = messageId;
+    return {'id': 'saved-demo', 'width': 128, 'height': 128};
+  }
+
   @override
   bool get signedIn => true;
   @override
@@ -49,6 +75,31 @@ class FakeChat extends DiscussionClient {
   Future<Json> sendMessage(String room, String content, String clientId) async {
     sent = content;
     return item(2, body: content, mine: true);
+  }
+}
+
+class FakeImageChat extends FakeChat {
+  @override
+  Future<Json> messages(
+    String room, {
+    int? after,
+    int? before,
+    bool wait = false,
+  }) {
+    if (after == null) {
+      return Future.value({
+        'messages': [
+          {
+            ...item(1, body: '[图片]'),
+            'kind': 'image',
+            'media': {'width': 768, 'height': 512},
+          },
+        ],
+        'cursor': 1,
+        'before': null,
+      });
+    }
+    return super.messages(room, after: after, before: before, wait: wait);
   }
 }
 
@@ -140,6 +191,93 @@ void main() {
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox());
     client.polls.last.complete({'messages': [], 'cursor': 3, 'before': null});
+    await tester.pump();
+    client.close();
+  });
+
+  testWidgets('小屏收藏网格点按直接发送表情包', (tester) async {
+    tester.view.physicalSize = const Size(320, 568);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final client = FakeChat();
+    final room = DiscussionRoom({
+      'roomKey': 'demo',
+      'name': '演示课程',
+      'teachers': ['教师'],
+      'attendingClassNames': ['班级'],
+      'arrangements': [],
+    });
+    await tester.pumpWidget(
+      MaterialApp(
+        home: ChatPage(client: client, room: room),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('表情'));
+    await tester.pumpAndSettle();
+    expect(find.text('收藏的表情包'), findsOneWidget);
+    expect(find.text('😂'), findsNothing);
+    await tester.tap(
+      find.byWidgetPredicate(
+        (widget) => widget is Semantics && widget.properties.label == '收藏表情包 1',
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(client.sent, 'saved-demo');
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox());
+    for (final pending in client.polls) {
+      if (!pending.isCompleted) pending.complete({'messages': [], 'cursor': 1});
+    }
+    await tester.pump();
+    client.close();
+  });
+
+  testWidgets('小屏图片消息可点击放大，下载失败有提示', (tester) async {
+    tester.view.physicalSize = const Size(320, 568);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final client = FakeImageChat();
+    final room = DiscussionRoom({
+      'roomKey': 'demo',
+      'name': '演示课程',
+      'teachers': ['教师'],
+      'attendingClassNames': ['班级'],
+      'arrangements': [],
+    });
+    await tester.pumpWidget(
+      MaterialApp(
+        home: ChatPage(client: client, room: room),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('[图片]'), findsNothing);
+    await tester.longPress(
+      find.byWidgetPredicate(
+        (widget) => widget is Semantics && widget.properties.label == '图片消息',
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('添加到表情包'));
+    await tester.pumpAndSettle();
+    expect(client.collected, 1);
+
+    await tester.tap(
+      find.byWidgetPredicate(
+        (widget) => widget is Semantics && widget.properties.label == '图片消息',
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('查看图片'), findsOneWidget);
+    expect(find.byType(InteractiveViewer), findsOneWidget);
+    expect(find.text('图片加载失败'), findsWidgets);
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox());
+    for (final pending in client.polls) {
+      if (!pending.isCompleted) pending.complete({'messages': [], 'cursor': 1});
+    }
     await tester.pump();
     client.close();
   });

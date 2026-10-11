@@ -4,13 +4,20 @@ import 'dart:typed_data';
 /// Server avatar format: 128×128, straight RGBA, 8 bits, no interlacing.
 /// Encode explicitly because native PNG encoders can choose other PNG formats.
 Uint8List encodeAvatarPng(Uint8List rgba) {
-  const side = 128;
-  const stride = side * 4;
-  if (rgba.length != side * stride) {
+  return encodeRgbaPng(rgba, 128, 128);
+}
+
+Uint8List encodeRgbaPng(Uint8List rgba, int width, int height) {
+  final stride = width * 4;
+  if (width < 1 ||
+      height < 1 ||
+      width > 768 ||
+      height > 768 ||
+      rgba.length != height * stride) {
     throw const FormatException('头像像素数据无效。');
   }
-  final pixels = Uint8List(side * (stride + 1));
-  for (var row = 0; row < side; row++) {
+  final pixels = Uint8List(height * (stride + 1));
+  for (var row = 0; row < height; row++) {
     // Each row starts with filter type 0 (None).
     pixels.setRange(
       row * (stride + 1) + 1,
@@ -20,8 +27,8 @@ Uint8List encodeAvatarPng(Uint8List rgba) {
     );
   }
   final header = ByteData(13)
-    ..setUint32(0, side)
-    ..setUint32(4, side)
+    ..setUint32(0, width)
+    ..setUint32(4, height)
     ..setUint8(8, 8)
     ..setUint8(9, 6);
   final output = BytesBuilder(copy: false)
