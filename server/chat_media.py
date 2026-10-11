@@ -5,7 +5,8 @@ import struct
 import zlib
 
 MAX_BYTES = 3 * 1024 * 1024
-MAX_REQUEST = 4 * 1024 * 1024 + 20000
+MAX_GIF_BYTES = 10 * 1024 * 1024
+MAX_REQUEST = ((MAX_GIF_BYTES + 2) // 3) * 4 + 20000
 
 
 class MediaError(ValueError):
@@ -125,15 +126,17 @@ def gif_info(data):
 
 
 def parse(value):
-    if not isinstance(value, str) or len(value) > MAX_BYTES * 4 // 3:
-        raise MediaError('发送的图片不能超过 3 MB。')
+    if not isinstance(value, str) or len(value) > ((MAX_GIF_BYTES + 2) // 3) * 4:
+        raise MediaError('GIF 表情包不能超过 10 MB，静态图片不能超过 3 MB。')
     try:
         data = base64.b64decode(value, validate=True)
     except (ValueError, binascii.Error):
         raise MediaError('图片编码无效。') from None
-    if not data or len(data) > MAX_BYTES:
-        raise MediaError('发送的图片不能超过 3 MB。')
+    if not data or len(data) > MAX_GIF_BYTES:
+        raise MediaError('GIF 表情包不能超过 10 MB，静态图片不能超过 3 MB。')
     if data.startswith(b'\x89PNG\r\n\x1a\n'):
+        if len(data) > MAX_BYTES:
+            raise MediaError('发送的静态图片不能超过 3 MB。')
         width, height, mime = png_info(data)
     elif data.startswith((b'GIF87a', b'GIF89a')):
         width, height, mime = gif_info(data)

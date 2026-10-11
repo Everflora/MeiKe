@@ -9,7 +9,7 @@ from pathlib import Path
 
 from app import Database, Server
 from test_chat import png_avatar
-from test_chat_media import gif_image, encoded, large_png
+from test_chat_media import gif_image, encoded, large_png, large_gif
 
 
 class AvatarHttpTests(unittest.TestCase):
@@ -77,6 +77,17 @@ class AvatarHttpTests(unittest.TestCase):
                 response = connection.getresponse()
                 self.assertEqual(response.status, 200)
                 self.assertEqual(response.read(), large)
+                animated = large_gif()
+                status, saved = request('/v1/stickers', {'media': encoded(animated)}, token)
+                self.assertEqual(status, 200)
+                status, sent = request(path, {'kind': 'sticker', 'stickerId': saved['sticker']['id'], 'clientId': 'HTTP-LARGE-GIF'}, token)
+                self.assertEqual(status, 200)
+                connection.request('GET', f"/v1/messages/{sent['message']['id']}/media", headers={'Authorization': 'Bearer ' + token})
+                response = connection.getresponse()
+                self.assertEqual(response.status, 200)
+                self.assertEqual(response.getheader('Content-Type'), 'image/gif')
+                self.assertEqual(response.read(), animated)
+
 
             finally:
                 connection.close()

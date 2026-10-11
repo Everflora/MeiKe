@@ -66,8 +66,8 @@ Nginx 通过独立路径代理，不记录讨论 API 的访问日志。
 `GET/POST /v1/profile` 读取和修改当前身份的昵称、头像；修改不会创建新身份。
 头像由应用居中裁剪为 128×128 PNG，保存在 users.avatar 中，读取路径为
 `GET /v1/users/{userId}/avatar?version={avatarVersion}`，仍须 Bearer 身份。
-Nginx 仅为 MeiKe API 放宽上传限制到 5m。头像请求仍由服务端限制为 150,000 字节，
-其他普通接口限制为 20,000 字节，图片消息请求限制为 4 MiB + 20,000 字节。
+Nginx 仅为 MeiKe API 放宽上传限制到 15m。头像请求仍由服务端限制为 150,000 字节，
+其他普通接口限制为 20,000 字节，表情包请求最多约 13.34 MiB + 20,000 字节；文件消息同样按 10 MiB 文件的 Base64 大小限制。
 
 `GET/POST /v1/rooms/{roomKey}/messages` 用于历史消息与发送。`after` 是事件游标，
 `before` 是历史消息 ID，二者不能同时使用；`wait=8` 等待最多 8 秒，期间每
@@ -79,7 +79,7 @@ Nginx 仅为 MeiKe API 放宽上传限制到 5m。头像请求仍由服务端限
 发送图片/表情包仍使用消息 POST 接口，提交 `kind: image` 或 `sticker`、
 `media: Base64文件内容` 和 `clientId`；文字消息保持原接口。静态图片由应用缩放
 至最长边 768 像素，统一编码为 RGBA8 PNG；GIF 原文件保留动画，宽高最大 512，
-最多 200 帧、总画布像素预算 32 Mi。每个文件最多 3 MiB，每个身份每分钟最多
+最多 200 帧、总画布像素预算 32 Mi。静态图片最多 3 MiB，GIF 最多 10 MiB，每个身份每分钟最多
 10 条媒体消息，过去 24 小时保留的媒体最多 100 MiB。PNG 校验块 CRC、像素数据
 和解压长度；GIF 校验结构、帧尺寸和数量，不在服务端解码 LZW 像素。
 

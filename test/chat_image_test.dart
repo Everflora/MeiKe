@@ -39,4 +39,34 @@ void main() {
       await expectLater(prepareChatImage(wide), throwsFormatException);
     });
   });
+  testWidgets('超过3MB的GIF保留原文件，超过10MB明确拒绝', (tester) async {
+    await tester.runAsync(() async {
+      final gif = base64Decode(
+        'R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAkQBADs=',
+      );
+      final builder = BytesBuilder(copy: false)
+        ..add(gif.sublist(0, gif.length - 1))
+        ..add([0x21, 0xfe]);
+      final block = Uint8List(256)..[0] = 255;
+      for (var i = 0; i < 4 * 1024 * 1024 ~/ 256; i++) {
+        builder.add(block);
+      }
+      builder.add([0, 0x3b]);
+      final large = builder.takeBytes();
+      expect(large.length, greaterThan(3 * 1024 * 1024));
+      expect(await prepareChatImage(large), large);
+      final tooLarge = Uint8List(maxChatGifBytes + 1)
+        ..setRange(0, gif.length, gif);
+      await expectLater(
+        prepareChatImage(tooLarge),
+        throwsA(
+          isA<FormatException>().having(
+            (e) => e.message,
+            'message',
+            contains('10 MB'),
+          ),
+        ),
+      );
+    });
+  });
 }
