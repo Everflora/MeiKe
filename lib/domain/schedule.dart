@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:characters/characters.dart';
 import 'package:uuid/uuid.dart';
+import 'academic_calendar.dart';
 
 String newId() => const Uuid().v4().toUpperCase();
 typedef Json = Map<String, dynamic>;
@@ -127,17 +128,20 @@ class Semester {
     this.name = '我的学期',
     DateTime? startDate,
     this.weekCount = 20,
+    this.useSchoolCalendar = true,
     List<LessonPeriod>? periods,
   }) : startDate = startDate ?? SchoolClock.monday(DateTime.now()),
        periods = periods ?? LessonPeriod.defaults();
   String name;
   DateTime startDate;
   int weekCount;
+  bool useSchoolCalendar;
   List<LessonPeriod> periods;
   factory Semester.fromJson(Json j) => Semester(
     name: j['name'] as String,
     startDate: _date(j['startDate']),
     weekCount: j['weekCount'] as int,
+    useSchoolCalendar: j['useSchoolCalendar'] as bool? ?? true,
     periods: (j['periods'] as List)
         .map((e) => LessonPeriod.fromJson(e as Json))
         .toList(),
@@ -149,6 +153,7 @@ class Semester {
       '',
     ),
     'weekCount': weekCount,
+    'useSchoolCalendar': useSchoolCalendar,
     'periods': periods.map((p) => p.toJson()).toList(),
   };
   Semester copy() => Semester.fromJson(toJson());
@@ -369,6 +374,8 @@ class Occurrence {
     required this.allDay,
     required this.notes,
     required this.busyRanges,
+    this.calendarNote = '',
+    this.makeupFor,
   });
   final String id,
       courseId,
@@ -382,6 +389,33 @@ class Occurrence {
   final int week, weekday, startMinute, endMinute;
   final bool isExtra, allDay;
   final List<MinuteRange> busyRanges;
+  final String calendarNote;
+  final DateTime? makeupFor;
+  Occurrence calendarCopy({
+    required int week,
+    required int weekday,
+    required String note,
+    DateTime? sourceDate,
+  }) => Occurrence(
+    id: sourceDate == null ? id : '$id-calendar-$week-$weekday',
+    courseId: courseId,
+    sourceId: sourceId,
+    name: name,
+    teacher: teacher,
+    location: location,
+    color: color,
+    week: week,
+    weekday: weekday,
+    startMinute: startMinute,
+    endMinute: endMinute,
+    periodLabel: periodLabel,
+    isExtra: isExtra,
+    allDay: allDay,
+    notes: notes,
+    busyRanges: busyRanges,
+    calendarNote: note,
+    makeupFor: sourceDate,
+  );
   String get timeLabel => allDay
       ? '全天'
       : '${LessonPeriod.format(startMinute)}–${LessonPeriod.format(endMinute)}';
@@ -424,6 +458,24 @@ class ScheduleData {
   int version;
   Semester semester;
   List<Course> courses;
+  CalendarTerm? get calendarTerm => semester.useSchoolCalendar
+      ? SeuCalendar.forMonday(
+          SchoolClock.day(SchoolClock.monday(semester.startDate)),
+        )
+      : null;
+  int get firstDisplayWeek =>
+      calendarTerm != null &&
+          calendarTerm!.start.isBefore(calendarTerm!.firstMonday)
+      ? 0
+      : 1;
+  String weekLabel(int week) => week == 0 ? '开学补课周' : '第 $week 周';
+  int get lastDisplayWeek =>
+      math.max(semester.weekCount, calendarTerm?.weeks ?? semester.weekCount);
+  CalendarEvent? calendarEventOn(DateTime instant) => calendarTerm == null
+      ? null
+      : SeuCalendar.highlight(SchoolClock.day(instant));
+  List<CalendarEvent> calendarEventsOn(DateTime instant) =>
+      calendarTerm == null ? [] : SeuCalendar.on(SchoolClock.day(instant));
   List<BreakSlot> get breaks => [
     for (var i = 1; i < semester.periods.length; i++)
       if (semester.periods[i].startMinute > semester.periods[i - 1].endMinute)
@@ -540,7 +592,7 @@ class ScheduleData {
     return null;
   }
 
-  List<Occurrence> occurrencesFor(Course c, int week) {
+  List<Occurrence> _rawOccurrencesFor(Course c, int week) {
     if (week < 1 || week > semester.weekCount) return [];
     return [
       for (final m in c.meetings.where((m) => m.occurs(week)))
@@ -592,6 +644,55 @@ class ScheduleData {
     ];
   }
 
+  List<Occurrence> occurrencesFor(Course c, int week) {
+    final term = calendarTerm;
+    if (term == null) return _rawOccurrencesFor(c, week);
+    if (week < firstDisplayWeek || week > lastDisplayWeek) return [];
+    final result = <Occurrence>[];
+    for (final event in _rawOccurrencesFor(c, week)) {
+      final date = SchoolClock.day(
+        SchoolClock.date(week, event.weekday, semester),
+      );
+      final stop = SeuCalendar.stoppageOn(date);
+      final replacement = SeuCalendar.makeupOn(date);
+      final outside = !term.contains(date);
+      if (!event.isExtra && (stop != null || outside || replacement != null)) {
+        continue;
+      }
+      result.add(
+        event.isExtra && (stop != null || outside)
+            ? event.calendarCopy(
+                week: week,
+                weekday: event.weekday,
+                note: '${stop?.title ?? '非教学期'} · 停课日额外安排',
+              )
+            : event,
+      );
+    }
+    for (var day = 1; day <= 7; day++) {
+      final date = SchoolClock.day(SchoolClock.date(week, day, semester));
+      final makeup = SeuCalendar.makeupOn(date);
+      if (makeup == null || !term.contains(makeup.sourceDate!)) continue;
+      final source = makeup.sourceDate!;
+      final sourceWeek = SchoolClock.week(source, semester);
+      for (final event in _rawOccurrencesFor(
+        c,
+        sourceWeek,
+      ).where((e) => !e.isExtra && e.weekday == source.weekday)) {
+        result.add(
+          event.calendarCopy(
+            week: week,
+            weekday: day,
+            sourceDate: source,
+            note:
+                '${makeup.title} · 补${CalendarEvent.shortDate(source)}${SchoolClock.weekdays[source.weekday - 1]}（第$sourceWeek周）的课',
+          ),
+        );
+      }
+    }
+    return result;
+  }
+
   List<Occurrence> occurrences(int week, {int? weekday}) {
     final result = courses
         .expand((c) => occurrencesFor(c, week))
@@ -608,7 +709,7 @@ class ScheduleData {
 
   List<String> conflicts(Course candidate) {
     final names = <String>{};
-    for (var week = 1; week <= semester.weekCount; week++) {
+    for (var week = firstDisplayWeek; week <= semester.weekCount; week++) {
       final own = occurrencesFor(candidate, week);
       final other = courses
           .where((c) => c.id != candidate.id)
@@ -617,7 +718,7 @@ class ScheduleData {
         for (final b in [...own, ...other]) {
           if (a.overlaps(b)) {
             names.add(
-              '第 $week 周${SchoolClock.weekdays[a.weekday - 1]}：${b.name}',
+              '${weekLabel(week)}${SchoolClock.weekdays[a.weekday - 1]}：${b.name}',
             );
           }
         }

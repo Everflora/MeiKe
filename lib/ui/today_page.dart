@@ -38,6 +38,7 @@ class _TodayPageState extends State<TodayPage> {
     final data = widget.store.data;
     final week = SchoolClock.week(now, data.semester);
     final courses = data.occurrences(week, weekday: SchoolClock.weekday(now));
+    final calendarEvents = data.calendarEventsOn(now);
     return ListView(
       padding: const EdgeInsets.all(20),
       children: [
@@ -47,6 +48,26 @@ class _TodayPageState extends State<TodayPage> {
           padding: const EdgeInsets.only(bottom: 24),
         ),
         _hero(context, data, courses, week),
+        for (final calendar in calendarEvents)
+          Padding(
+            padding: const EdgeInsets.only(top: 12),
+            child: Card(
+              child: Padding(
+                padding: const EdgeInsets.all(14),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '${calendar.title} · ${calendar.dateLabel}',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: 5),
+                    Text(calendar.details),
+                  ],
+                ),
+              ),
+            ),
+          ),
         const SizedBox(height: 24),
         Row(
           children: [
@@ -131,6 +152,11 @@ class _TodayPageState extends State<TodayPage> {
                                 e.teacher,
                                 style: Theme.of(context).textTheme.bodySmall,
                               ),
+                            if (e.calendarNote.isNotEmpty)
+                              Text(
+                                e.calendarNote,
+                                style: TextStyle(color: context.meike.green),
+                              ),
                             if (e.notes.isNotEmpty)
                               Padding(
                                 padding: const EdgeInsets.only(top: 8),
@@ -179,7 +205,8 @@ class _TodayPageState extends State<TodayPage> {
         active ??
         courses.where((e) => !e.allDay && e.endMinute > minute).firstOrNull;
     final gap = data.breaks.where((r) => r.contains(minute)).firstOrNull;
-    final semesterActive = week >= 1 && week <= data.semester.weekCount;
+    final semesterActive =
+        week >= data.firstDisplayWeek && week <= data.lastDisplayWeek;
     final resting =
         semesterActive &&
         gap != null &&
@@ -234,7 +261,7 @@ class _TodayPageState extends State<TodayPage> {
                                 : '按自己的节奏'),
                     ),
                     const Spacer(),
-                    if (semesterActive) Text('第 $week 周'),
+                    if (semesterActive) Text(data.weekLabel(week)),
                   ],
                 ),
                 const SizedBox(height: 18),
@@ -306,9 +333,9 @@ class _TodayPageState extends State<TodayPage> {
                   ),
                 ] else ...[
                   Text(
-                    week < 1
+                    week < data.firstDisplayWeek
                         ? '新学期，等你开启'
-                        : week > data.semester.weekCount
+                        : week > data.lastDisplayWeek
                         ? '这一学期，辛苦啦'
                         : courses.isEmpty
                         ? '今天没有课程'

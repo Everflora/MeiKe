@@ -1,7 +1,7 @@
 name: seu_timetable
 description: SEU综合课表，安卓与iOS共用的离线Flutter课表。
 publish_to: none
-version: 1.4.1+15
+version: 1.5.0+16
 
 environment:
   sdk: '>=3.10.0 <4.0.0'
@@ -30,6 +30,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/app_icon.png
+    - assets/seu-calendar-2026-2027.jpg
     - assets/school_import.js
     - assets/labor_news.js
 

@@ -234,7 +234,7 @@ class _SettingsPageState extends State<SettingsPage> {
           ],
         ),
         Text(
-          '梅课 1.4.1 · SEU 校园课表',
+          '梅课 1.5.0 · SEU 校园课表',
           style: Theme.of(context).textTheme.bodySmall,
           textAlign: TextAlign.center,
         ),
@@ -333,6 +333,13 @@ class _SemesterEditorState extends State<SemesterEditor> {
               max: 40,
               format: (v) => '$v 周',
               onChanged: (v) => setState(() => draft.weekCount = v),
+            ),
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              title: const Text('按 SEU 校历显示课程'),
+              subtitle: const Text('匹配校历学期时隐藏常规停课日、调整补课；手动额外安排保留。'),
+              value: draft.useSchoolCalendar,
+              onChanged: (v) => setState(() => draft.useSchoolCalendar = v),
             ),
           ],
         ),

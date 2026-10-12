@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 
 import '../data/schedule_store.dart';
 import '../domain/schedule.dart';
+import '../domain/academic_calendar.dart';
 import 'course_editor.dart';
 import 'classroom_label.dart';
 import 'course_details.dart';
@@ -27,10 +28,11 @@ class _TimetablePageState extends State<TimetablePage>
   late int selectedWeek = currentWeek;
   late String semesterKey = jsonEncode(widget.store.data.semester.toJson());
   Timer? timer;
-  int get currentWeek => SchoolClock.week(
-    now,
-    widget.store.data.semester,
-  ).clamp(1, widget.store.data.semester.weekCount);
+  int get currentWeek =>
+      SchoolClock.week(now, widget.store.data.semester).clamp(
+        widget.store.data.firstDisplayWeek,
+        widget.store.data.lastDisplayWeek,
+      );
   @override
   void initState() {
     super.initState();
@@ -125,6 +127,7 @@ class _TimetablePageState extends State<TimetablePage>
           child: LayoutBuilder(
             builder: (context, constraints) {
               const timeWidth = 38.0;
+              final headerHeight = data.calendarTerm == null ? 44.0 : 56.0;
               final width = math.max(
                 1.0,
                 (constraints.maxWidth - timeWidth) / 7,
@@ -144,7 +147,7 @@ class _TimetablePageState extends State<TimetablePage>
               );
               final height = math.max(
                 ginkgo ? base.height * 30 / 52 : base.height / 2,
-                constraints.maxHeight - 44 - allDayHeight - 4,
+                constraints.maxHeight - headerHeight - allDayHeight - 4,
               );
               final layout = TimelineLayout(
                 data.semester.periods,
@@ -157,7 +160,7 @@ class _TimetablePageState extends State<TimetablePage>
                   child: Column(
                     children: [
                       SizedBox(
-                        height: 44,
+                        height: headerHeight,
                         child: Row(
                           children: [
                             SizedBox(
@@ -185,6 +188,20 @@ class _TimetablePageState extends State<TimetablePage>
                                     data.semester,
                                   ),
                                   now: now,
+                                  event: data.calendarEventOn(
+                                    SchoolClock.date(
+                                      selectedWeek,
+                                      day,
+                                      data.semester,
+                                    ),
+                                  ),
+                                  events: data.calendarEventsOn(
+                                    SchoolClock.date(
+                                      selectedWeek,
+                                      day,
+                                      data.semester,
+                                    ),
+                                  ),
                                 ),
                               ),
                           ],
@@ -466,7 +483,7 @@ class _TimetablePageState extends State<TimetablePage>
                         height: 44,
                       ),
                       padding: EdgeInsets.zero,
-                      onPressed: selectedWeek > 1
+                      onPressed: selectedWeek > data.firstDisplayWeek
                           ? () => setState(() => selectedWeek--)
                           : null,
                       icon: const Icon(Icons.chevron_left),
@@ -479,13 +496,13 @@ class _TimetablePageState extends State<TimetablePage>
                             setState(() => selectedWeek = week),
                         itemBuilder: (_) => [
                           for (
-                            var week = 1;
-                            week <= data.semester.weekCount;
+                            var week = data.firstDisplayWeek;
+                            week <= data.lastDisplayWeek;
                             week++
                           )
                             PopupMenuItem(
                               value: week,
-                              child: Text('第 $week 周'),
+                              child: Text(data.weekLabel(week)),
                             ),
                         ],
                         child: Padding(
@@ -499,7 +516,7 @@ class _TimetablePageState extends State<TimetablePage>
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     Text(
-                                      '第 $selectedWeek 周',
+                                      data.weekLabel(selectedWeek),
                                       style: const TextStyle(
                                         fontSize: 17,
                                         fontWeight: FontWeight.w600,
@@ -535,7 +552,7 @@ class _TimetablePageState extends State<TimetablePage>
                         height: 44,
                       ),
                       padding: EdgeInsets.zero,
-                      onPressed: selectedWeek < data.semester.weekCount
+                      onPressed: selectedWeek < data.lastDisplayWeek
                           ? () => setState(() => selectedWeek++)
                           : null,
                       icon: const Icon(Icons.chevron_right),
@@ -619,7 +636,7 @@ class _TimetablePageState extends State<TimetablePage>
       children: [
         IconButton(
           tooltip: '上一周',
-          onPressed: selectedWeek > 1
+          onPressed: selectedWeek > widget.store.data.firstDisplayWeek
               ? () => setState(() => selectedWeek--)
               : null,
           icon: const Icon(Icons.chevron_left, size: 21),
@@ -630,17 +647,20 @@ class _TimetablePageState extends State<TimetablePage>
           onSelected: (week) => setState(() => selectedWeek = week),
           itemBuilder: (_) => [
             for (
-              var week = 1;
-              week <= widget.store.data.semester.weekCount;
+              var week = widget.store.data.firstDisplayWeek;
+              week <= widget.store.data.lastDisplayWeek;
               week++
             )
-              PopupMenuItem(value: week, child: Text('第 $week 周')),
+              PopupMenuItem(
+                value: week,
+                child: Text(widget.store.data.weekLabel(week)),
+              ),
           ],
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                '第 $selectedWeek 周',
+                widget.store.data.weekLabel(selectedWeek),
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -663,7 +683,7 @@ class _TimetablePageState extends State<TimetablePage>
         ),
         IconButton(
           tooltip: '下一周',
-          onPressed: selectedWeek < widget.store.data.semester.weekCount
+          onPressed: selectedWeek < widget.store.data.lastDisplayWeek
               ? () => setState(() => selectedWeek++)
               : null,
           icon: const Icon(Icons.chevron_right, size: 21),
@@ -674,9 +694,17 @@ class _TimetablePageState extends State<TimetablePage>
 }
 
 class _DayHeader extends StatelessWidget {
-  const _DayHeader({required this.day, required this.date, required this.now});
+  const _DayHeader({
+    required this.day,
+    required this.date,
+    required this.now,
+    this.event,
+    this.events = const [],
+  });
   final int day;
   final DateTime date, now;
+  final CalendarEvent? event;
+  final List<CalendarEvent> events;
   @override
   Widget build(BuildContext context) {
     final today = SchoolClock.day(date) == SchoolClock.day(now);
@@ -707,6 +735,42 @@ class _DayHeader extends StatelessWidget {
             ),
           ),
         ),
+        if (event != null)
+          Tooltip(
+            message: '${event!.title}：${event!.details}',
+            child: InkWell(
+              onTap: () => showDialog<void>(
+                context: context,
+                builder: (ctx) => AlertDialog(
+                  title: Text(
+                    '${SchoolClock.shortDate(date)} · ${event!.title}',
+                  ),
+                  content: SingleChildScrollView(
+                    child: Text(
+                      events.map((e) => '${e.title}：${e.details}').join('\n\n'),
+                    ),
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(ctx),
+                      child: const Text('知道了'),
+                    ),
+                  ],
+                ),
+              ),
+              child: Text(
+                event!.badge,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 9,
+                  height: 1.1,
+                  color: context.meike.green,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ),
       ],
     );
   }
@@ -740,7 +804,7 @@ class _EventCard extends StatelessWidget {
         : event.color.foreground(context);
     return Semantics(
       label:
-          '${event.name}，${SchoolClock.weekdays[event.weekday - 1]}，${event.timeLabel}，${event.location}',
+          '${event.name}，${SchoolClock.weekdays[event.weekday - 1]}，${event.timeLabel}，${event.location}，${event.calendarNote}',
       button: true,
       excludeSemantics: true,
       child: SizedBox(
@@ -796,7 +860,9 @@ class _EventCard extends StatelessWidget {
                     children: [
                       if (extraHeight > 0)
                         Text(
-                          '额外安排',
+                          event.calendarNote.isNotEmpty ? '停课日额外安排' : '额外安排',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             fontSize: 8,
                             height: 1.1,
@@ -804,7 +870,11 @@ class _EventCard extends StatelessWidget {
                           ),
                         ),
                       Text(
-                        event.name,
+                        '${event.makeupFor != null
+                            ? '补·'
+                            : event.isExtra && event.calendarNote.isNotEmpty
+                            ? '额·'
+                            : ''}${event.name}',
                         maxLines: lines,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(

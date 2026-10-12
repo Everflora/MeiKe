@@ -8,7 +8,11 @@ void main() {
   late ScheduleData data;
   setUp(
     () => data = ScheduleData(
-      semester: Semester(startDate: SchoolClock.instant(2026, 9, 21)),
+      // These fixtures test raw recurrence; calendar overrides have their own suite.
+      semester: Semester(
+        startDate: SchoolClock.instant(2026, 9, 21),
+        useSchoolCalendar: false,
+      ),
     ),
   );
   test('学校作息与课间完整匹配', () {
@@ -369,6 +373,7 @@ void main() {
     final imported = ScheduleCodec.decode(
       File('test/fixtures/ios-v1.json').readAsBytesSync(),
     );
+    imported.semester.useSchoolCalendar = false;
     final golden =
         jsonDecode(
               File('test/fixtures/ios-occurrences.json').readAsStringSync(),
