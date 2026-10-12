@@ -286,7 +286,9 @@ class _TimetablePageState extends State<TimetablePage>
                                               ),
                                             ),
                                             Text(
-                                              '${LessonPeriod.format(s.start)}–',
+                                              LessonPeriod.format(
+                                                s.start,
+                                              ).replaceFirst(RegExp(r'^0'), ''),
                                               style: TextStyle(
                                                 fontSize: 9,
                                                 height: 1.1,
@@ -294,7 +296,17 @@ class _TimetablePageState extends State<TimetablePage>
                                               ),
                                             ),
                                             Text(
-                                              LessonPeriod.format(s.end),
+                                              '-',
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                height: .8,
+                                                color: context.meike.muted,
+                                              ),
+                                            ),
+                                            Text(
+                                              LessonPeriod.format(
+                                                s.end,
+                                              ).replaceFirst(RegExp(r'^0'), ''),
                                               style: TextStyle(
                                                 fontSize: 9,
                                                 height: 1.1,

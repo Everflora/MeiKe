@@ -232,14 +232,38 @@ void main() {
       expect(find.text('午休'), findsNothing);
       expect(find.text('晚休'), findsNothing);
       expect(find.text('5′'), findsNothing);
-      expect(find.text('09:50–'), findsOneWidget);
+      expect(find.text('9:50'), findsOneWidget);
       expect(find.text('10:35'), findsOneWidget);
+      final axis = find.byKey(const ValueKey('timetable-period-3'));
+      final start = find.descendant(of: axis, matching: find.text('9:50'));
+      final dash = find.descendant(of: axis, matching: find.text('-'));
+      final end = find.descendant(of: axis, matching: find.text('10:35'));
+      expect(dash, findsOneWidget);
+      final startRect = tester.getRect(start);
+      final dashRect = tester.getRect(dash);
+      final endRect = tester.getRect(end);
+      expect(startRect.bottom, lessThanOrEqualTo(dashRect.top));
+      expect(dashRect.bottom, lessThanOrEqualTo(endRect.top));
+      expect(startRect.center.dx, closeTo(dashRect.center.dx, .01));
+      expect(endRect.center.dx, closeTo(dashRect.center.dx, .01));
+      expect(tester.getRect(axis).contains(startRect.topLeft), isTrue);
+      expect(
+        endRect.bottom,
+        lessThanOrEqualTo(tester.getRect(axis).bottom + .01),
+      );
+      expect(
+        endRect.right,
+        lessThanOrEqualTo(tester.getRect(axis).right + .01),
+      );
+      expect(find.text('8:00'), findsOneWidget);
+      expect(find.text('8:45'), findsOneWidget);
+
       expect(find.text('21:25'), findsOneWidget);
       expect(find.text('第 3–5 节'), findsOneWidget);
       expect(find.text('桃园田径场'), findsOneWidget);
       expect(find.text('午间实验 · 午间实验'), findsOneWidget);
       expect(find.text('实301'), findsOneWidget);
-      expect(find.text('13:00–'), findsOneWidget);
+      expect(find.text('13:00'), findsOneWidget);
       expect(find.text('13:30'), findsOneWidget);
       final event = store.data
           .occurrences(1)
