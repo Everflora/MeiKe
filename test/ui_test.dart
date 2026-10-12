@@ -16,6 +16,13 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 void main() {
   late Directory dir;
   late ScheduleStore store;
+  // The calendar can also display day 13; target the final lesson's time slot.
+  Finder finalPeriodLabel() => find.descendant(
+    of: find
+        .ancestor(of: find.text('20:40'), matching: find.byType(FittedBox))
+        .first,
+    matching: find.text('13'),
+  );
   setUp(() async {
     dir = await Directory.systemTemp.createTemp('seu-ui-');
     store = ScheduleStore(File('${dir.path}/schedule.json'));
@@ -141,7 +148,7 @@ void main() {
     expect(tester.getRect(find.byTooltip('选择教学周')).top, greaterThan(panel.top));
     expect(tester.getRect(find.byTooltip('添加课程')).bottom, lessThan(panel.top));
     expect(
-      tester.getRect(find.text('13')).bottom,
+      tester.getRect(finalPeriodLabel()).bottom,
       lessThan(tester.getRect(find.byType(NavigationBar)).top),
     );
     expect(
@@ -170,7 +177,7 @@ void main() {
   testWidgets('七天13节首屏、单节体育地点、无本周和放大按钮', (tester) async {
     await screen(tester);
     expect(find.text('周日'), findsOneWidget);
-    expect(find.text('13'), findsOneWidget);
+    expect(finalPeriodLabel(), findsOneWidget);
     expect(find.text('体育馆2楼'), findsOneWidget);
     expect(find.text('体育'), findsOneWidget);
     expect(find.text('本周'), findsNothing);
@@ -266,7 +273,7 @@ void main() {
     expect(find.text('所有课程'), findsOneWidget);
     await tester.tap(find.byType(BackButton));
     await tester.pumpAndSettle();
-    expect(find.text('13'), findsOneWidget);
+    expect(finalPeriodLabel(), findsOneWidget);
     await tester.tap(find.widgetWithText(NavigationDestination, '我的'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('课程管理'));
