@@ -859,6 +859,7 @@ class TimelineLayout {
     List<Occurrence> occurrences = const [],
     double? fittingHeight,
     bool compact = false,
+    bool collapseBreaks = false,
   }) {
     final timed = occurrences.where((e) => !e.allDay);
     var cursor = periods.first.startMinute;
@@ -869,6 +870,55 @@ class TimelineLayout {
     }
     var y = 0.0;
     final result = <TimelineSegment>[];
+    final lessonHeight = compact ? 52.0 : 68.0;
+    void addGap(int start, int end, double usualHeight) {
+      if (!collapseBreaks) {
+        result.add(TimelineSegment(start, end, null, y, usualHeight));
+        y += usualHeight;
+        return;
+      }
+      // Empty pauses consume no space. Only the occupied portion of an extra
+      // gets a row, so a short lunch experiment still has room for its title.
+      final occupied =
+          timed
+              .where(
+                (e) => e.isExtra && e.startMinute < end && e.endMinute > start,
+              )
+              .map(
+                (e) => MinuteRange(
+                  math.max(start, e.startMinute),
+                  math.min(end, e.endMinute),
+                ),
+              )
+              .toList()
+            ..sort((a, b) => a.start.compareTo(b.start));
+      final merged = <MinuteRange>[];
+      for (final range in occupied) {
+        if (merged.isNotEmpty && range.start <= merged.last.end) {
+          merged[merged.length - 1] = MinuteRange(
+            merged.last.start,
+            math.max(merged.last.end, range.end),
+          );
+        } else {
+          merged.add(range);
+        }
+      }
+      var previous = start;
+      for (final range in merged) {
+        if (previous < range.start) {
+          result.add(TimelineSegment(previous, range.start, null, y, 0));
+        }
+        result.add(
+          TimelineSegment(range.start, range.end, null, y, lessonHeight),
+        );
+        y += lessonHeight;
+        previous = range.end;
+      }
+      if (previous < end) {
+        result.add(TimelineSegment(previous, end, null, y, 0));
+      }
+    }
+
     for (final p in periods) {
       if (p.startMinute > cursor) {
         final gap = p.startMinute - cursor;
@@ -879,21 +929,15 @@ class TimelineLayout {
                   ? 8.0
                   : 4.0)
             : (gap > 20 ? 38.0 : 22.0);
-        result.add(TimelineSegment(cursor, p.startMinute, null, y, h));
-        y += h;
+        addGap(cursor, p.startMinute, h);
       }
-      final lessonHeight = compact ? 52.0 : 68.0;
       result.add(
         TimelineSegment(p.startMinute, p.endMinute, p.id, y, lessonHeight),
       );
       y += lessonHeight;
       cursor = p.endMinute;
     }
-    if (cursor < upper) {
-      final extraHeight = compact ? 52.0 : 68.0;
-      result.add(TimelineSegment(cursor, upper, null, y, extraHeight));
-      y += extraHeight;
-    }
+    if (cursor < upper) addGap(cursor, upper, lessonHeight);
     final scale = fittingHeight == null
         ? 1.0
         : math.max(1.0, fittingHeight) / y;

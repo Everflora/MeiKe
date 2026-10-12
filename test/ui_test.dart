@@ -16,11 +16,8 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 void main() {
   late Directory dir;
   late ScheduleStore store;
-  // The calendar can also display day 13; target the final lesson's time slot.
   Finder finalPeriodLabel() => find.descendant(
-    of: find
-        .ancestor(of: find.text('20:40'), matching: find.byType(FittedBox))
-        .first,
+    of: find.byKey(const ValueKey('timetable-period-13')),
     matching: find.text('13'),
   );
   setUp(() async {
@@ -188,6 +185,93 @@ void main() {
     );
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox());
+  });
+  testWidgets('两套主题都显示完整时段，连堂分节对齐、单节地点保留，课程可点击', (tester) async {
+    for (final theme in MeikeTheme.values) {
+      final appearance = AppearanceController(
+        File('${dir.path}/appearance.txt'),
+      );
+      await tester.runAsync(() async {
+        await appearance.setTheme(theme);
+        await appearance.setMode(ThemeMode.light);
+        final semester = store.data.semester;
+        await store.replace(
+          ScheduleData(
+            semester: semester,
+            courses: [
+              Course(
+                name: '数据库原理',
+                location: '教三-302',
+                meetings: [WeeklyMeeting(startPeriod: 3, endPeriod: 5)],
+              ),
+              Course(
+                name: '体育',
+                location: '桃园田径场',
+                meetings: [
+                  WeeklyMeeting(weekday: 3, startPeriod: 2, endPeriod: 2),
+                ],
+              ),
+              Course(
+                name: '午间实验',
+                location: '实301',
+                extras: [
+                  ExtraMeeting(
+                    title: '午间实验',
+                    weekday: 7,
+                    startMinute: 780,
+                    endMinute: 810,
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      });
+      appearance.dispose();
+      await screen(tester, width: 320, height: 568);
+      expect(find.text('午休'), findsNothing);
+      expect(find.text('晚休'), findsNothing);
+      expect(find.text('5′'), findsNothing);
+      expect(find.text('09:50–'), findsOneWidget);
+      expect(find.text('10:35'), findsOneWidget);
+      expect(find.text('21:25'), findsOneWidget);
+      expect(find.text('第 3–5 节'), findsOneWidget);
+      expect(find.text('桃园田径场'), findsOneWidget);
+      expect(find.text('午间实验 · 午间实验'), findsOneWidget);
+      expect(find.text('实301'), findsOneWidget);
+      expect(find.text('13:00–'), findsOneWidget);
+      expect(find.text('13:30'), findsOneWidget);
+      final event = store.data
+          .occurrences(1)
+          .firstWhere((e) => e.name == '数据库原理');
+      final slot4 = tester.getRect(
+        find.byKey(const ValueKey('timetable-period-4')),
+      );
+      final slot5 = tester.getRect(
+        find.byKey(const ValueKey('timetable-period-5')),
+      );
+      final divider4 = tester.getRect(
+        find.byKey(ValueKey('course-divider-${event.id}-4')),
+      );
+      final divider5 = tester.getRect(
+        find.byKey(ValueKey('course-divider-${event.id}-5')),
+      );
+      expect(divider4.top, closeTo(slot4.top, .01));
+      expect(divider5.top, closeTo(slot5.top, .01));
+      expect(divider5.top - divider4.top, closeTo(slot4.height, .01));
+      expect(tester.takeException(), isNull);
+      await tester.tap(find.text('午间实验 · 午间实验'));
+      await tester.pumpAndSettle();
+      expect(find.text('上课地点'), findsOneWidget);
+      await tester.tap(find.byTooltip('关闭课程详情'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('数据库原理'));
+      await tester.pumpAndSettle();
+      expect(find.text('上课地点'), findsOneWidget);
+      expect(find.text('教三-302'), findsWidgets);
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox());
+    }
   });
   testWidgets('小屏和横屏布局不溢出', (tester) async {
     await screen(tester, width: 320, height: 568);
