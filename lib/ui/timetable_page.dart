@@ -804,7 +804,9 @@ class _EventCard extends StatelessWidget {
     final segmented = rows.length > 1;
     final firstRowHeight = segmented ? rows.first.height - 2 : height;
     final lastRowHeight = segmented ? rows.last.height - 2 : height;
-    final roomLines = lastRowHeight >= 36 ? 2 : 1;
+    final roomLines = segmented
+        ? (lastRowHeight >= 36 ? 2 : 1)
+        : (height > 70 ? 2 : 1);
     final locationHeight = event.location.isEmpty ? 0 : roomLines * 10;
     final extraHeight = event.isExtra && !event.allDay && height > 70 ? 10 : 0;
     final lines =
