@@ -13,6 +13,7 @@ import 'ui/settings_page.dart';
 import 'ui/timetable_page.dart';
 import 'ui/today_page.dart';
 import 'ui/theme.dart';
+import 'ui/nai_family.dart';
 
 class SeuTimetableApp extends StatefulWidget {
   const SeuTimetableApp({super.key, required this.store});
@@ -49,6 +50,13 @@ class _SeuTimetableAppState extends State<SeuTimetableApp> {
       theme: meikeTheme(Brightness.light, appearance.theme),
       darkTheme: meikeTheme(Brightness.dark, appearance.theme),
       themeMode: appearance.mode,
+      builder: (context, child) => MediaQuery(
+        data: MediaQuery.of(context).copyWith(
+          disableAnimations:
+              MediaQuery.disableAnimationsOf(context) || !appearance.motion,
+        ),
+        child: child!,
+      ),
       home: _Home(store: widget.store, appearance: appearance),
     ),
   );
@@ -126,6 +134,16 @@ class _HomeState extends State<_Home> {
   );
 
   Widget _navigation(BuildContext context) {
+    if (context.naiFamily) {
+      return NaiNavigation(
+        selected: selected,
+        onSelect: (v) => setState(() {
+          selected = v;
+          if (v == 2) discussionOpened = true;
+          if (v == 3) newsOpened = true;
+        }),
+      );
+    }
     final bar = NavigationBar(
       selectedIndex: selected,
       onDestinationSelected: (v) => setState(() {

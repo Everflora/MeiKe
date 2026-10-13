@@ -147,7 +147,7 @@ ThemeData meikeTheme(
   final dark = brightness == Brightness.dark;
   final p = design == MeikeTheme.ginkgo
       ? (dark ? MeikeColors.ginkgoDark : MeikeColors.ginkgoLight)
-      : (dark ? MeikeColors.dark : MeikeColors.light);
+      : (dark ? MeikeColors.dark : MeikeColors.light).copyWith(design: design);
   final scheme =
       ColorScheme.fromSeed(seedColor: p.green, brightness: brightness).copyWith(
         primary: p.green,
@@ -422,7 +422,7 @@ class BrandHeader extends StatelessWidget {
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (context.meike.design != MeikeTheme.ginkgo) ...[
+        if (context.meike.design == MeikeTheme.plum) ...[
           Row(
             children: [
               const PlumMark(size: 20),
@@ -433,9 +433,23 @@ class BrandHeader extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 15),
-        ] else if (trailing != null)
+        ] else if (trailing != null &&
+            context.meike.design == MeikeTheme.ginkgo)
           Align(alignment: Alignment.centerRight, child: trailing),
-        Text(title, style: Theme.of(context).textTheme.headlineMedium),
+        if (context.meike.design == MeikeTheme.naiFamily)
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  title,
+                  style: Theme.of(context).textTheme.headlineMedium,
+                ),
+              ),
+              ?trailing,
+            ],
+          )
+        else
+          Text(title, style: Theme.of(context).textTheme.headlineMedium),
         if (subtitle != null) ...[
           const SizedBox(height: 5),
           Text(subtitle!, style: Theme.of(context).textTheme.bodySmall),

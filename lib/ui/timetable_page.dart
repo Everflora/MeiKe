@@ -14,17 +14,19 @@ import 'courses_page.dart';
 import 'school_import_page.dart';
 import 'theme.dart';
 import 'appearance.dart';
+import 'nai_family.dart';
 
 class TimetablePage extends StatefulWidget {
-  const TimetablePage({super.key, required this.store});
+  const TimetablePage({super.key, required this.store, this.clock});
   final ScheduleStore store;
+  final DateTime Function()? clock;
   @override
   State<TimetablePage> createState() => _TimetablePageState();
 }
 
 class _TimetablePageState extends State<TimetablePage>
     with WidgetsBindingObserver {
-  DateTime now = DateTime.now();
+  late DateTime now = widget.clock?.call() ?? DateTime.now();
   late int selectedWeek = currentWeek;
   late String semesterKey = jsonEncode(widget.store.data.semester.toJson());
   Timer? timer;
@@ -46,7 +48,7 @@ class _TimetablePageState extends State<TimetablePage>
     if (!mounted) return;
     final wasCurrent = selectedWeek == currentWeek;
     setState(() {
-      now = DateTime.now();
+      now = widget.clock?.call() ?? DateTime.now();
       if (wasCurrent) selectedWeek = currentWeek;
     });
   }
@@ -186,7 +188,7 @@ class _TimetablePageState extends State<TimetablePage>
                               width: timeWidth,
                               child: Center(
                                 child: Text(
-                                  ginkgo
+                                  (ginkgo || context.naiFamily)
                                       ? '${SchoolClock.wall(start).month}月'
                                       : '节次',
                                   style: TextStyle(
@@ -273,208 +275,232 @@ class _TimetablePageState extends State<TimetablePage>
                             ],
                           ),
                         ),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      Stack(
+                        clipBehavior: Clip.none,
                         children: [
-                          SizedBox(
-                            width: timeWidth,
-                            child: Column(
-                              children: [
-                                for (final s in layout.segments.where(
-                                  (s) => s.height > 0,
-                                ))
-                                  SizedBox(
-                                    key: ValueKey(
-                                      'timetable-period-${s.period ?? s.start}',
-                                    ),
-                                    height: s.height,
-                                    child: Center(
-                                      child: FittedBox(
-                                        fit: BoxFit.scaleDown,
-                                        child: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Text(
-                                              s.period?.toString() ?? '额外',
-                                              style: const TextStyle(
-                                                fontSize: 11,
-                                                height: 1.1,
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                            ),
-                                            Text(
-                                              LessonPeriod.format(
-                                                s.start,
-                                              ).replaceFirst(RegExp(r'^0'), ''),
-                                              style: TextStyle(
-                                                fontSize: 9,
-                                                height: 1.1,
-                                                color: context.meike.muted,
-                                              ),
-                                            ),
-                                            Text(
-                                              '-',
-                                              style: TextStyle(
-                                                fontSize: 10,
-                                                height: .8,
-                                                color: context.meike.muted,
-                                              ),
-                                            ),
-                                            Text(
-                                              LessonPeriod.format(
-                                                s.end,
-                                              ).replaceFirst(RegExp(r'^0'), ''),
-                                              style: TextStyle(
-                                                fontSize: 9,
-                                                height: 1.1,
-                                                color: context.meike.muted,
-                                              ),
-                                            ),
-                                          ],
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(
+                                width: timeWidth,
+                                child: Column(
+                                  children: [
+                                    for (final s in layout.segments.where(
+                                      (s) => s.height > 0,
+                                    ))
+                                      SizedBox(
+                                        key: ValueKey(
+                                          'timetable-period-${s.period ?? s.start}',
                                         ),
-                                      ),
-                                    ),
-                                  ),
-                              ],
-                            ),
-                          ),
-                          for (var day = 1; day <= 7; day++)
-                            SizedBox(
-                              width: width,
-                              height: layout.height,
-                              child: Stack(
-                                clipBehavior: Clip.hardEdge,
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(
-                                      ginkgo ? 9 : 0,
-                                    ),
-                                    child: Column(
-                                      children: [
-                                        for (final s in layout.segments.where(
-                                          (s) => s.height > 0,
-                                        ))
-                                          Container(
-                                            height: s.height,
-                                            margin: const EdgeInsets.symmetric(
-                                              horizontal: 1,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color:
-                                                  SchoolClock.day(
-                                                        SchoolClock.date(
-                                                          selectedWeek,
-                                                          day,
-                                                          data.semester,
-                                                        ),
-                                                      ) ==
-                                                      SchoolClock.day(now)
-                                                  ? context.meike.soft
-                                                        .withValues(alpha: .45)
-                                                  : ginkgo
-                                                  ? context.meike.surface
-                                                  : context.meike.paper,
-                                              border: Border(
-                                                bottom: BorderSide(
-                                                  color: context.meike.line
-                                                      .withValues(alpha: .5),
-                                                  width: 0.5,
+                                        height: s.height,
+                                        child: Center(
+                                          child: FittedBox(
+                                            fit: BoxFit.scaleDown,
+                                            child: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Text(
+                                                  s.period?.toString() ?? '额外',
+                                                  style: const TextStyle(
+                                                    fontSize: 11,
+                                                    height: 1.1,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
                                                 ),
-                                              ),
+                                                Text(
+                                                  LessonPeriod.format(
+                                                    s.start,
+                                                  ).replaceFirst(
+                                                    RegExp(r'^0'),
+                                                    '',
+                                                  ),
+                                                  style: TextStyle(
+                                                    fontSize: 9,
+                                                    height: 1.1,
+                                                    color: context.meike.muted,
+                                                  ),
+                                                ),
+                                                Text(
+                                                  '-',
+                                                  style: TextStyle(
+                                                    fontSize: 10,
+                                                    height: .8,
+                                                    color: context.meike.muted,
+                                                  ),
+                                                ),
+                                                Text(
+                                                  LessonPeriod.format(
+                                                    s.end,
+                                                  ).replaceFirst(
+                                                    RegExp(r'^0'),
+                                                    '',
+                                                  ),
+                                                  style: TextStyle(
+                                                    fontSize: 9,
+                                                    height: 1.1,
+                                                    color: context.meike.muted,
+                                                  ),
+                                                ),
+                                              ],
                                             ),
                                           ),
-                                      ],
-                                    ),
-                                  ),
-                                  for (final lane in OccurrenceLane.arrange(
-                                    events
-                                        .where(
-                                          (e) => e.weekday == day && !e.allDay,
-                                        )
-                                        .toList(),
-                                  ))
-                                    Positioned(
-                                      left:
-                                          1 +
-                                          lane.index * (width - 2) / lane.count,
-                                      top:
-                                          layout.position(
-                                            lane.occurrence.startMinute,
-                                          ) +
-                                          eventInset(lane.occurrence),
-                                      width: math.max(
-                                        1,
-                                        (width - 2) / lane.count - 1,
+                                        ),
                                       ),
-                                      child: _EventCard(
-                                        event: lane.occurrence,
-                                        height:
-                                            eventHeight(lane.occurrence) -
-                                            2 * eventInset(lane.occurrence),
-                                        layout: layout,
-                                        active:
-                                            SchoolClock.day(
-                                                  SchoolClock.date(
-                                                    selectedWeek,
-                                                    day,
-                                                    data.semester,
-                                                  ),
-                                                ) ==
-                                                SchoolClock.day(now) &&
-                                            lane.occurrence.busyRanges.any(
-                                              (r) => r.contains(
-                                                SchoolClock.minute(now),
-                                              ),
-                                            ),
-                                        onTap: () => open(lane.occurrence),
-                                      ),
-                                    ),
-                                  if (ginkgo &&
-                                      SchoolClock.day(
-                                            SchoolClock.date(
-                                              selectedWeek,
-                                              day,
-                                              data.semester,
-                                            ),
-                                          ) ==
-                                          SchoolClock.day(now) &&
-                                      SchoolClock.minute(now) >=
-                                          layout.segments.first.start &&
-                                      SchoolClock.minute(now) <
-                                          layout.segments.last.end)
-                                    Positioned(
-                                      top: layout.position(
-                                        SchoolClock.minute(now),
-                                      ),
-                                      left: 1,
-                                      right: 1,
-                                      child: IgnorePointer(
-                                        child: Stack(
-                                          clipBehavior: Clip.none,
+                                  ],
+                                ),
+                              ),
+                              for (var day = 1; day <= 7; day++)
+                                SizedBox(
+                                  width: width,
+                                  height: layout.height,
+                                  child: Stack(
+                                    clipBehavior: Clip.hardEdge,
+                                    children: [
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(
+                                          ginkgo ? 9 : 0,
+                                        ),
+                                        child: Column(
                                           children: [
-                                            Container(
-                                              height: 1.5,
-                                              color: gingko,
-                                            ),
-                                            Positioned(
-                                              left: 0,
-                                              top: -1.5,
-                                              child: Container(
-                                                width: 4,
-                                                height: 4,
-                                                decoration: const BoxDecoration(
-                                                  color: gingko,
-                                                  shape: BoxShape.circle,
+                                            for (final s
+                                                in layout.segments.where(
+                                                  (s) => s.height > 0,
+                                                ))
+                                              Container(
+                                                height: s.height,
+                                                margin:
+                                                    const EdgeInsets.symmetric(
+                                                      horizontal: 1,
+                                                    ),
+                                                decoration: BoxDecoration(
+                                                  color:
+                                                      SchoolClock.day(
+                                                            SchoolClock.date(
+                                                              selectedWeek,
+                                                              day,
+                                                              data.semester,
+                                                            ),
+                                                          ) ==
+                                                          SchoolClock.day(now)
+                                                      ? context.meike.soft
+                                                            .withValues(
+                                                              alpha: .45,
+                                                            )
+                                                      : ginkgo
+                                                      ? context.meike.surface
+                                                      : context.meike.paper,
+                                                  border: Border(
+                                                    bottom: BorderSide(
+                                                      color: context.meike.line
+                                                          .withValues(
+                                                            alpha: .5,
+                                                          ),
+                                                      width: 0.5,
+                                                    ),
+                                                  ),
                                                 ),
                                               ),
-                                            ),
                                           ],
                                         ),
                                       ),
-                                    ),
-                                ],
-                              ),
-                            ),
+                                      for (final lane in OccurrenceLane.arrange(
+                                        events
+                                            .where(
+                                              (e) =>
+                                                  e.weekday == day && !e.allDay,
+                                            )
+                                            .toList(),
+                                      ))
+                                        Positioned(
+                                          left:
+                                              1 +
+                                              lane.index *
+                                                  (width - 2) /
+                                                  lane.count,
+                                          top:
+                                              layout.position(
+                                                lane.occurrence.startMinute,
+                                              ) +
+                                              eventInset(lane.occurrence),
+                                          width: math.max(
+                                            1,
+                                            (width - 2) / lane.count - 1,
+                                          ),
+                                          child: _EventCard(
+                                            event: lane.occurrence,
+                                            height:
+                                                eventHeight(lane.occurrence) -
+                                                2 * eventInset(lane.occurrence),
+                                            layout: layout,
+                                            active:
+                                                SchoolClock.day(
+                                                      SchoolClock.date(
+                                                        selectedWeek,
+                                                        day,
+                                                        data.semester,
+                                                      ),
+                                                    ) ==
+                                                    SchoolClock.day(now) &&
+                                                lane.occurrence.busyRanges.any(
+                                                  (r) => r.contains(
+                                                    SchoolClock.minute(now),
+                                                  ),
+                                                ),
+                                            onTap: () => open(lane.occurrence),
+                                          ),
+                                        ),
+                                      if (ginkgo &&
+                                          SchoolClock.day(
+                                                SchoolClock.date(
+                                                  selectedWeek,
+                                                  day,
+                                                  data.semester,
+                                                ),
+                                              ) ==
+                                              SchoolClock.day(now) &&
+                                          SchoolClock.minute(now) >=
+                                              layout.segments.first.start &&
+                                          SchoolClock.minute(now) <
+                                              layout.segments.last.end)
+                                        Positioned(
+                                          top: layout.position(
+                                            SchoolClock.minute(now),
+                                          ),
+                                          left: 1,
+                                          right: 1,
+                                          child: IgnorePointer(
+                                            child: Stack(
+                                              clipBehavior: Clip.none,
+                                              children: [
+                                                Container(
+                                                  height: 1.5,
+                                                  color: gingko,
+                                                ),
+                                                Positioned(
+                                                  left: 0,
+                                                  top: -1.5,
+                                                  child: Container(
+                                                    width: 4,
+                                                    height: 4,
+                                                    decoration:
+                                                        const BoxDecoration(
+                                                          color: gingko,
+                                                          shape:
+                                                              BoxShape.circle,
+                                                        ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                            ],
+                          ),
+                          if (context.naiFamily)
+                            ..._eggMarkers(events, layout, width, timeWidth),
                         ],
                       ),
                       const SizedBox(height: 4),
@@ -493,7 +519,7 @@ class _TimetablePageState extends State<TimetablePage>
         children: [
           if (!ginkgo)
             SizedBox(
-              height: 48,
+              height: context.naiFamily ? 56 : 48,
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: Row(
@@ -530,6 +556,9 @@ class _TimetablePageState extends State<TimetablePage>
                           padding: const EdgeInsets.symmetric(horizontal: 4),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: context.naiFamily
+                                ? CrossAxisAlignment.start
+                                : CrossAxisAlignment.center,
                             children: [
                               FittedBox(
                                 fit: BoxFit.scaleDown,
@@ -538,8 +567,8 @@ class _TimetablePageState extends State<TimetablePage>
                                   children: [
                                     Text(
                                       data.weekLabel(selectedWeek),
-                                      style: const TextStyle(
-                                        fontSize: 17,
+                                      style: TextStyle(
+                                        fontSize: context.naiFamily ? 22 : 17,
                                         fontWeight: FontWeight.w600,
                                       ),
                                     ),
@@ -607,6 +636,9 @@ class _TimetablePageState extends State<TimetablePage>
                         height: 38,
                       ),
                       style: IconButton.styleFrom(
+                        backgroundColor: context.naiFamily
+                            ? context.meike.heroAccent
+                            : null,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -616,7 +648,9 @@ class _TimetablePageState extends State<TimetablePage>
                           : null,
                       icon: Icon(
                         Icons.add,
-                        color: Theme.of(context).colorScheme.onPrimary,
+                        color: context.naiFamily
+                            ? const Color(0xFF24382E)
+                            : Theme.of(context).colorScheme.onPrimary,
                       ),
                     ),
                   ],
@@ -664,7 +698,9 @@ class _TimetablePageState extends State<TimetablePage>
           selectWeek(selectedWeek + (right ? -1 : 1));
         },
         child: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 240),
+          duration: MediaQuery.disableAnimationsOf(context)
+              ? Duration.zero
+              : const Duration(milliseconds: 240),
           switchInCurve: Curves.easeOutCubic,
           switchOutCurve: Curves.easeInCubic,
           transitionBuilder: (child, animation) {
@@ -685,6 +721,74 @@ class _TimetablePageState extends State<TimetablePage>
         ),
       ),
     );
+  }
+
+  List<Widget> _eggMarkers(
+    List<Occurrence> events,
+    TimelineLayout layout,
+    double width,
+    double timeWidth,
+  ) {
+    final entries = <(Occurrence, Rect)>[];
+    for (var day = 1; day <= 7; day++) {
+      for (final lane in OccurrenceLane.arrange(
+        events.where((e) => e.weekday == day && !e.allDay).toList(),
+      )) {
+        final e = lane.occurrence;
+        final height =
+            layout.position(e.endMinute) - layout.position(e.startMinute);
+        final inset = height >= 4 ? 1.0 : 0.0;
+        entries.add((
+          e,
+          Rect.fromLTWH(
+            (day - 1) * width + 1 + lane.index * (width - 2) / lane.count,
+            layout.position(e.startMinute) + inset,
+            math.max(1, (width - 2) / lane.count - 1),
+            height - 2 * inset,
+          ),
+        ));
+      }
+    }
+    final occupied = entries.map((e) => e.$2).toList();
+    final active = entries
+        .where(
+          (entry) =>
+              SchoolClock.day(
+                    SchoolClock.date(
+                      selectedWeek,
+                      entry.$1.weekday,
+                      widget.store.data.semester,
+                    ),
+                  ) ==
+                  SchoolClock.day(now) &&
+              entry.$1.busyRanges.any(
+                (r) => r.contains(SchoolClock.minute(now)),
+              ),
+        )
+        .firstOrNull;
+    if (active == null) return [];
+    final rect = naiEggPlacement(
+      active.$2,
+      occupied,
+      Size(width * 7, layout.height),
+    );
+    return [
+      Positioned(
+        left: timeWidth + rect.left,
+        top: rect.top,
+        width: rect.width,
+        height: rect.height,
+        child: Semantics(
+          label: '奶蛋：正在上课，${active.$1.name}，点按查看详情',
+          button: true,
+          child: GestureDetector(
+            key: const ValueKey('nai-active-egg'),
+            onTap: () => open(active.$1),
+            child: const NaiCharacter(NaiAnimal.egg),
+          ),
+        ),
+      ),
+    ];
   }
 
   Widget _ginkgoWeek(DateTime start, DateTime end) => SizedBox(
@@ -769,7 +873,7 @@ class _DayHeader extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          context.meike.design == MeikeTheme.ginkgo
+          (context.meike.design == MeikeTheme.ginkgo || context.naiFamily)
               ? '一二三四五六日'[day - 1]
               : SchoolClock.weekdays[day - 1],
           style: TextStyle(fontSize: 10, color: context.meike.muted),
@@ -780,7 +884,9 @@ class _DayHeader extends StatelessWidget {
           height: 24,
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: today ? gingko : null,
+            color: today
+                ? (context.naiFamily ? context.meike.green : gingko)
+                : null,
             borderRadius: BorderRadius.circular(8),
           ),
           child: Text(
@@ -788,7 +894,11 @@ class _DayHeader extends StatelessWidget {
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,
-              color: today ? const Color(0xFF24382E) : context.meike.ink,
+              color: today
+                  ? (context.naiFamily
+                        ? Theme.of(context).colorScheme.onPrimary
+                        : const Color(0xFF24382E))
+                  : context.meike.ink,
             ),
           ),
         ),
@@ -886,8 +996,12 @@ class _EventCard extends StatelessWidget {
         !event.allDay &&
         height + .01 < 6 + 12.1 + (event.location.isEmpty ? 0 : 9.9);
     final foreground = active
-        ? (ginkgo ? context.meike.goldInk : context.meike.onHero)
-        : context.meike.design == MeikeTheme.ginkgo
+        ? (context.naiFamily
+              ? context.meike.ink
+              : ginkgo
+              ? context.meike.goldInk
+              : context.meike.onHero)
+        : (context.meike.design == MeikeTheme.ginkgo || context.naiFamily)
         ? context.meike.ink
         : event.color.foreground(context);
     return Semantics(
@@ -899,13 +1013,23 @@ class _EventCard extends StatelessWidget {
         height: height,
         child: Material(
           color: active
-              ? (ginkgo ? context.meike.goldSoft : context.meike.hero)
+              ? (ginkgo || context.naiFamily
+                    ? context.meike.goldSoft
+                    : context.meike.hero)
               : context.meike.design == MeikeTheme.ginkgo
               ? context.meike.surface
+              : context.naiFamily
+              ? Color.lerp(
+                  event.color.surface(context),
+                  context.meike.soft,
+                  .62,
+                )!
               : event.color.surface(context),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(ginkgo ? 5 : 7),
-            side: ginkgo
+            side: context.naiFamily && active
+                ? BorderSide(color: context.meike.green, width: 1.1)
+                : ginkgo
                 ? BorderSide(color: context.meike.line, width: .7)
                 : BorderSide.none,
           ),
@@ -940,7 +1064,7 @@ class _EventCard extends StatelessWidget {
                           : event.color.foreground(context),
                     ),
                   ),
-                if (active)
+                if (active && !context.naiFamily)
                   Positioned(
                     top: 0,
                     right: 5,

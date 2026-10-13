@@ -7,6 +7,7 @@ import '../domain/schedule.dart';
 import 'course_details.dart';
 import 'classroom_label.dart';
 import 'theme.dart';
+import 'nai_family.dart';
 
 class TodayPage extends StatefulWidget {
   const TodayPage({super.key, required this.store, this.clock});
@@ -48,6 +49,10 @@ class _TodayPageState extends State<TodayPage> {
           padding: const EdgeInsets.only(bottom: 24),
         ),
         _hero(context, data, courses, week),
+        if (context.naiFamily && courses.isNotEmpty) ...[
+          const SizedBox(height: 12),
+          _familyProgress(courses),
+        ],
         for (final calendar in calendarEvents)
           Padding(
             padding: const EdgeInsets.only(top: 12),
@@ -174,6 +179,12 @@ class _TodayPageState extends State<TodayPage> {
                         ),
                       ),
                       const SizedBox(width: 8),
+                      if (context.naiFamily &&
+                          !e.allDay &&
+                          e.busyRanges.any(
+                            (r) => r.contains(SchoolClock.minute(now)),
+                          ))
+                        const NaiCharacter(NaiAnimal.egg, size: 36),
                       Text(
                         e.periodLabel,
                         style: TextStyle(
@@ -187,6 +198,49 @@ class _TodayPageState extends State<TodayPage> {
               ),
             ),
           ),
+      ],
+    );
+  }
+
+  Widget _familyProgress(List<Occurrence> courses) {
+    final completed = courses
+        .where((e) => !e.allDay && e.endMinute <= SchoolClock.minute(now))
+        .length;
+    final ratio = completed / courses.length;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          '今日进度 · $completed / ${courses.length}',
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
+        SizedBox(
+          height: 40,
+          child: LayoutBuilder(
+            builder: (context, box) => Stack(
+              children: [
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 8,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                    child: LinearProgressIndicator(
+                      value: ratio,
+                      minHeight: 5,
+                      backgroundColor: context.meike.soft,
+                    ),
+                  ),
+                ),
+                Positioned(
+                  left: (box.maxWidth - 30) * ratio,
+                  bottom: 8,
+                  child: const NaiCharacter(NaiAnimal.frog, size: 30),
+                ),
+              ],
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -215,6 +269,113 @@ class _TodayPageState extends State<TodayPage> {
         active == null;
     final allDay = courses.where((e) => e.allDay).firstOrNull;
     final seconds = next?.secondsUntilLessonEnds(now);
+    if (context.naiFamily) {
+      final title = resting
+          ? gap.title
+          : next?.name ??
+                allDay?.name ??
+                (courses.isEmpty ? '今天没有课程' : '今日课程已完成');
+      final completed = courses
+          .where((e) => !e.allDay && e.endMinute <= minute)
+          .length;
+      return Container(
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          color: context.meike.soft,
+          borderRadius: BorderRadius.circular(24),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Text(
+                  resting
+                      ? '休息一下'
+                      : active != null
+                      ? '正在上课'
+                      : next != null
+                      ? '下一堂课'
+                      : '按自己的节奏',
+                  style: TextStyle(color: context.meike.green),
+                ),
+                const Spacer(),
+                if (semesterActive)
+                  Text(
+                    data.weekLabel(week),
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: Theme.of(context).textTheme.headlineSmall,
+                      ),
+                      const SizedBox(height: 8),
+                      if (next != null) ...[
+                        Text(
+                          next.timeLabel,
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                        ClassroomLabel(
+                          next.location.isEmpty ? '地点待定' : next.location,
+                          maxLines: 2,
+                        ),
+                      ],
+                      if (resting) Text('还可休息 ${gap.end - minute} 分钟'),
+                      if (!resting && seconds != null) ...[
+                        const SizedBox(height: 12),
+                        Text(
+                          next!.isExtra ? '距离本次安排结束' : '距离本节下课',
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                        FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            '${seconds ~/ 60} 分 ${(seconds % 60).toString().padLeft(2, '0')} 秒',
+                            style: TextStyle(
+                              fontSize: 30,
+                              fontWeight: FontWeight.w600,
+                              color: context.meike.green,
+                            ),
+                          ),
+                        ),
+                      ],
+                      if (next != null && minute < next.startMinute)
+                        Text('距离开始还有 ${next.startMinute - minute} 分钟'),
+                      if (next == null && allDay == null)
+                        Text(
+                          courses.isEmpty ? '留一点时间给自己。' : '已完成 $completed 项安排。',
+                        ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 10),
+                NaiCharacter(
+                  courses.isEmpty
+                      ? NaiAnimal.egg
+                      : next == null
+                      ? NaiAnimal.frogBack
+                      : active != null
+                      ? NaiAnimal.frog
+                      : NaiAnimal.chicken,
+                  size: 78,
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+    }
     return Container(
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(

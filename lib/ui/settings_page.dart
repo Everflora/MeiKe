@@ -9,6 +9,7 @@ import 'course_editor.dart';
 import 'courses_page.dart';
 import 'appearance.dart';
 import 'theme.dart';
+import 'nai_family.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key, required this.store, this.appearance});
@@ -95,6 +96,10 @@ class _SettingsPageState extends State<SettingsPage> {
           subtitle: '把学习与生活，安排得刚刚好。',
           padding: EdgeInsets.only(bottom: 24),
         ),
+        if (context.naiFamily) ...[
+          const NaiFamilyBanner(height: 135),
+          const SizedBox(height: 20),
+        ],
         if (!widget.store.canWrite)
           SectionCard(
             title: '本地数据读取失败',
@@ -137,6 +142,21 @@ class _SettingsPageState extends State<SettingsPage> {
           SectionCard(
             title: '外观',
             children: [
+              if (context.naiFamily) ...[
+                SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: const Text('角色动效'),
+                  value: widget.appearance!.motion,
+                  onChanged: (value) async {
+                    try {
+                      await widget.appearance!.setMotion(value);
+                    } catch (e) {
+                      if (context.mounted) await showError(context, e);
+                    }
+                  },
+                ),
+                const Divider(),
+              ],
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 leading: const Icon(Icons.palette_outlined),
@@ -228,13 +248,13 @@ class _SettingsPageState extends State<SettingsPage> {
             SizedBox(height: 10),
             Text('额外安排支持指定周、全天实验和独立地点。'),
             SizedBox(height: 10),
-            Text('课表保留课间与午休，今天页显示当前节次下课倒计时。'),
+            Text('课表展示每节课的起止时间，今天页显示当前节次下课倒计时。'),
             SizedBox(height: 10),
             Text('示例课程仅供体验，不代表真实课程信息。'),
           ],
         ),
         Text(
-          '梅课 1.5.2 · SEU 校园课表',
+          '梅课 1.6.0 · SEU 校园课表',
           style: Theme.of(context).textTheme.bodySmall,
           textAlign: TextAlign.center,
         ),

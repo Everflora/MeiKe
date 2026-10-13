@@ -6,6 +6,7 @@ import '../data/discussion_client.dart';
 import '../data/schedule_store.dart';
 import '../domain/schedule.dart';
 import 'theme.dart';
+import 'nai_family.dart';
 import 'chat_page.dart';
 import 'discussion_profile.dart';
 import 'discussion_helpers.dart';
@@ -198,38 +199,47 @@ class _DiscussionPageState extends State<DiscussionPage> {
                 )
               : null,
         ),
+        if (context.naiFamily && client.signedIn && terms.isNotEmpty)
+          const Padding(
+            padding: EdgeInsets.fromLTRB(20, 0, 20, 12),
+            child: NaiFamilyBanner(height: 108),
+          ),
         if (busy) const LinearProgressIndicator(),
         if (error != null)
           Padding(padding: const EdgeInsets.all(12), child: Text(error!)),
         if (!client.signedIn || terms.isEmpty)
           Expanded(
             child: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(24),
-                      decoration: BoxDecoration(
-                        color: context.meike.soft,
-                        borderRadius: BorderRadius.circular(28),
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(24),
+                        decoration: BoxDecoration(
+                          color: context.meike.soft,
+                          borderRadius: BorderRadius.circular(28),
+                        ),
+                        child: context.naiFamily
+                            ? const NaiCharacter(NaiAnimal.mouse, size: 72)
+                            : const PlumMark(size: 52),
                       ),
-                      child: const PlumMark(size: 52),
-                    ),
-                    const SizedBox(height: 16),
-                    const Text('和同一个教学班的同学交流'),
-                    const SizedBox(height: 8),
-                    const Text(
-                      '设置昵称后，选择自己的课程进入讨论室。',
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 20),
-                    FilledButton(
-                      onPressed: ready && !busy ? connect : null,
-                      child: Text(client.signedIn ? '连接讨论室' : '设置头像和昵称'),
-                    ),
-                  ],
+                      const SizedBox(height: 16),
+                      const Text('和同一个教学班的同学交流'),
+                      const SizedBox(height: 8),
+                      const Text(
+                        '设置昵称后，选择自己的课程进入讨论室。',
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 20),
+                      FilledButton(
+                        onPressed: ready && !busy ? connect : null,
+                        child: Text(client.signedIn ? '连接讨论室' : '设置头像和昵称'),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -285,10 +295,15 @@ class _DiscussionPageState extends State<DiscussionPage> {
                               color: course.color.surface(context),
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            child: Icon(
-                              Icons.forum_outlined,
-                              color: course.color.foreground(context),
-                            ),
+                            child: context.naiFamily
+                                ? NaiCharacter(
+                                    NaiAnimal.values[index % 5],
+                                    size: 44,
+                                  )
+                                : Icon(
+                                    Icons.forum_outlined,
+                                    color: course.color.foreground(context),
+                                  ),
                           ),
                           title: Text(course.name),
                           subtitle: Text(
