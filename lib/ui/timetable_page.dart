@@ -28,6 +28,8 @@ class _TimetablePageState extends State<TimetablePage>
   late int selectedWeek = currentWeek;
   late String semesterKey = jsonEncode(widget.store.data.semester.toJson());
   Timer? timer;
+  double dragDistance = 0;
+  int slideDirection = 1;
   int get currentWeek =>
       SchoolClock.week(now, widget.store.data.semester).clamp(
         widget.store.data.firstDisplayWeek,
@@ -69,6 +71,16 @@ class _TimetablePageState extends State<TimetablePage>
     timer?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  void selectWeek(int target) {
+    final data = widget.store.data;
+    final week = target.clamp(data.firstDisplayWeek, data.lastDisplayWeek);
+    if (week == selectedWeek) return;
+    setState(() {
+      slideDirection = week > selectedWeek ? 1 : -1;
+      selectedWeek = week;
+    });
   }
 
   void open(Occurrence event) =>
@@ -474,7 +486,8 @@ class _TimetablePageState extends State<TimetablePage>
           ),
         ),
     ];
-    return ColoredBox(
+    final page = ColoredBox(
+      key: ValueKey(selectedWeek),
       color: context.meike.paper,
       child: Column(
         children: [
@@ -493,7 +506,7 @@ class _TimetablePageState extends State<TimetablePage>
                       ),
                       padding: EdgeInsets.zero,
                       onPressed: selectedWeek > data.firstDisplayWeek
-                          ? () => setState(() => selectedWeek--)
+                          ? () => selectWeek(selectedWeek - 1)
                           : null,
                       icon: const Icon(Icons.chevron_left),
                     ),
@@ -501,8 +514,7 @@ class _TimetablePageState extends State<TimetablePage>
                       child: PopupMenuButton<int>(
                         tooltip: '选择教学周',
                         initialValue: selectedWeek,
-                        onSelected: (week) =>
-                            setState(() => selectedWeek = week),
+                        onSelected: (week) => selectWeek(week),
                         itemBuilder: (_) => [
                           for (
                             var week = data.firstDisplayWeek;
@@ -562,7 +574,7 @@ class _TimetablePageState extends State<TimetablePage>
                       ),
                       padding: EdgeInsets.zero,
                       onPressed: selectedWeek < data.lastDisplayWeek
-                          ? () => setState(() => selectedWeek++)
+                          ? () => selectWeek(selectedWeek + 1)
                           : null,
                       icon: const Icon(Icons.chevron_right),
                     ),
@@ -637,6 +649,42 @@ class _TimetablePageState extends State<TimetablePage>
         ],
       ),
     );
+    return ClipRect(
+      child: GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onHorizontalDragStart: (_) => dragDistance = 0,
+        onHorizontalDragUpdate: (details) =>
+            dragDistance += details.primaryDelta ?? 0,
+        onHorizontalDragEnd: (details) {
+          final velocity = details.primaryVelocity ?? 0;
+          if (dragDistance.abs() < 40 && velocity.abs() < 250) return;
+          final right = dragDistance.abs() >= 40
+              ? dragDistance > 0
+              : velocity > 0;
+          selectWeek(selectedWeek + (right ? -1 : 1));
+        },
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 240),
+          switchInCurve: Curves.easeOutCubic,
+          switchOutCurve: Curves.easeInCubic,
+          transitionBuilder: (child, animation) {
+            final incoming = child.key == ValueKey(selectedWeek);
+            final offset = (incoming ? 1.0 : -1.0) * slideDirection;
+            return SlideTransition(
+              position: Tween<Offset>(
+                begin: Offset(offset, 0),
+                end: Offset.zero,
+              ).animate(animation),
+              child: IgnorePointer(
+                ignoring: !incoming,
+                child: ExcludeSemantics(excluding: !incoming, child: child),
+              ),
+            );
+          },
+          child: page,
+        ),
+      ),
+    );
   }
 
   Widget _ginkgoWeek(DateTime start, DateTime end) => SizedBox(
@@ -646,14 +694,14 @@ class _TimetablePageState extends State<TimetablePage>
         IconButton(
           tooltip: '上一周',
           onPressed: selectedWeek > widget.store.data.firstDisplayWeek
-              ? () => setState(() => selectedWeek--)
+              ? () => selectWeek(selectedWeek - 1)
               : null,
           icon: const Icon(Icons.chevron_left, size: 21),
         ),
         PopupMenuButton<int>(
           tooltip: '选择教学周',
           initialValue: selectedWeek,
-          onSelected: (week) => setState(() => selectedWeek = week),
+          onSelected: (week) => selectWeek(week),
           itemBuilder: (_) => [
             for (
               var week = widget.store.data.firstDisplayWeek;
@@ -693,7 +741,7 @@ class _TimetablePageState extends State<TimetablePage>
         IconButton(
           tooltip: '下一周',
           onPressed: selectedWeek < widget.store.data.lastDisplayWeek
-              ? () => setState(() => selectedWeek++)
+              ? () => selectWeek(selectedWeek + 1)
               : null,
           icon: const Icon(Icons.chevron_right, size: 21),
         ),

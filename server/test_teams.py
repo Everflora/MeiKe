@@ -89,6 +89,35 @@ class TeamTests(unittest.TestCase):
             db.execute('DELETE FROM team_consents WHERE user_id=? AND offering_id=?', (self.people[0]['user']['id'], self.room))
         self.assert_code('CONSENT_REQUIRED', lambda: self.call('GET', '/v1/team-list', query={'roundId': [self.rid], 'view': ['mine']}))
 
+    def test_optional_contacts_persist_clear_and_do_not_require_questionnaire(self):
+        self.assertEqual(self.call('GET', '/v1/team-contacts')['contacts'], {'qq': '', 'wechat': '', 'email': ''})
+        with self.db.connect() as db:
+            db.execute('DELETE FROM team_profiles WHERE user_id=?', (self.people[0]['user']['id'],))
+        saved = {'qq': '123456', 'wechat': 'sample_wechat', 'email': 'student@example.com'}
+        self.assertEqual(self.call('PUT', '/v1/team-contacts', saved)['contacts'], saved)
+        self.db = Database(self.db.file)
+        self.assertEqual(self.call('GET', '/v1/team-contacts')['contacts'], saved)
+        self.assertEqual(self.call('GET', '/v1/team-contacts', person=1)['contacts']['qq'], '')
+        self.call('PUT', '/v1/team-contacts', {})
+        self.assertEqual(self.call('GET', '/v1/team-contacts')['contacts'], {'qq': '', 'wechat': '', 'email': ''})
+        for body in [{'qq': 'abc'}, {'email': 'invalid'}, {'wechat': 'bad\nvalue'}, {'wechat': 'x' * 65}, {'userId': self.people[1]['user']['id']}]:
+            with self.assertRaises(ApiError):
+                self.call('PUT', '/v1/team-contacts', body)
+
+    def test_contacts_visible_only_to_current_team_members_never_in_lists(self):
+        self.call('PUT', '/v1/team-contacts', {'email': 'private@example.com'})
+        team = self.create()
+        path = '/v1/team-detail/' + team['id']
+        self.assertNotIn('private@example.com', json.dumps(self.call('GET', path, person=1)))
+        for view in ['recruiting', 'mine']:
+            self.assertNotIn('private@example.com', json.dumps(self.call('GET', '/v1/team-list', query={'roundId': [self.rid], 'view': [view]})))
+        self.review(self.apply(team, 1))
+        own = self.call('GET', path, person=1)['team']
+        leader = next(m for m in own['members'] if m['id'] == team['leaderId'])
+        self.assertEqual(leader['contacts']['email'], 'private@example.com')
+        self.call('POST', path + '/leave', person=1)
+        self.assertNotIn('private@example.com', json.dumps(self.call('GET', path, person=1)))
+
     def test_MVP_create_recommend_apply_review_leave_close_and_restart(self):
         team = self.create()
         result = self.call('GET', '/v1/team-list', query={'roundId': [self.rid], 'recommend': ['true']}, person=1)

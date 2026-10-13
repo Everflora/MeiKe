@@ -1,6 +1,7 @@
 """Authenticated team workflows. Matching never reads SQL or HTTP state."""
 import datetime
 import json
+import re
 import secrets
 import time
 from team_matching import CONFIG, validate_answers, validate_requirements, match_team
@@ -16,6 +17,9 @@ def initialize(db):
       CREATE TABLE IF NOT EXISTS team_profiles (
         user_id TEXT PRIMARY KEY REFERENCES users(id), answers TEXT NOT NULL,
         version INTEGER NOT NULL, tags TEXT NOT NULL DEFAULT '{}');
+      CREATE TABLE IF NOT EXISTS team_contacts (
+        user_id TEXT PRIMARY KEY REFERENCES users(id), qq TEXT NOT NULL DEFAULT '',
+        wechat TEXT NOT NULL DEFAULT '', email TEXT NOT NULL DEFAULT '');
       CREATE TABLE IF NOT EXISTS group_rounds (
         id TEXT PRIMARY KEY, offering_id TEXT NOT NULL REFERENCES rooms(id),
         name TEXT NOT NULL, creator_id TEXT NOT NULL REFERENCES users(id), created INTEGER NOT NULL);
@@ -194,6 +198,25 @@ def route(db, user, method, path, query, body, error, bounded):
     parts = path.strip('/').split('/')
     if path == '/v1/team-config' and method == 'GET':
         return {'config': CONFIG}
+    if path == '/v1/team-contacts':
+        if method == 'GET':
+            row = one('SELECT qq,wechat,email FROM team_contacts WHERE user_id=?', (uid,))
+            return {'contacts': dict(row) if row else {'qq': '', 'wechat': '', 'email': ''}}
+        if method in ('POST', 'PUT'):
+            own_fields(['qq', 'wechat', 'email'])
+            values = {}
+            for key, label, limit in [('qq', 'QQ', 32), ('wechat', '微信', 64), ('email', '邮箱', 254)]:
+                values[key] = bounded(body.get(key, ''), label, limit, False)
+                if any(ord(c) < 32 or ord(c) == 127 for c in values[key]):
+                    fail(400, 'INVALID_INPUT', '联系方式不能包含控制字符。')
+            if values['qq'] and not re.fullmatch(r'[0-9]+', values['qq']):
+                fail(400, 'INVALID_INPUT', 'QQ 请填写数字账号。')
+            if values['email'] and not re.fullmatch(r'[^\s@]+@[^\s@]+\.[^\s@]+', values['email']):
+                fail(400, 'INVALID_INPUT', '请填写有效的邮箱地址。')
+            db.execute('''INSERT INTO team_contacts VALUES (?,?,?,?) ON CONFLICT(user_id)
+                DO UPDATE SET qq=excluded.qq,wechat=excluded.wechat,email=excluded.email''',
+                       (uid, values['qq'], values['wechat'], values['email']))
+            return {'contacts': values}
     if path == '/v1/team-consent' and method == 'POST':
         own_fields(['offeringId', 'consent', 'confirmMembership'])
         oid = body.get('offeringId')
@@ -355,7 +378,14 @@ def route(db, user, method, path, query, body, error, bounded):
         row = team(parts[2])
         action = parts[3] if len(parts) == 4 else ''
         if not action and method == 'GET':
-            return {'team': model(row)}
+            result = model(row)
+            if result['mine']:
+                contacts = {r['user_id']: {key: r[key] for key in ('qq', 'wechat', 'email')}
+                            for r in db.execute('''SELECT c.* FROM team_contacts c JOIN team_members m
+                                ON m.user_id=c.user_id WHERE m.team_id=?''', (row['id'],))}
+                for member in result['members']:
+                    member['contacts'] = contacts.get(member['id'], {})
+            return {'team': result}
         if action in ('publish', 'close', 'complete') and method == 'POST':
             own_fields([])
             team(row['id'], leader=True)
