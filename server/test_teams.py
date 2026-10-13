@@ -57,6 +57,38 @@ class TeamTests(unittest.TestCase):
             function()
         self.assertEqual(caught.exception.code, code)
 
+    def test_simple_views_browse_without_questionnaire_and_show_only_my_membership(self):
+        own = self.create()
+        other = self.create(person=1, name='其他队伍')
+        query = {'roundId': [self.rid], 'view': ['recruiting']}
+        with self.db.connect() as db:
+            db.execute('DELETE FROM team_profiles WHERE user_id=?', (self.people[2]['user']['id'],))
+            db.execute('DELETE FROM team_preferences WHERE user_id=?', (self.people[2]['user']['id'],))
+        result = self.call('GET', '/v1/team-list', query=query, person=2)['teams']
+        self.assertEqual({t['id'] for t in result}, {own['id'], other['id']})
+        self.assertTrue(all(not t['match']['displayScore'] for t in result))
+        self.assertEqual([t['id'] for t in self.call('GET', '/v1/team-list', query=query)['teams']], [other['id']])
+        mine = self.call('GET', '/v1/team-list', query={'roundId': [self.rid], 'view': ['mine']})['teams']
+        self.assertEqual([t['id'] for t in mine], [own['id']])
+        self.call('POST', f"/v1/team-detail/{other['id']}/close", person=1)
+        self.assertEqual(self.call('GET', '/v1/team-list', query=query)['teams'], [])
+
+    def test_my_view_preserves_legacy_round_membership_and_course_isolation(self):
+        own = self.create()
+        with self.db.connect() as db:
+            db.execute('INSERT INTO group_rounds VALUES (?,?,?,?,0)', ('legacy-round', self.room, '旧活动', self.people[0]['user']['id']))
+            db.execute('UPDATE teams SET round_id=? WHERE id=?', ('legacy-round', own['id']))
+            db.execute('UPDATE team_members SET round_id=? WHERE team_id=?', ('legacy-round', own['id']))
+        other_rid = self.other_course()
+        self.preferences(0, rid=other_rid)
+        other = self.create(roundId=other_rid, name='另一课程队伍')
+        result = self.call('GET', '/v1/team-list', query={'roundId': [self.rid], 'view': ['mine']})['teams']
+        self.assertEqual([t['id'] for t in result], [own['id']])
+        self.assertNotIn(other['id'], [t['id'] for t in result])
+        with self.db.connect() as db:
+            db.execute('DELETE FROM team_consents WHERE user_id=? AND offering_id=?', (self.people[0]['user']['id'], self.room))
+        self.assert_code('CONSENT_REQUIRED', lambda: self.call('GET', '/v1/team-list', query={'roundId': [self.rid], 'view': ['mine']}))
+
     def test_MVP_create_recommend_apply_review_leave_close_and_restart(self):
         team = self.create()
         result = self.call('GET', '/v1/team-list', query={'roundId': [self.rid], 'recommend': ['true']}, person=1)
