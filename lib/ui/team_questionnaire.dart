@@ -3,6 +3,39 @@ import '../data/team_client.dart';
 import '../domain/schedule.dart';
 import 'discussion_helpers.dart';
 
+Future<bool> ensureTeamPreferences(
+  BuildContext context,
+  TeamClient client,
+  Json config,
+  String roundId,
+) async {
+  Future<bool> complete() async {
+    final profile = await client.get('profile');
+    final preferences = await client.get('preferences/$roundId');
+    final answers = {
+      ...profile['answers'] as Json,
+      ...preferences['answers'] as Json,
+    };
+    return (config['questions'] as List).cast<Json>().every(
+      (q) => teamAnswerError(q, answers[q['id']]) == null,
+    );
+  }
+
+  if (await complete()) return true;
+  if (!context.mounted) return false;
+  await Navigator.push<bool>(
+    context,
+    MaterialPageRoute(
+      builder: (_) => TeamQuestionnairePage(
+        client: client,
+        config: config,
+        roundId: roundId,
+      ),
+    ),
+  );
+  return context.mounted && await complete();
+}
+
 class TeamQuestion extends StatelessWidget {
   const TeamQuestion({
     super.key,

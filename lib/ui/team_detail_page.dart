@@ -6,6 +6,7 @@ import '../domain/team_availability.dart';
 import 'discussion_helpers.dart';
 import 'team_availability_page.dart';
 import 'discussion_profile.dart';
+import 'team_questionnaire.dart';
 
 class TeamDetailPage extends StatefulWidget {
   const TeamDetailPage({
@@ -75,6 +76,19 @@ class _TeamDetailPageState extends State<TeamDetailPage> {
       error = null;
     });
     try {
+      if (operation == 'apply') {
+        final ready = await ensureTeamPreferences(
+          context,
+          widget.client,
+          widget.config,
+          team!['roundId'] as String,
+        );
+        if (!mounted) return;
+        if (!ready) {
+          setState(() => busy = false);
+          return;
+        }
+      }
       await widget.client.write('$path/$operation', body);
       await load();
     } catch (e) {

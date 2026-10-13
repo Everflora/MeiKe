@@ -73,6 +73,9 @@ class FakeTeamDiscussion extends DiscussionClient {
       };
     }
     if (path.startsWith('v1/team-list')) {
+      if (Uri.parse(path).queryParameters['view'] == 'mine') {
+        return {'teams': <Json>[], 'next': null};
+      }
       return {
         'teams': [
           {
@@ -269,6 +272,38 @@ void main() {
     expect(fake.writes.single.$1, 'v1/team-preferences/second-round');
   });
 
+  testWidgets('课程组队直接浏览招募，两个入口分开显示，空我的队伍可创建', (tester) async {
+    final fake = FakeTeamDiscussion();
+    addTearDown(fake.close);
+    final room = DiscussionRoom({
+      'roomKey': 'ROOM',
+      'name': '测试教学班',
+      'teachers': ['老师'],
+      'attendingClassNames': ['班级'],
+      'arrangements': [],
+    });
+    await tester.pumpWidget(
+      MaterialApp(
+        home: TeamPage(client: fake, room: room),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('正在组队'), findsOneWidget);
+    expect(find.text('我的队伍'), findsOneWidget);
+    expect(find.text('问卷未补全团队'), findsOneWidget);
+    expect(find.text('推荐团队'), findsNothing);
+    expect(find.text('合作程度筛选'), findsNothing);
+    await tester.tap(find.text('我的队伍'));
+    await tester.pumpAndSettle();
+    expect(find.text('问卷未补全团队'), findsNothing);
+    expect(find.text('创建团队'), findsOneWidget);
+    expect(find.textContaining('你还没有加入队伍'), findsOneWidget);
+    await tester.tap(find.text('创建团队'));
+    await tester.pumpAndSettle();
+    expect(find.byType(TeamQuestionnairePage), findsOneWidget);
+    await tester.pumpWidget(const SizedBox());
+  });
+
   testWidgets(
     'explicit class consent required and low-confidence score never shown',
     (tester) async {
@@ -306,11 +341,11 @@ void main() {
       );
       expect(find.textContaining('99.9'), findsNothing);
       await tester.scrollUntilVisible(
-        find.text('规则匹配分 76.7'),
+        find.text('匹配度 77%'),
         300,
         scrollable: find.byType(Scrollable).first,
       );
-      expect(find.text('规则匹配分 76.7'), findsOneWidget);
+      expect(find.text('匹配度 77%'), findsOneWidget);
       expect(fake.writes.single.$2['confirmMembership'], true);
       expect(find.text('新建组队活动'), findsNothing);
       expect(find.textContaining('组队活动（'), findsNothing);

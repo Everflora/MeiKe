@@ -290,9 +290,17 @@ def route(db, user, method, path, query, body, error, bounded):
             db.execute('INSERT INTO team_members VALUES (?,?,?,?)', (tid, uid, rid, now))
             return {'team': model(team(tid))}
         if method == 'GET':
+            view = query.get('view', [''])[0]
+            if view not in ('', 'recruiting', 'mine'):
+                fail(400, 'INVALID_INPUT', '组队列表类型无效。')
             # One batch for teams, memberships, profiles and preferences (no questionnaire N+1).
-            rows = db.execute('SELECT * FROM teams WHERE round_id=? AND (published=1 OR leader_id=?) LIMIT ?', (rid, uid, CONFIG['limits']['maxTeamsPerRound'])).fetchall()
-            all_members = db.execute('SELECT m.team_id,m.user_id,u.name,u.avatar_version,p.answers profile,r.answers preference,r.overrides FROM team_members m JOIN users u ON u.id=m.user_id LEFT JOIN team_profiles p ON p.user_id=m.user_id LEFT JOIN team_preferences r ON r.user_id=m.user_id AND r.round_id=m.round_id WHERE m.round_id=?', (rid,)).fetchall()
+            if view == 'mine':
+                rows = db.execute('''SELECT t.* FROM teams t JOIN group_rounds g ON g.id=t.round_id
+                    JOIN team_members own ON own.team_id=t.id WHERE g.offering_id=? AND own.user_id=?''',
+                                  (group(rid)['offering_id'], uid)).fetchall()
+            else:
+                rows = db.execute('SELECT * FROM teams WHERE round_id=? AND (published=1 OR leader_id=?) LIMIT ?', (rid, uid, CONFIG['limits']['maxTeamsPerRound'])).fetchall()
+            all_members = db.execute('SELECT m.team_id,m.user_id,u.name,u.avatar_version,p.answers profile,r.answers preference,r.overrides FROM team_members m JOIN users u ON u.id=m.user_id JOIN group_rounds g ON g.id=m.round_id LEFT JOIN team_profiles p ON p.user_id=m.user_id LEFT JOIN team_preferences r ON r.user_id=m.user_id AND r.round_id=m.round_id WHERE g.offering_id=?', (group(rid)['offering_id'],)).fetchall()
             grouped = {}
             answers = {}
             for m in all_members:
@@ -302,12 +310,17 @@ def route(db, user, method, path, query, body, error, bounded):
             candidate = effective(uid, rid)
             pref = one('SELECT can_meet_offline FROM team_preferences WHERE user_id=? AND round_id=?', (uid, rid))
             joined = joined_course(uid, rid)
-            recommendations = query.get('recommend', ['false'])[0] == 'true'
+            recommendations = not view and query.get('recommend', ['false'])[0] == 'true'
             cache = {'banned': {r[0] for r in db.execute('SELECT team_id FROM team_bans WHERE user_id=?', (uid,))},
                      'avoided': {r[0] for r in db.execute('SELECT avoided_id FROM team_avoidances WHERE user_id=? UNION SELECT user_id FROM team_avoidances WHERE avoided_id=?', (uid, uid))}}
             result = []
             for row in rows:
                 mm = grouped.get(row['id'], [])
+                if view == 'recruiting':
+                    if not row['published'] or row['completed'] or row['status'] != 'RECRUITING' or len(mm) >= row['capacity'] or any(m['user_id'] == uid for m in mm):
+                        continue
+                    if row['id'] in cache['banned'] or any(m['user_id'] in cache['avoided'] for m in mm):
+                        continue
                 if recommendations and eligible(row, uid, mm, bool(pref and pref[0]), joined, cache):
                     continue
                 item = model(row, mm)
@@ -317,7 +330,7 @@ def route(db, user, method, path, query, body, error, bounded):
                     continue
                 if skill_filter and not any(r['tag'] == skill_filter for r in item['requiredSkills']):
                     continue
-                if recommendations:
+                if recommendations or view == 'recruiting':
                     item['match'] = match_team(candidate, [answers[m['user_id']] for m in mm], item)
                 result.append(item)
             result.sort(key=lambda t: (-(t.get('match', {}).get('displayScore') or -1),

@@ -31,7 +31,7 @@ class _TeamPageState extends State<TeamPage> {
       checkedConsent = false,
       checkedClass = false,
       busy = false,
-      recommend = true;
+      myTeams = false;
   int? next;
   @override
   void initState() {
@@ -43,6 +43,8 @@ class _TeamPageState extends State<TeamPage> {
     setState(() {
       busy = true;
       error = null;
+      teams = [];
+      next = null;
     });
     try {
       config ??= (await client.get('config'))['config'] as Json;
@@ -64,9 +66,9 @@ class _TeamPageState extends State<TeamPage> {
         if (roundId != null) {
           final result = await client.get('list', {
             'roundId': roundId!,
-            'recommend': '$recommend',
-            'mode': ?mode,
-            'skill': ?skill,
+            'view': myTeams ? 'mine' : 'recruiting',
+            if (!myTeams) 'mode': ?mode,
+            if (!myTeams) 'skill': ?skill,
           });
           teams = (result['teams'] as List).cast<Json>();
           next = result['next'] as int?;
@@ -141,10 +143,10 @@ class _TeamPageState extends State<TeamPage> {
     try {
       final result = await client.get('list', {
         'roundId': roundId!,
-        'recommend': '$recommend',
+        'view': myTeams ? 'mine' : 'recruiting',
         'offset': '$next',
-        'mode': ?mode,
-        'skill': ?skill,
+        if (!myTeams) 'mode': ?mode,
+        if (!myTeams) 'skill': ?skill,
       });
       if (!mounted) return;
       final newTeams = (result['teams'] as List).cast<Json>();
@@ -200,9 +202,31 @@ class _TeamPageState extends State<TeamPage> {
                 ),
                 Text('${widget.room.teacher} · ${widget.room.classes}'),
                 const SizedBox(height: 12),
+                SegmentedButton<bool>(
+                  segments: const [
+                    ButtonSegment(
+                      value: false,
+                      label: Text('正在组队'),
+                      icon: Icon(Icons.group_add_outlined),
+                    ),
+                    ButtonSegment(
+                      value: true,
+                      label: Text('我的队伍'),
+                      icon: Icon(Icons.groups_outlined),
+                    ),
+                  ],
+                  selected: {myTeams},
+                  onSelectionChanged: busy
+                      ? null
+                      : (selected) {
+                          setState(() => myTeams = selected.single);
+                          if (consent) load();
+                        },
+                ),
+                const SizedBox(height: 16),
                 if (config != null && !consent) ...[
                   const Text(
-                    '组队问卷用于推荐本教学班的团队。原始答案仅自己可见，对外显示昵称、头像和聚合匹配理由。当前账户未验证学籍，需自行确认教学班。',
+                    '首次使用请确认教学班。确认后即可查看队伍，问卷可稍后填写，用于计算匹配度；原始答案仅自己可见。当前账户未验证学籍。',
                   ),
                   CheckboxListTile(
                     contentPadding: EdgeInsets.zero,
@@ -236,119 +260,131 @@ class _TeamPageState extends State<TeamPage> {
                         FilledButton.tonalIcon(
                           onPressed: busy ? null : questionnaire,
                           icon: const Icon(Icons.edit_note),
-                          label: const Text('填写本次偏好'),
+                          label: const Text('填写偏好，查看匹配度'),
                         ),
-                        FilledButton.icon(
-                          onPressed: busy
-                              ? null
-                              : () async {
-                                  final created = await Navigator.push<Json>(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => TeamCreatePage(
-                                        client: client,
-                                        config: config!,
-                                        roundId: roundId!,
-                                      ),
-                                    ),
-                                  );
-                                  if (!mounted) return;
-                                  if (created != null) {
-                                    await openTeam(created);
-                                  } else {
-                                    await load();
-                                  }
-                                },
-                          icon: const Icon(Icons.group_add),
-                          label: const Text('创建团队'),
-                        ),
+                        if (myTeams)
+                          FilledButton.icon(
+                            onPressed: busy
+                                ? null
+                                : () async {
+                                    setState(() => busy = true);
+                                    try {
+                                      final ready = await ensureTeamPreferences(
+                                        context,
+                                        client,
+                                        config!,
+                                        roundId!,
+                                      );
+                                      if (!context.mounted || !ready) return;
+                                      final created =
+                                          await Navigator.push<Json>(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (_) => TeamCreatePage(
+                                                client: client,
+                                                config: config!,
+                                                roundId: roundId!,
+                                              ),
+                                            ),
+                                          );
+                                      if (!mounted) return;
+                                      if (created != null) {
+                                        await openTeam(created);
+                                      } else {
+                                        await load();
+                                      }
+                                    } catch (e) {
+                                      if (mounted) {
+                                        setState(() => error = message(e));
+                                      }
+                                    } finally {
+                                      if (mounted) setState(() => busy = false);
+                                    }
+                                  },
+                            icon: const Icon(Icons.group_add),
+                            label: const Text('创建团队'),
+                          ),
                       ],
                     ),
                     const SizedBox(height: 16),
-                    Wrap(
-                      spacing: 8,
-                      children: [
-                        ChoiceChip(
-                          label: const Text('推荐团队'),
-                          selected: recommend,
-                          onSelected: busy
-                              ? null
-                              : (_) {
-                                  recommend = true;
-                                  load();
-                                },
-                        ),
-                        ChoiceChip(
-                          label: const Text('全部与我的团队'),
-                          selected: !recommend,
-                          onSelected: busy
-                              ? null
-                              : (_) {
-                                  recommend = false;
-                                  load();
-                                },
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    DropdownButtonFormField<String>(
-                      initialValue: mode ?? '',
-                      decoration: const InputDecoration(labelText: '合作程度筛选'),
-                      items: [
-                        const DropdownMenuItem(
-                          value: '',
-                          child: Text('全部合作程度'),
-                        ),
-                        for (final m in config!['modes'] as List)
-                          DropdownMenuItem(
-                            value: m['id'] as String,
-                            child: Text(m['label']),
-                          ),
-                      ],
-                      onChanged: busy
-                          ? null
-                          : (v) {
-                              mode = v!.isEmpty ? null : v;
-                              load();
-                            },
-                    ),
-                    const SizedBox(height: 12),
-                    DropdownButtonFormField<String>(
-                      initialValue: skill ?? '',
-                      decoration: const InputDecoration(labelText: '团队声明的技能需求'),
-                      items: [
-                        const DropdownMenuItem(
-                          value: '',
-                          child: Text('全部技能需求'),
-                        ),
-                        for (final o
-                            in (config!['questions'] as List).firstWhere(
-                                  (q) => q['id'] == 'q3',
-                                )['options']
-                                as List)
-                          if (o['id'] != config!['emptySkills'])
-                            DropdownMenuItem(
-                              value: o['id'] as String,
-                              child: Text(o['label']),
+                    if (!myTeams)
+                      ExpansionTile(
+                        tilePadding: EdgeInsets.zero,
+                        title: const Text('筛选队伍'),
+                        children: [
+                          DropdownButtonFormField<String>(
+                            initialValue: mode ?? '',
+                            decoration: const InputDecoration(
+                              labelText: '合作程度筛选',
                             ),
-                      ],
-                      onChanged: busy
-                          ? null
-                          : (v) {
-                              skill = v!.isEmpty ? null : v;
-                              load();
-                            },
-                    ),
-                    const SizedBox(height: 12),
-                    const Text('规则匹配分反映问卷偏好兼容度；规则仍需实际合作反馈校准。'),
+                            items: [
+                              const DropdownMenuItem(
+                                value: '',
+                                child: Text('全部合作程度'),
+                              ),
+                              for (final m in config!['modes'] as List)
+                                DropdownMenuItem(
+                                  value: m['id'] as String,
+                                  child: Text(m['label']),
+                                ),
+                            ],
+                            onChanged: busy
+                                ? null
+                                : (v) {
+                                    mode = v!.isEmpty ? null : v;
+                                    load();
+                                  },
+                          ),
+                          const SizedBox(height: 12),
+                          DropdownButtonFormField<String>(
+                            initialValue: skill ?? '',
+                            decoration: const InputDecoration(
+                              labelText: '团队声明的技能需求',
+                            ),
+                            items: [
+                              const DropdownMenuItem(
+                                value: '',
+                                child: Text('全部技能需求'),
+                              ),
+                              for (final o
+                                  in (config!['questions'] as List).firstWhere(
+                                        (q) => q['id'] == 'q3',
+                                      )['options']
+                                      as List)
+                                if (o['id'] != config!['emptySkills'])
+                                  DropdownMenuItem(
+                                    value: o['id'] as String,
+                                    child: Text(o['label']),
+                                  ),
+                            ],
+                            onChanged: busy
+                                ? null
+                                : (v) {
+                                    skill = v!.isEmpty ? null : v;
+                                    load();
+                                  },
+                          ),
+                          const SizedBox(height: 12),
+                        ],
+                      ),
+                    const Text('匹配度根据组队偏好计算，帮助你找到合适的队友。'),
                     if (!busy && teams.isEmpty)
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 24),
                         child: Text(
-                          recommend
-                              ? '暂时没有可申请推荐。已入队可在“全部与我的团队”查看；也可完成偏好或创建团队。'
-                              : '还没有团队，创建一个邀请同班同学参与。',
+                          myTeams
+                              ? '你还没有加入队伍。去“正在组队”找队友，或创建自己的队伍。'
+                              : '暂时没有正在招募的队伍，可以创建队伍，邀请同班同学加入。',
                         ),
+                      ),
+                    if (!myTeams && teams.isEmpty && !busy)
+                      TextButton.icon(
+                        onPressed: () {
+                          setState(() => myTeams = true);
+                          load();
+                        },
+                        icon: const Icon(Icons.group_add),
+                        label: const Text('去创建我的队伍'),
                       ),
                     for (final t in teams)
                       Card(
@@ -390,11 +426,13 @@ class _TeamPageState extends State<TeamPage> {
                                 if (t['match'] != null) ...[
                                   if (t['match']['displayScore'] == true)
                                     Text(
-                                      '规则匹配分 ${t['match']['score']}',
+                                      '匹配度 ${(t['match']['score'] as num).toStringAsFixed(0)}%',
                                       style: Theme.of(
                                         context,
                                       ).textTheme.titleMedium,
                                     ),
+                                  if (t['match']['displayScore'] != true)
+                                    const Text('填写偏好后查看匹配度'),
                                   for (final reason
                                       in t['match']['reasons'] as List)
                                     Text(reason),
