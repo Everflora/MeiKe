@@ -7,6 +7,7 @@ import 'discussion_helpers.dart';
 import 'team_create_page.dart';
 import 'team_detail_page.dart';
 import 'team_questionnaire.dart';
+import 'team_contacts_page.dart';
 
 class TeamPage extends StatefulWidget {
   const TeamPage({
@@ -137,6 +138,14 @@ class _TeamPageState extends State<TeamPage> {
     if (mounted) await load();
   }
 
+  Future<void> editContacts() async {
+    await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(builder: (_) => TeamContactsPage(client: client)),
+    );
+    if (mounted) await load();
+  }
+
   Future<void> more() async {
     if (next == null || busy) return;
     setState(() => busy = true);
@@ -166,6 +175,11 @@ class _TeamPageState extends State<TeamPage> {
     appBar: AppBar(
       title: const Text('课程组队'),
       actions: [
+        IconButton(
+          tooltip: '组队联系方式',
+          icon: const Icon(Icons.contact_mail_outlined),
+          onPressed: busy ? null : editContacts,
+        ),
         IconButton(
           tooltip: '刷新推荐',
           onPressed: busy ? null : load,
@@ -262,6 +276,12 @@ class _TeamPageState extends State<TeamPage> {
                           icon: const Icon(Icons.edit_note),
                           label: const Text('填写偏好，查看匹配度'),
                         ),
+                        if (myTeams)
+                          OutlinedButton.icon(
+                            onPressed: busy ? null : editContacts,
+                            icon: const Icon(Icons.contact_mail_outlined),
+                            label: const Text('联系方式（选填）'),
+                          ),
                         if (myTeams)
                           FilledButton.icon(
                             onPressed: busy

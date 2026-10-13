@@ -213,8 +213,23 @@ class _TeamDetailPageState extends State<TeamDetailPage> {
                       version: member['avatarVersion'] as String,
                     ),
                     title: Text(member['name'] as String),
-                    subtitle: Text(
-                      member['id'] == team!['leaderId'] ? '负责人' : '成员',
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(member['id'] == team!['leaderId'] ? '负责人' : '成员'),
+                        for (final field in const {
+                          'qq': 'QQ',
+                          'wechat': '微信',
+                          'email': '邮箱',
+                        }.entries)
+                          if (((member['contacts'] as Json?)?[field.key]
+                                      as String? ??
+                                  '')
+                              .isNotEmpty)
+                            SelectableText(
+                              '${field.value}：${member['contacts'][field.key]}',
+                            ),
+                      ],
                     ),
                     trailing: member['id'] == widget.client.userId
                         ? null
