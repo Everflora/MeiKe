@@ -6,8 +6,94 @@ import 'package:seu_timetable/app.dart';
 import 'package:seu_timetable/data/discussion_client.dart';
 import 'package:seu_timetable/data/schedule_store.dart';
 import 'package:seu_timetable/domain/schedule.dart';
+import 'package:seu_timetable/ui/discussion_page.dart';
+import 'package:seu_timetable/ui/appearance.dart';
+import 'package:seu_timetable/ui/theme.dart';
+
+class TermFixtureClient extends DiscussionClient {
+  TermFixtureClient(String semester) : super(sessionFile: File('unused')) {
+    nickname = '演示同学';
+    available = [
+      {'code': 'current', 'name': semester},
+      {'code': 'next', 'name': '下一学期'},
+    ];
+  }
+  late final List<Json> available;
+  @override
+  bool get signedIn => true;
+  @override
+  Future<void> loadSession() async {}
+  @override
+  Future<void> refreshProfile() async {}
+  @override
+  Future<List<Json>> terms() async => available;
+}
 
 void main() {
+  testWidgets('学期选择框在首次进入、切换和移焦后持续显示主题绿色边框', (tester) async {
+    tester.view.physicalSize = const Size(320, 568);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final store = ScheduleStore(File('unused-schedule'));
+    addTearDown(store.dispose);
+    for (final design in MeikeTheme.values) {
+      for (final brightness in Brightness.values) {
+        final client = TermFixtureClient(store.data.semester.name);
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: meikeTheme(brightness, design),
+            home: Scaffold(
+              body: Column(
+                children: [
+                  Expanded(
+                    child: DiscussionPage(store: store, client: client),
+                  ),
+                  const TextField(key: ValueKey('focus-target')),
+                ],
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('连接讨论室'));
+        await tester.pumpAndSettle();
+        final field = find.byType(DropdownButtonFormField<String>);
+        InputDecorator selector() => tester.widget<InputDecorator>(
+          find.descendant(of: field, matching: find.byType(InputDecorator)),
+        );
+        void checkBorder() {
+          final decoration = selector().decoration;
+          final enabled = decoration.enabledBorder!;
+          expect(enabled.borderSide.style, BorderStyle.solid);
+          expect(enabled.borderSide.width, greaterThan(0));
+          expect(enabled.borderSide.color, tester.element(field).meike.green);
+          expect(enabled, decoration.focusedBorder);
+          expect(tester.takeException(), isNull);
+        }
+
+        expect(selector().isFocused, isFalse);
+        checkBorder();
+        await tester.tap(field);
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('下一学期').last);
+        await tester.pumpAndSettle();
+        expect(
+          tester.widget<DropdownButtonFormField<String>>(field).initialValue,
+          'next',
+        );
+        checkBorder();
+        await tester.tap(find.byKey(const ValueKey('focus-target')));
+        await tester.pumpAndSettle();
+        expect(selector().isFocused, isFalse);
+        checkBorder();
+        FocusManager.instance.primaryFocus?.unfocus();
+        await tester.pumpWidget(const SizedBox());
+        client.close();
+      }
+    }
+  });
+
   test('匹配只上传课程名、教师和实际教学周时间，不上传备注或群号', () {
     final course = Course(
       name: ' 演示课程 ',

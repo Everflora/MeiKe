@@ -11,8 +11,11 @@ import 'discussion_profile.dart';
 import 'discussion_helpers.dart';
 
 class DiscussionPage extends StatefulWidget {
-  const DiscussionPage({super.key, required this.store});
+  const DiscussionPage({super.key, required this.store, this.client});
   final ScheduleStore store;
+
+  /// An injected client is owned by its caller.
+  final DiscussionClient? client;
   @override
   State<DiscussionPage> createState() => _DiscussionPageState();
 }
@@ -26,11 +29,13 @@ class _DiscussionPageState extends State<DiscussionPage> {
   @override
   void initState() {
     super.initState();
-    client = DiscussionClient(
-      sessionFile: File(
-        '${widget.store.file.parent.path}/discussion-session.json',
-      ),
-    );
+    client =
+        widget.client ??
+        DiscussionClient(
+          sessionFile: File(
+            '${widget.store.file.parent.path}/discussion-session.json',
+          ),
+        );
     load();
   }
 
@@ -156,13 +161,17 @@ class _DiscussionPageState extends State<DiscussionPage> {
 
   @override
   void dispose() {
-    client.close();
+    if (widget.client == null) client.close();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final courses = widget.store.data.courses;
+    final termBorder = OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: BorderSide(color: context.meike.green, width: 1.2),
+    );
     return Column(
       children: [
         BrandHeader(
@@ -231,7 +240,13 @@ class _DiscussionPageState extends State<DiscussionPage> {
             child: DropdownButtonFormField<String>(
               initialValue: term,
               isExpanded: true,
-              decoration: const InputDecoration(labelText: '学期'),
+              decoration: InputDecoration(
+                labelText: '学期',
+                border: termBorder,
+                enabledBorder: termBorder,
+                focusedBorder: termBorder,
+                disabledBorder: termBorder,
+              ),
               items: [
                 for (final item in terms)
                   DropdownMenuItem(
