@@ -157,6 +157,11 @@ class _TimetablePageState extends State<TimetablePage>
                 compact: ginkgo,
                 collapseBreaks: true,
               );
+              double eventHeight(Occurrence event) =>
+                  layout.position(event.endMinute) -
+                  layout.position(event.startMinute);
+              double eventInset(Occurrence event) =>
+                  eventHeight(event) >= 4 ? 1 : 0;
               return MediaQuery.withNoTextScaling(
                 child: SingleChildScrollView(
                   child: Column(
@@ -384,23 +389,16 @@ class _TimetablePageState extends State<TimetablePage>
                                           layout.position(
                                             lane.occurrence.startMinute,
                                           ) +
-                                          1,
+                                          eventInset(lane.occurrence),
                                       width: math.max(
                                         1,
                                         (width - 2) / lane.count - 1,
                                       ),
                                       child: _EventCard(
                                         event: lane.occurrence,
-                                        height: math.max(
-                                          2,
-                                          layout.position(
-                                                lane.occurrence.endMinute,
-                                              ) -
-                                              layout.position(
-                                                lane.occurrence.startMinute,
-                                              ) -
-                                              2,
-                                        ),
+                                        height:
+                                            eventHeight(lane.occurrence) -
+                                            2 * eventInset(lane.occurrence),
                                         layout: layout,
                                         active:
                                             SchoolClock.day(
@@ -827,6 +825,18 @@ class _EventCard extends StatelessWidget {
             .floor()
             .clamp(1, 3);
     final ginkgo = context.meike.design == MeikeTheme.ginkgo;
+    final title =
+        '${event.makeupFor != null
+            ? '补·'
+            : event.isExtra && event.calendarNote.isNotEmpty
+            ? '额·'
+            : ''}${event.name}';
+    // Keep the true time position and height. Short events use a single title
+    // line; their full location and time remain available in course details.
+    final compact =
+        event.isExtra &&
+        !event.allDay &&
+        height + .01 < 6 + 12.1 + (event.location.isEmpty ? 0 : 9.9);
     final foreground = active
         ? (ginkgo ? context.meike.goldInk : context.meike.onHero)
         : context.meike.design == MeikeTheme.ginkgo
@@ -897,65 +907,82 @@ class _EventCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                Padding(
-                  padding: const EdgeInsets.all(3),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (extraHeight > 0)
-                        Text(
-                          event.calendarNote.isNotEmpty ? '停课日额外安排' : '额外安排',
+                if (compact)
+                  Positioned.fill(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 3),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          title,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                            fontSize: 8,
+                            fontSize: math.min(11, height / 1.1),
                             height: 1.1,
+                            fontWeight: FontWeight.w600,
                             color: foreground,
                           ),
-                        ),
-                      Text(
-                        '${event.makeupFor != null
-                            ? '补·'
-                            : event.isExtra && event.calendarNote.isNotEmpty
-                            ? '额·'
-                            : ''}${event.name}',
-                        maxLines: lines,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 11,
-                          height: 1.1,
-                          fontWeight: FontWeight.w600,
-                          color: foreground,
                         ),
                       ),
-                      const Spacer(),
-                      if (segmented)
-                        FittedBox(
-                          fit: BoxFit.scaleDown,
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            event.periodLabel,
+                    ),
+                  )
+                else
+                  Padding(
+                    padding: const EdgeInsets.all(3),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (extraHeight > 0)
+                          Text(
+                            event.calendarNote.isNotEmpty ? '停课日额外安排' : '额外安排',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               fontSize: 8,
-                              height: 1.2,
-                              fontWeight: FontWeight.w600,
-                              color: foreground.withValues(alpha: .85),
+                              height: 1.1,
+                              color: foreground,
                             ),
                           ),
-                        ),
-                      if (event.location.isNotEmpty)
-                        ClassroomLabel(
-                          event.location,
-                          maxLines: roomLines,
+                        Text(
+                          title,
+                          maxLines: lines,
+                          overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                            fontSize: 9,
+                            fontSize: 11,
                             height: 1.1,
+                            fontWeight: FontWeight.w600,
                             color: foreground,
                           ),
                         ),
-                    ],
+                        const Spacer(),
+                        if (segmented)
+                          FittedBox(
+                            fit: BoxFit.scaleDown,
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              event.periodLabel,
+                              style: TextStyle(
+                                fontSize: 8,
+                                height: 1.2,
+                                fontWeight: FontWeight.w600,
+                                color: foreground.withValues(alpha: .85),
+                              ),
+                            ),
+                          ),
+                        if (event.location.isNotEmpty)
+                          ClassroomLabel(
+                            event.location,
+                            maxLines: roomLines,
+                            style: TextStyle(
+                              fontSize: 9,
+                              height: 1.1,
+                              color: foreground,
+                            ),
+                          ),
+                      ],
+                    ),
                   ),
-                ),
               ],
             ),
           ),
