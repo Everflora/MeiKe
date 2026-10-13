@@ -6,6 +6,7 @@ import '../domain/schedule.dart';
 import 'labor_news_page.dart';
 import 'theme.dart';
 import 'jwc_news_page.dart';
+import 'academic_calendar_page.dart';
 
 class NewsPage extends StatefulWidget {
   const NewsPage({super.key, required this.store});
@@ -23,7 +24,9 @@ class _NewsSectionsState extends State<NewsPage> {
       const BrandHeader(title: '校园消息', subtitle: '把与你有关的消息，放在一起。'),
       Padding(
         padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
-        child: Row(
+        child: Wrap(
+          spacing: 8,
+          runSpacing: 4,
           children: [
             ChoiceChip(
               label: const Padding(
@@ -33,7 +36,6 @@ class _NewsSectionsState extends State<NewsPage> {
               selected: selected == 0,
               onSelected: (_) => setState(() => selected = 0),
             ),
-            const SizedBox(width: 8),
             ChoiceChip(
               label: const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 8),
@@ -44,6 +46,14 @@ class _NewsSectionsState extends State<NewsPage> {
                 selected = 1;
                 jwcOpened = true;
               }),
+            ),
+            ChoiceChip(
+              label: const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8),
+                child: Text('校历'),
+              ),
+              selected: selected == 2,
+              onSelected: (_) => setState(() => selected = 2),
             ),
           ],
         ),
@@ -60,6 +70,7 @@ class _NewsSectionsState extends State<NewsPage> {
                     ),
                   )
                 : const SizedBox(),
+            AcademicCalendarPanel(store: widget.store),
           ],
         ),
       ),

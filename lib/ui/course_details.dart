@@ -39,7 +39,11 @@ Future<void> showCourseDetails(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      event.isExtra ? '额外安排' : '常规课程',
+                      event.makeupFor != null
+                          ? '校历补课'
+                          : event.isExtra
+                          ? '额外安排'
+                          : '常规课程',
                       style: Theme.of(ctx).textTheme.bodySmall,
                     ),
                     const SizedBox(height: 4),
@@ -72,6 +76,8 @@ Future<void> showCourseDetails(
           ),
           if (event.teacher.isNotEmpty)
             _DetailRow(Icons.person_outline, '任课教师', event.teacher),
+          if (event.calendarNote.isNotEmpty)
+            _DetailRow(Icons.event_note, '校历调整', event.calendarNote),
           if (event.notes.isNotEmpty)
             _DetailRow(Icons.notes_outlined, '课程备注', event.notes),
           const SizedBox(height: 16),
