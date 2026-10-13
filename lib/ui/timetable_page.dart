@@ -126,7 +126,7 @@ class _TimetablePageState extends State<TimetablePage>
         Expanded(
           child: LayoutBuilder(
             builder: (context, constraints) {
-              const timeWidth = 38.0;
+              const timeWidth = 43.0;
               final headerHeight = data.calendarTerm == null ? 44.0 : 56.0;
               final width = math.max(
                 1.0,
@@ -144,6 +144,7 @@ class _TimetablePageState extends State<TimetablePage>
                 data.semester.periods,
                 occurrences: events,
                 compact: ginkgo,
+                collapseBreaks: true,
               );
               final height = math.max(
                 ginkgo ? base.height * 30 / 52 : base.height / 2,
@@ -154,6 +155,7 @@ class _TimetablePageState extends State<TimetablePage>
                 occurrences: events,
                 fittingHeight: height,
                 compact: ginkgo,
+                collapseBreaks: true,
               );
               return MediaQuery.withNoTextScaling(
                 child: SingleChildScrollView(
@@ -261,52 +263,59 @@ class _TimetablePageState extends State<TimetablePage>
                             width: timeWidth,
                             child: Column(
                               children: [
-                                for (final s in layout.segments)
+                                for (final s in layout.segments.where(
+                                  (s) => s.height > 0,
+                                ))
                                   SizedBox(
+                                    key: ValueKey(
+                                      'timetable-period-${s.period ?? s.start}',
+                                    ),
                                     height: s.height,
                                     child: Center(
-                                      child: s.period != null
-                                          ? FittedBox(
-                                              fit: BoxFit.scaleDown,
-                                              child: Column(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  Text(
-                                                    '${s.period}',
-                                                    style: const TextStyle(
-                                                      fontSize: 11,
-                                                      height: 1.1,
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                    ),
-                                                  ),
-                                                  Text(
-                                                    LessonPeriod.format(
-                                                      s.start,
-                                                    ),
-                                                    style: TextStyle(
-                                                      fontSize: 9,
-                                                      height: 1.2,
-                                                      color:
-                                                          context.meike.muted,
-                                                    ),
-                                                  ),
-                                                ],
+                                      child: FittedBox(
+                                        fit: BoxFit.scaleDown,
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Text(
+                                              s.period?.toString() ?? '额外',
+                                              style: const TextStyle(
+                                                fontSize: 11,
+                                                height: 1.1,
+                                                fontWeight: FontWeight.w600,
                                               ),
-                                            )
-                                          : Text(
-                                              s.end - s.start >= 30
-                                                  ? (s.label == '午休'
-                                                        ? '午休'
-                                                        : '晚休')
-                                                  : ginkgo
-                                                  ? ''
-                                                  : '${s.end - s.start}′',
+                                            ),
+                                            Text(
+                                              LessonPeriod.format(
+                                                s.start,
+                                              ).replaceFirst(RegExp(r'^0'), ''),
                                               style: TextStyle(
-                                                fontSize: 8,
+                                                fontSize: 9,
+                                                height: 1.1,
                                                 color: context.meike.muted,
                                               ),
                                             ),
+                                            Text(
+                                              '-',
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                height: .8,
+                                                color: context.meike.muted,
+                                              ),
+                                            ),
+                                            Text(
+                                              LessonPeriod.format(
+                                                s.end,
+                                              ).replaceFirst(RegExp(r'^0'), ''),
+                                              style: TextStyle(
+                                                fontSize: 9,
+                                                height: 1.1,
+                                                color: context.meike.muted,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
                                     ),
                                   ),
                               ],
@@ -325,7 +334,9 @@ class _TimetablePageState extends State<TimetablePage>
                                     ),
                                     child: Column(
                                       children: [
-                                        for (final s in layout.segments)
+                                        for (final s in layout.segments.where(
+                                          (s) => s.height > 0,
+                                        ))
                                           Container(
                                             height: s.height,
                                             margin: const EdgeInsets.symmetric(
@@ -791,11 +802,30 @@ class _EventCard extends StatelessWidget {
   final bool active;
   @override
   Widget build(BuildContext context) {
-    final locationHeight = event.location.isEmpty ? 0 : (height > 70 ? 20 : 11);
+    final rows = event.isExtra || event.allDay
+        ? <TimelineSegment>[]
+        : (layout?.segments ?? <TimelineSegment>[])
+              .where(
+                (s) =>
+                    s.period != null &&
+                    event.busyRanges.any(
+                      (r) => r.start < s.end && r.end > s.start,
+                    ),
+              )
+              .toList();
+    final segmented = rows.length > 1;
+    final firstRowHeight = segmented ? rows.first.height - 2 : height;
+    final lastRowHeight = segmented ? rows.last.height - 2 : height;
+    final roomLines = segmented
+        ? (lastRowHeight >= 36 ? 2 : 1)
+        : (height > 70 ? 2 : 1);
+    final locationHeight = event.location.isEmpty ? 0 : roomLines * 10;
     final extraHeight = event.isExtra && !event.allDay && height > 70 ? 10 : 0;
-    final lines = ((height - 8 - locationHeight - extraHeight) / 11)
-        .floor()
-        .clamp(1, 3);
+    final lines =
+        ((firstRowHeight - 8 - (segmented ? 0 : locationHeight) - extraHeight) /
+                12.1)
+            .floor()
+            .clamp(1, 3);
     final ginkgo = context.meike.design == MeikeTheme.ginkgo;
     final foreground = active
         ? (ginkgo ? context.meike.goldInk : context.meike.onHero)
@@ -804,7 +834,7 @@ class _EventCard extends StatelessWidget {
         : event.color.foreground(context);
     return Semantics(
       label:
-          '${event.name}，${SchoolClock.weekdays[event.weekday - 1]}，${event.timeLabel}，${event.location}，${event.calendarNote}',
+          '${event.name}，${SchoolClock.weekdays[event.weekday - 1]}，${event.periodLabel}，${event.timeLabel}，${event.location}，${event.calendarNote}',
       button: true,
       excludeSemantics: true,
       child: SizedBox(
@@ -826,6 +856,20 @@ class _EventCard extends StatelessWidget {
             onTap: onTap,
             child: Stack(
               children: [
+                if (segmented)
+                  for (final row in rows.skip(1))
+                    Positioned(
+                      key: ValueKey('course-divider-${event.id}-${row.period}'),
+                      top: row.y - layout!.position(event.startMinute) - 1,
+                      left: 2,
+                      right: 0,
+                      child: IgnorePointer(
+                        child: Container(
+                          height: .8,
+                          color: foreground.withValues(alpha: .22),
+                        ),
+                      ),
+                    ),
                 if (context.meike.design == MeikeTheme.ginkgo)
                   Positioned(
                     left: 0,
@@ -885,10 +929,24 @@ class _EventCard extends StatelessWidget {
                         ),
                       ),
                       const Spacer(),
+                      if (segmented)
+                        FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            event.periodLabel,
+                            style: TextStyle(
+                              fontSize: 8,
+                              height: 1.2,
+                              fontWeight: FontWeight.w600,
+                              color: foreground.withValues(alpha: .85),
+                            ),
+                          ),
+                        ),
                       if (event.location.isNotEmpty)
                         ClassroomLabel(
                           event.location,
-                          maxLines: height > 70 ? 2 : 1,
+                          maxLines: roomLines,
                           style: TextStyle(
                             fontSize: 9,
                             height: 1.1,

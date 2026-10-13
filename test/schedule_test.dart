@@ -353,6 +353,64 @@ void main() {
     expect(layout.position(360), 0);
     expect(layout.position(1400), layout.height);
   });
+  test('课表折叠所有空休息，三节课对应三个等高节次且时刻映射连续', () {
+    final layout = TimelineLayout(
+      data.semester.periods,
+      collapseBreaks: true,
+      compact: true,
+      fittingHeight: 520,
+    );
+    expect(layout.height, 520);
+    expect(layout.segments.where((s) => s.height > 0).length, 13);
+    expect(layout.position(525), layout.position(530));
+    expect(layout.position(735), layout.position(840));
+    expect(layout.position(590), 80);
+    expect(layout.position(735) - layout.position(590), 120);
+    for (var minute = 480; minute < 1285; minute++) {
+      expect(
+        layout.position(minute),
+        lessThanOrEqualTo(layout.position(minute + 1)),
+      );
+    }
+  });
+  test('折叠休息仍保留午间及早晚额外实验，不会把常规连堂误当休息课', () {
+    data.courses = [
+      Course(
+        name: '数据库原理',
+        meetings: [WeeklyMeeting(startPeriod: 3, endPeriod: 5)],
+      ),
+      Course(
+        name: '特别实验',
+        extras: [
+          ExtraMeeting(startMinute: 360, endMinute: 420),
+          ExtraMeeting(startMinute: 780, endMinute: 810),
+          ExtraMeeting(startMinute: 1300, endMinute: 1400),
+        ],
+      ),
+    ];
+    final events = data.occurrences(1);
+    final layout = TimelineLayout(
+      data.semester.periods,
+      occurrences: events,
+      collapseBreaks: true,
+    );
+    expect(
+      layout.segments.where((s) => s.period == null && s.height > 0).length,
+      3,
+    );
+    for (final event in events.where((e) => e.isExtra)) {
+      expect(
+        layout.position(event.endMinute) - layout.position(event.startMinute),
+        68,
+      );
+    }
+    expect(layout.position(735), layout.position(780));
+    expect(layout.position(810), layout.position(840));
+    final database = events.firstWhere((e) => !e.isExtra);
+    expect(database.busyRanges.length, 3);
+    expect(database.busyRanges.any((r) => r.contains(636)), isFalse);
+    expect(layout.position(1400), layout.height);
+  });
   test('重叠安排并排显示，首尾相接独占整列', () {
     final c = Course(
       name: '补课',
