@@ -1,7 +1,7 @@
 name: seu_timetable
 description: SEU综合课表，安卓与iOS共用的离线Flutter课表。
 publish_to: none
-version: 1.6.3+23
+version: 1.6.4+24
 
 environment:
   sdk: '>=3.10.0 <4.0.0'

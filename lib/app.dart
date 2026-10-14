@@ -121,13 +121,17 @@ class _SeuTimetableAppState extends State<SeuTimetableApp> {
           fit: StackFit.expand,
           children: [
             child!,
-            if (appearance.theme == MeikeTheme.naiFamily &&
-                appearance.eggPet &&
-                MediaQuery.viewInsetsOf(context).bottom == 0)
-              NaiEggCompanion(
-                key: petKey,
-                onSelect: petNavigate,
-                onExpansionChanged: petExpansionChanged,
+            if (appearance.theme == MeikeTheme.naiFamily && appearance.eggPet)
+              Offstage(
+                offstage: MediaQuery.viewInsetsOf(context).bottom > 0,
+                child: TickerMode(
+                  enabled: MediaQuery.viewInsetsOf(context).bottom == 0,
+                  child: NaiEggCompanion(
+                    key: petKey,
+                    onSelect: petNavigate,
+                    onExpansionChanged: petExpansionChanged,
+                  ),
+                ),
               ),
           ],
         ),
