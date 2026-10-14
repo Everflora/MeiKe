@@ -33,42 +33,45 @@ class NaiCharacter extends StatelessWidget {
   );
 }
 
-class NaiWallpaper extends StatelessWidget {
-  const NaiWallpaper({super.key});
+class NaiFamilyBanner extends StatelessWidget {
+  const NaiFamilyBanner({super.key});
   @override
-  Widget build(BuildContext context) => IgnorePointer(
-    child: ExcludeSemantics(
-      child: Opacity(
-        opacity: Theme.of(context).brightness == Brightness.dark ? .10 : .18,
-        child: Image.asset(
-          'assets/nai-family/family.webp',
-          fit: BoxFit.contain,
-          alignment: Alignment.center,
-          width: double.infinity,
-          height: double.infinity,
-        ),
-      ),
+  Widget build(BuildContext context) => AspectRatio(
+    aspectRatio: 3,
+    child: Image.asset(
+      'assets/nai-family/family-wide.webp',
+      width: double.infinity,
+      fit: BoxFit.cover,
+      excludeFromSemantics: true,
     ),
   );
 }
 
-class NaiFamilyBanner extends StatelessWidget {
-  const NaiFamilyBanner({super.key, this.height = 120});
-  final double height;
+class NaiAddGlyph extends StatelessWidget {
+  const NaiAddGlyph({super.key});
   @override
-  Widget build(BuildContext context) => ClipRRect(
-    borderRadius: BorderRadius.circular(20),
-    child: SizedBox(
-      height: height,
-      width: double.infinity,
-      child: ColoredBox(
-        color: context.meike.soft,
-        child: Image.asset(
-          'assets/nai-family/family.webp',
-          fit: BoxFit.contain,
-          excludeFromSemantics: true,
-        ),
-      ),
+  Widget build(BuildContext context) => SizedBox.square(
+    dimension: 24,
+    child: Stack(
+      clipBehavior: Clip.none,
+      alignment: Alignment.center,
+      children: [
+        const Icon(Icons.add, color: Color(0xFF24382E), size: 22),
+        for (final left in [5.0, 15.0])
+          Positioned(
+            top: -4,
+            left: left,
+            child: Container(
+              key: ValueKey('nai-add-eye-$left'),
+              width: 3,
+              height: 3,
+              decoration: const BoxDecoration(
+                color: Color(0xFF567447),
+                shape: BoxShape.circle,
+              ),
+            ),
+          ),
+      ],
     ),
   );
 }

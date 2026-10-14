@@ -640,18 +640,23 @@ class _TimetablePageState extends State<TimetablePage>
                             ? context.meike.heroAccent
                             : null,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: context.naiFamily
+                              ? const BorderRadius.vertical(
+                                  top: Radius.circular(22),
+                                  bottom: Radius.circular(16),
+                                )
+                              : BorderRadius.circular(12),
                         ),
                       ),
                       onPressed: widget.store.canWrite && !widget.store.busy
                           ? () => editCourse(context, widget.store)
                           : null,
-                      icon: Icon(
-                        Icons.add,
-                        color: context.naiFamily
-                            ? const Color(0xFF24382E)
-                            : Theme.of(context).colorScheme.onPrimary,
-                      ),
+                      icon: context.naiFamily
+                          ? const NaiAddGlyph()
+                          : Icon(
+                              Icons.add,
+                              color: Theme.of(context).colorScheme.onPrimary,
+                            ),
                     ),
                   ],
                 ),
@@ -1009,9 +1014,24 @@ class _EventCard extends StatelessWidget {
           '${event.name}，${SchoolClock.weekdays[event.weekday - 1]}，${event.periodLabel}，${event.timeLabel}，${event.location}，${event.calendarNote}',
       button: true,
       excludeSemantics: true,
-      child: SizedBox(
+      child: Container(
         height: height,
+        decoration: context.naiFamily && active
+            ? BoxDecoration(
+                borderRadius: BorderRadius.circular(7),
+                boxShadow: [
+                  BoxShadow(
+                    color: context.meike.green.withValues(alpha: .2),
+                    blurRadius: 5,
+                    spreadRadius: 1,
+                  ),
+                ],
+              )
+            : null,
         child: Material(
+          key: context.naiFamily && active
+              ? const ValueKey('nai-active-course-border')
+              : null,
           color: active
               ? (ginkgo || context.naiFamily
                     ? context.meike.goldSoft
@@ -1028,7 +1048,7 @@ class _EventCard extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(ginkgo ? 5 : 7),
             side: context.naiFamily && active
-                ? BorderSide(color: context.meike.green, width: 1.1)
+                ? BorderSide(color: context.meike.green, width: 2)
                 : ginkgo
                 ? BorderSide(color: context.meike.line, width: .7)
                 : BorderSide.none,

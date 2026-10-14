@@ -199,10 +199,10 @@ class _DiscussionPageState extends State<DiscussionPage> {
                 )
               : null,
         ),
-        if (context.naiFamily && client.signedIn && terms.isNotEmpty)
+        if (context.naiFamily)
           const Padding(
-            padding: EdgeInsets.fromLTRB(20, 0, 20, 12),
-            child: NaiFamilyBanner(height: 108),
+            padding: EdgeInsets.only(bottom: 12),
+            child: NaiFamilyBanner(),
           ),
         if (busy) const LinearProgressIndicator(),
         if (error != null)
@@ -222,9 +222,7 @@ class _DiscussionPageState extends State<DiscussionPage> {
                           color: context.meike.soft,
                           borderRadius: BorderRadius.circular(28),
                         ),
-                        child: context.naiFamily
-                            ? const NaiCharacter(NaiAnimal.mouse, size: 72)
-                            : const PlumMark(size: 52),
+                        child: const PlumMark(size: 52),
                       ),
                       const SizedBox(height: 16),
                       const Text('和同一个教学班的同学交流'),
@@ -288,23 +286,20 @@ class _DiscussionPageState extends State<DiscussionPage> {
                             horizontal: 14,
                             vertical: 8,
                           ),
-                          leading: Container(
-                            width: 44,
-                            height: 44,
-                            decoration: BoxDecoration(
-                              color: course.color.surface(context),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: context.naiFamily
-                                ? NaiCharacter(
-                                    NaiAnimal.values[index % 5],
-                                    size: 44,
-                                  )
-                                : Icon(
+                          leading: context.naiFamily
+                              ? null
+                              : Container(
+                                  width: 44,
+                                  height: 44,
+                                  decoration: BoxDecoration(
+                                    color: course.color.surface(context),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Icon(
                                     Icons.forum_outlined,
                                     color: course.color.foreground(context),
                                   ),
-                          ),
+                                ),
                           title: Text(course.name),
                           subtitle: Text(
                             '${course.teacher.isEmpty ? '未填写教师' : course.teacher}\n${course.meetings.map((m) => '${m.summary} · ${m.recurrence}').join('\n')}',

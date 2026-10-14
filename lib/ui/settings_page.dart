@@ -9,7 +9,6 @@ import 'course_editor.dart';
 import 'courses_page.dart';
 import 'appearance.dart';
 import 'theme.dart';
-import 'nai_family.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key, required this.store, this.appearance});
@@ -96,10 +95,7 @@ class _SettingsPageState extends State<SettingsPage> {
           subtitle: '把学习与生活，安排得刚刚好。',
           padding: EdgeInsets.only(bottom: 24),
         ),
-        if (context.naiFamily) ...[
-          const NaiFamilyBanner(height: 135),
-          const SizedBox(height: 20),
-        ],
+
         if (!widget.store.canWrite)
           SectionCard(
             title: '本地数据读取失败',
@@ -142,7 +138,7 @@ class _SettingsPageState extends State<SettingsPage> {
           SectionCard(
             title: '外观',
             children: [
-              if (context.naiFamily) ...[
+              if (context.meike.design == MeikeTheme.naiFamily) ...[
                 SwitchListTile(
                   contentPadding: EdgeInsets.zero,
                   title: const Text('角色动效'),
@@ -254,7 +250,7 @@ class _SettingsPageState extends State<SettingsPage> {
           ],
         ),
         Text(
-          '梅课 1.6.0 · SEU 校园课表',
+          '梅课 1.6.1 · SEU 校园课表',
           style: Theme.of(context).textTheme.bodySmall,
           textAlign: TextAlign.center,
         ),

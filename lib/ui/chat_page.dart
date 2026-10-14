@@ -8,7 +8,6 @@ import '../domain/schedule.dart';
 import 'discussion_helpers.dart';
 import 'discussion_profile.dart';
 import 'theme.dart';
-import 'nai_family.dart';
 import '../data/schedule_store.dart';
 import 'team_page.dart';
 import 'sticker_panel.dart';
@@ -761,8 +760,6 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
         Expanded(
           child: Stack(
             children: [
-              if (context.naiFamily)
-                const Positioned.fill(child: NaiWallpaper()),
               if (messages.isEmpty && !loading)
                 const Center(child: Text('还没有消息，和同班同学打个招呼吧。')),
               ListView.builder(

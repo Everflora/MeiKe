@@ -89,8 +89,7 @@ class _NewsSectionsState extends State<NewsPage> {
       children: [
         Text('校园', style: Theme.of(context).textTheme.headlineMedium),
         const SizedBox(height: 10),
-        const NaiFamilyBanner(height: 116),
-        const SizedBox(height: 12),
+        const SizedBox(height: 4),
         Row(
           children: [
             for (var i = 0; i < 3; i++) ...[
@@ -118,13 +117,13 @@ class _NewsSectionsState extends State<NewsPage> {
                               color: context.meike.ink,
                             ),
                           ),
-                          NaiCharacter(
-                            const [
-                              NaiAnimal.chicken,
-                              NaiAnimal.mouse,
-                              NaiAnimal.egg,
-                            ][i],
-                            size: 48,
+                          const SizedBox(height: 4),
+                          Image.asset(
+                            'assets/nai-family/${const ['chicken-garden', 'mouse-blackboard', 'egg-calendar'][i]}.webp',
+                            height: 82,
+                            width: double.infinity,
+                            fit: BoxFit.contain,
+                            excludeFromSemantics: true,
                           ),
                         ],
                       ),
