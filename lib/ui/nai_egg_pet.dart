@@ -63,36 +63,26 @@ class _EggMouth extends CustomPainter {
     final image = Alignment.center.inscribe(fitted, Offset.zero & size);
     final center = Offset(image.center.dx, image.top + image.height * .336);
     final p = progress.clamp(0.0, 1.0);
-    double blend(double a, double b, double t) =>
-        a + (b - a) * Curves.easeInOut.transform(t.clamp(0.0, 1.0));
-    final double openness, widthFactor;
-    if (p <= .32) {
-      openness = blend(0, 1, p / .32);
-      widthFactor = blend(.185, .115, p / .32);
-    } else if (p <= .68) {
-      openness = blend(1, .38, (p - .32) / .36);
-      widthFactor = blend(.115, .17, (p - .32) / .36);
-    } else {
-      openness = blend(.38, 0, (p - .68) / .32);
-      widthFactor = blend(.17, .185, (p - .68) / .32);
-    }
-    final width = image.width * widthFactor;
-    final height = image.height * (.0025 + .052 * openness);
+    final shape = _articulation(p);
+    final width = image.width * shape.width;
+    final height = image.height * shape.height;
+    final upperCurve = .62 - .46 * shape.flatness;
+    final lowerCurve = 1 - .32 * shape.flatness;
     final path = Path()
       ..moveTo(center.dx - width / 2, center.dy)
       ..cubicTo(
         center.dx - width * .28,
-        center.dy - height * .62,
+        center.dy - height * upperCurve,
         center.dx + width * .28,
-        center.dy - height * .62,
+        center.dy - height * upperCurve,
         center.dx + width / 2,
         center.dy,
       )
       ..cubicTo(
         center.dx + width * .28,
-        center.dy + height,
+        center.dy + height * lowerCurve,
         center.dx - width * .28,
-        center.dy + height,
+        center.dy + height * lowerCurve,
         center.dx - width / 2,
         center.dy,
       )
@@ -115,26 +105,105 @@ class _EggMouth extends CustomPainter {
               Rect.fromCenter(center: center, width: width, height: height * 2),
             ),
     );
-    if (openness > .08) {
+    if (shape.height > .004) {
       canvas.save();
       canvas.clipPath(path);
       canvas.drawOval(
         Rect.fromCenter(
-          center: center + Offset(0, height * .72),
+          center: center + Offset(0, height * shape.tongueY),
           width: width * .65,
           height: height * .45,
         ),
-        Paint()
-          ..color = const Color(
-            0xFFB88377,
-          ).withValues(alpha: openness.clamp(0.0, 1.0)),
+        Paint()..color = const Color(0xFFB88377).withValues(alpha: .75),
       );
+      if (shape.teeth > 0) {
+        canvas.drawRRect(
+          RRect.fromRectAndRadius(
+            Rect.fromLTWH(
+              center.dx - width * .36,
+              center.dy - height * .12,
+              width * .72,
+              height * .35,
+            ),
+            Radius.circular(height * .12),
+          ),
+          Paint()
+            ..color = const Color(0xFFF1DFBF).withValues(alpha: shape.teeth),
+        );
+      }
       canvas.restore();
     }
   }
 
   @override
   bool shouldRepaint(_EggMouth oldDelegate) => oldDelegate.progress != progress;
+}
+
+typedef _MouthPose = ({
+  double width,
+  double height,
+  double teeth,
+  double tongueY,
+  double flatness,
+});
+
+// One utterance: open jaw for 安/a/, briefly close for /n/ and /d/, then
+// spread the lips and reveal the upper teeth for a sustained 迪/iː/.
+_MouthPose _articulation(double p) {
+  const _MouthPose rest = (
+    width: .185,
+    height: .0025,
+    teeth: 0,
+    tongueY: .72,
+    flatness: .2,
+  );
+  const _MouthPose an = (
+    width: .175,
+    height: .067,
+    teeth: 0,
+    tongueY: .72,
+    flatness: .25,
+  );
+  const _MouthPose n = (
+    width: .15,
+    height: .0018,
+    teeth: .1,
+    tongueY: .25,
+    flatness: .6,
+  );
+  const _MouthPose d = (
+    width: .20,
+    height: .004,
+    teeth: .35,
+    tongueY: .45,
+    flatness: .7,
+  );
+  const _MouthPose di = (
+    width: .27,
+    height: .023,
+    teeth: .85,
+    tongueY: .76,
+    flatness: .85,
+  );
+  _MouthPose mix(_MouthPose a, _MouthPose b, double t) {
+    final eased = Curves.easeInOut.transform(t.clamp(0.0, 1.0));
+    double lerp(double x, double y) => x + (y - x) * eased;
+    return (
+      width: lerp(a.width, b.width),
+      height: lerp(a.height, b.height),
+      teeth: lerp(a.teeth, b.teeth),
+      tongueY: lerp(a.tongueY, b.tongueY),
+      flatness: lerp(a.flatness, b.flatness),
+    );
+  }
+
+  if (p <= .18) return mix(rest, an, p / .18);
+  if (p <= .34) return an;
+  if (p <= .46) return mix(an, n, (p - .34) / .12);
+  if (p <= .52) return mix(n, d, (p - .46) / .06);
+  if (p <= .66) return mix(d, di, (p - .52) / .14);
+  if (p <= .88) return di;
+  return mix(di, rest, (p - .88) / .12);
 }
 
 typedef _EggPose = ({Offset center, double tilt});
@@ -147,7 +216,7 @@ class _PetGeometry {
       viewport.width - 12,
       math.max(padding.top + 100, viewport.height - padding.bottom - 80),
     );
-    extent = math.min(124.0, bounds.shortestSide / 2 - 4);
+    extent = math.min(136.0, bounds.shortestSide / 2 - 4);
     bubbleSize = (extent * .52).clamp(44.0, 64.0);
     radius = extent - bubbleSize / 2;
     eggSize = ((radius - bubbleSize / 2 - 8) * 2).clamp(40.0, 88.0);
@@ -167,7 +236,7 @@ class _PetGeometry {
   );
   _EggPose open(bool left, double fraction) => (
     center: Offset(
-      left ? bounds.left + extent : bounds.right - extent,
+      left ? eggSize / 2 + 4 : viewport.width - eggSize / 2 - 4,
       (dock(left, fraction).center.dy - 26).clamp(
         bounds.top + extent,
         bounds.bottom - extent,
@@ -179,6 +248,14 @@ class _PetGeometry {
     point.dx.clamp(0.0, viewport.width),
     point.dy.clamp(bounds.top + eggSize / 2, bounds.bottom - eggSize / 2),
   );
+  Offset bubbleCenter(Offset center, bool left, int index) {
+    final angle = -math.pi / 2 - index * math.pi / 4;
+    return center +
+        Offset(
+          (left ? -1 : 1) * radius * math.cos(angle),
+          radius * math.sin(angle),
+        );
+  }
 }
 
 /// Hit-tests only the pet while docked. Five independent circular destinations
@@ -197,9 +274,10 @@ class NaiEggCompanion extends StatefulWidget {
 
 class NaiEggCompanionState extends State<NaiEggCompanion>
     with SingleTickerProviderStateMixin {
+  static const _entryMillis = 1400;
   late final animation = AnimationController(
     vsync: this,
-    duration: const Duration(milliseconds: 1100),
+    duration: const Duration(milliseconds: _entryMillis),
     value: 1,
   );
   late _PetGeometry _geometry;
@@ -212,12 +290,14 @@ class NaiEggCompanionState extends State<NaiEggCompanion>
   Offset? menuCenter;
 
   _EggPose get _pose {
-    if (dragging) return (center: dragCenter!, tilt: _dragOrigin!.tilt);
+    if (dragging) return (center: dragCenter!, tilt: 0);
     final dock = _geometry.dock(dockLeft, anchorFraction);
     final start = _fromPose ?? dock;
     final target = _targetPose ?? dock;
     final t = entrySequence
-        ? Curves.easeOutCubic.transform((animation.value / .36).clamp(0.0, 1.0))
+        ? Curves.easeOutCubic.transform(
+            (animation.value * _entryMillis / 360).clamp(0.0, 1.0),
+          )
         : Curves.easeInOutCubic.transform(animation.value);
     return (
       center: Offset.lerp(start.center, target.center, t)!,
@@ -228,8 +308,8 @@ class NaiEggCompanionState extends State<NaiEggCompanion>
   double get mouthProgress {
     if (dragging) return 0;
     if (entrySequence && expanded) {
-      // Land at 396 ms, stay still, then speak from 473 to 968 ms.
-      final p = ((animation.value - .43) / .45).clamp(0.0, 1.0);
+      // Land at 360 ms, pause, then pronounce 安迪～ from 430 to 1230 ms.
+      final p = ((animation.value * _entryMillis - 430) / 800).clamp(0.0, 1.0);
       return p >= 1 ? 0 : p;
     }
     if (mouthFromProgress <= 0 || animation.value >= 1) return 0;
@@ -240,7 +320,7 @@ class NaiEggCompanionState extends State<NaiEggCompanion>
   double get menuOpacity {
     if (dragging) return 0;
     if (entrySequence && expanded) {
-      return ((animation.value - .9) / .1).clamp(0.0, 1.0);
+      return ((animation.value * _entryMillis - 1260) / 140).clamp(0.0, 1.0);
     }
     return expanded
         ? menuFromOpacity +
@@ -266,7 +346,7 @@ class NaiEggCompanionState extends State<NaiEggCompanion>
       if (open) menuCenter = target.center;
     });
     widget.onExpansionChanged?.call(open);
-    animation.duration = Duration(milliseconds: speak ? 1100 : 360);
+    animation.duration = Duration(milliseconds: speak ? _entryMillis : 360);
     if (MediaQuery.disableAnimationsOf(context)) {
       animation.value = 1;
     } else {
@@ -401,18 +481,22 @@ class NaiEggCompanionState extends State<NaiEggCompanion>
                               for (var i = 0; i < 5; i++)
                                 Positioned(
                                   left:
-                                      menuCenter!.dx +
-                                      _geometry.radius *
-                                          math.cos(
-                                            -math.pi / 2 + i * math.pi * 2 / 5,
-                                          ) -
+                                      _geometry
+                                          .bubbleCenter(
+                                            menuCenter!,
+                                            dockLeft,
+                                            i,
+                                          )
+                                          .dx -
                                       _geometry.bubbleSize / 2,
                                   top:
-                                      menuCenter!.dy +
-                                      _geometry.radius *
-                                          math.sin(
-                                            -math.pi / 2 + i * math.pi * 2 / 5,
-                                          ) -
+                                      _geometry
+                                          .bubbleCenter(
+                                            menuCenter!,
+                                            dockLeft,
+                                            i,
+                                          )
+                                          .dy -
                                       _geometry.bubbleSize / 2,
                                   width: _geometry.bubbleSize,
                                   height: _geometry.bubbleSize,

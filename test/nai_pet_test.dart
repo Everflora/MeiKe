@@ -1,7 +1,9 @@
 import 'dart:io';
 import 'dart:math' as math;
+import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:seu_timetable/app.dart';
 import 'package:seu_timetable/data/schedule_store.dart';
@@ -29,7 +31,7 @@ Future<void> petSelect(WidgetTester tester, int index) async {
 }
 
 void main() {
-  testWidgets('贴边不挡点击，先站稳再连续开口，五个圆形气泡环绕奶蛋', (tester) async {
+  testWidgets('贴边不挡点击，先站稳再连续开口，奶蛋靠右，五个气泡位于左侧半圆', (tester) async {
     tester.view.physicalSize = const Size(320, 568);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
@@ -80,6 +82,7 @@ void main() {
     );
     await tester.pumpAndSettle();
     final center = tester.getRect(egg).center;
+    expect(320 - tester.getRect(egg).right, inInclusiveRange(0, 8));
     final bubbles = [
       for (var i = 0; i < 5; i++)
         tester.getRect(find.byKey(ValueKey('nai-pet-destination-$i'))),
@@ -89,6 +92,7 @@ void main() {
       final bubble = bubbles[i];
       expect(bubble.width, bubble.height);
       expect((bubble.center - center).distance, closeTo(radius, .01));
+      expect(bubble.center.dx, lessThanOrEqualTo(center.dx + .01));
       expect(bubble.left, greaterThanOrEqualTo(0));
       expect(bubble.right, lessThanOrEqualTo(320));
       for (var j = i + 1; j < 5; j++) {
@@ -181,15 +185,15 @@ void main() {
     var runs = 0, wasOpen = false;
     Rect? landed;
     final mouthValues = <double>{};
-    for (var i = 0; i < 70; i++) {
+    for (var i = 0; i < 90; i++) {
       await tester.pump(const Duration(milliseconds: 16));
       final rect = tester.getRect(egg);
       expect(rect.left, lessThanOrEqualTo(previousX + .01));
       final mouth = tester
           .widget<NaiEggSprite>(find.byType(NaiEggSprite))
           .mouthProgress;
-      if (i < 29) expect(mouth, 0);
-      if (i >= 25) {
+      if (i < 26) expect(mouth, 0);
+      if (i >= 22) {
         landed ??= rect;
         expect(rect, landed);
         final transform = tester.widget<Transform>(
@@ -268,6 +272,7 @@ void main() {
     await gesture.moveBy(const Offset(-70, 0));
     await tester.pump();
     expect(tester.getRect(egg).center.dx, inExclusiveRange(80, 300));
+    expect(eggTilt(tester), closeTo(0, .00001));
     await gesture.up();
     await tester.pumpAndSettle();
     expect(tester.getRect(egg), dock);
@@ -278,6 +283,16 @@ void main() {
     expect(left.center.dy, lessThan(dock.center.dy));
     await openPet(tester);
     final open = tester.getRect(egg);
+    expect(open.left, inInclusiveRange(0, 8));
+    for (var i = 0; i < 5; i++) {
+      expect(
+        tester
+            .getRect(find.byKey(ValueKey('nai-pet-destination-$i')))
+            .center
+            .dx,
+        greaterThanOrEqualTo(open.center.dx - .01),
+      );
+    }
     gesture = await tester.startGesture(eggPoint(tester));
     await gesture.moveBy(const Offset(70, 50));
     await tester.pump();
@@ -292,12 +307,80 @@ void main() {
     gesture = await tester.startGesture(eggPoint(tester));
     await gesture.moveBy(const Offset(140, 30));
     await tester.pump();
+    expect(eggTilt(tester), closeTo(0, .00001));
     await gesture.cancel();
     await tester.pumpAndSettle();
     expect(tester.getRect(egg), left);
     await tester.dragFrom(eggPoint(tester), const Offset(350, 0));
     await tester.pumpAndSettle();
     expect(tester.getRect(egg).center.dx, 390);
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  testWidgets('实际绘制的安口型上下张开，迪口型横向拉长并出现上齿', (tester) async {
+    final key = GlobalKey();
+    Future<({Rect bounds, int teeth})> renderedMouth(double phase) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Center(
+            child: RepaintBoundary(
+              key: key,
+              child: NaiEggSprite(size: 220, mouthProgress: phase),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      final boundary =
+          key.currentContext!.findRenderObject()! as RenderRepaintBoundary;
+      final image = (await tester.runAsync(
+        () => boundary.toImage(pixelRatio: 1),
+      ))!;
+      final bytes = (await tester.runAsync(
+        () => image.toByteData(format: ui.ImageByteFormat.rawRgba),
+      ))!;
+      var minX = 220, minY = 220, maxX = 0, maxY = 0, teeth = 0;
+      for (var y = 66; y < 88; y++) {
+        for (var x = 70; x < 150; x++) {
+          final index = (y * 220 + x) * 4;
+          final r = bytes.getUint8(index),
+              g = bytes.getUint8(index + 1),
+              b = bytes.getUint8(index + 2);
+          if (bytes.getUint8(index + 3) > 200 && r < 115 && g < 95 && b < 80) {
+            minX = math.min(minX, x);
+            maxX = math.max(maxX, x);
+            minY = math.min(minY, y);
+            maxY = math.max(maxY, y);
+          }
+          if (y >= 70 &&
+              y < 80 &&
+              x >= 88 &&
+              x < 132 &&
+              r > 185 &&
+              g > 170 &&
+              b > 145) {
+            teeth++;
+          }
+        }
+      }
+      image.dispose();
+      return (
+        bounds: Rect.fromLTRB(
+          minX.toDouble(),
+          minY.toDouble(),
+          maxX + 1.0,
+          maxY + 1.0,
+        ),
+        teeth: teeth,
+      );
+    }
+
+    final an = await renderedMouth(.25);
+    final di = await renderedMouth(.76);
+    expect(an.bounds.height, greaterThan(di.bounds.height * 2));
+    expect(di.bounds.width, greaterThan(an.bounds.width * 1.3));
+    expect(di.teeth, greaterThan(an.teeth));
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox());
   });
@@ -452,4 +535,19 @@ void main() {
     expect(settings.eggPet, true);
     await tester.pumpWidget(const SizedBox());
   });
+}
+
+double eggTilt(WidgetTester tester) {
+  final transform = tester.widget<Transform>(
+    find
+        .descendant(
+          of: find.byKey(const ValueKey('nai-pet-egg')),
+          matching: find.byType(Transform),
+        )
+        .first,
+  );
+  return math.atan2(
+    transform.transform.storage[1],
+    transform.transform.storage[0],
+  );
 }

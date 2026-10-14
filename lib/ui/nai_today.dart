@@ -185,7 +185,7 @@ class NaiTodayContent extends StatelessWidget {
                           ),
                         ),
                         Positioned(
-                          right: -10,
+                          right: done ? 16 : -10,
                           bottom: done ? -16 : -8,
                           width: box.maxWidth * .56,
                           height: cardHeight * .86,
