@@ -29,7 +29,7 @@ Future<void> petSelect(WidgetTester tester, int index) async {
 }
 
 void main() {
-  testWidgets('半身贴边不挡普通点击，可拖动，弹跳时有两轮安迪口型和五个入口', (tester) async {
+  testWidgets('半身贴边不挡普通点击，可拖动，轻柔跳出时只有一轮口型和五个入口', (tester) async {
     tester.view.physicalSize = const Size(320, 568);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
@@ -71,12 +71,10 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 200));
     expect(tester.widget<NaiEggSprite>(find.byType(NaiEggSprite)).frame, 1);
-    await tester.pump(const Duration(milliseconds: 200));
+    await tester.pump(const Duration(milliseconds: 140));
     expect(tester.widget<NaiEggSprite>(find.byType(NaiEggSprite)).frame, 2);
-    await tester.pump(const Duration(milliseconds: 180));
-    expect(tester.widget<NaiEggSprite>(find.byType(NaiEggSprite)).frame, 1);
-    await tester.pump(const Duration(milliseconds: 120));
-    expect(tester.widget<NaiEggSprite>(find.byType(NaiEggSprite)).frame, 2);
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(tester.widget<NaiEggSprite>(find.byType(NaiEggSprite)).frame, 0);
     await tester.pumpAndSettle();
     expect(find.byKey(const ValueKey('nai-pet-menu')), findsOneWidget);
     for (var i = 0; i < 5; i++) {
@@ -117,6 +115,71 @@ void main() {
     await tester.tapAt(const Offset(20, 20));
     await tester.pumpAndSettle();
     expect(find.byKey(const ValueKey('nai-pet-menu')), findsNothing);
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  testWidgets('出入单向平滑，没有反复回弹或退回时重播口型，途中改变方向不跳位', (tester) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final key = GlobalKey<NaiEggCompanionState>();
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: meikeTheme(Brightness.light, MeikeTheme.naiFamily),
+        home: NaiEggCompanion(key: key, onSelect: (_) {}),
+      ),
+    );
+    final egg = find.byKey(const ValueKey('nai-pet-egg'));
+    final dock = tester.getRect(egg);
+    key.currentState!.reveal();
+    await tester.pump();
+    var previous = dock.left;
+    var openRuns = 0;
+    var wasOpen = false;
+    for (var i = 0; i < 14; i++) {
+      await tester.pump(const Duration(milliseconds: 40));
+      final rect = tester.getRect(egg);
+      expect(rect.left, lessThanOrEqualTo(previous + .01));
+      expect(rect.left, greaterThanOrEqualTo(390 - 88 - 16));
+      expect(rect.width, 88);
+      final mouth = tester
+          .widget<NaiEggSprite>(find.byType(NaiEggSprite))
+          .frame;
+      if (mouth != 0 && !wasOpen) openRuns++;
+      wasOpen = mouth != 0;
+      previous = rect.left;
+    }
+    expect(openRuns, 1);
+    expect(wasOpen, false);
+    final open = tester.getRect(egg);
+    key.currentState!.dismiss();
+    await tester.pump();
+    expect(tester.getRect(egg).topLeft, open.topLeft);
+    expect(find.byKey(const ValueKey('nai-pet-menu')), findsOneWidget);
+    await tester.pump(const Duration(milliseconds: 90));
+    final returning = tester.getRect(egg);
+    expect(returning.left, greaterThan(open.left));
+    expect(returning.left, lessThan(dock.left));
+    expect(tester.widget<NaiEggSprite>(find.byType(NaiEggSprite)).frame, 0);
+    key.currentState!.reveal();
+    await tester.pump();
+    expect(tester.getRect(egg).topLeft, returning.topLeft);
+    await tester.pumpAndSettle();
+    key.currentState!.dismiss();
+    await tester.pump();
+    previous = tester.getRect(egg).left;
+    for (var i = 0; i < 6; i++) {
+      await tester.pump(const Duration(milliseconds: 60));
+      final rect = tester.getRect(egg);
+      expect(rect.left, greaterThanOrEqualTo(previous - .01));
+      expect(rect.left, lessThanOrEqualTo(dock.left));
+      expect(tester.widget<NaiEggSprite>(find.byType(NaiEggSprite)).frame, 0);
+      previous = rect.left;
+    }
+    expect(tester.getRect(egg).topLeft, dock.topLeft);
+    expect(find.byKey(const ValueKey('nai-pet-menu')), findsNothing);
+    expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox());
   });
 

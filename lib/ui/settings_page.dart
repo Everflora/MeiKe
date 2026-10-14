@@ -264,7 +264,7 @@ class _SettingsPageState extends State<SettingsPage> {
           ],
         ),
         Text(
-          '梅课 1.6.2 · SEU 校园课表',
+          '梅课 1.6.3 · SEU 校园课表',
           style: Theme.of(context).textTheme.bodySmall,
           textAlign: TextAlign.center,
         ),

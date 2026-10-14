@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -68,21 +69,88 @@ class NaiEggCompanion extends StatefulWidget {
 }
 
 class NaiEggCompanionState extends State<NaiEggCompanion>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late final animation = AnimationController(
     vsync: this,
-    duration: const Duration(milliseconds: 1000),
-    reverseDuration: const Duration(milliseconds: 220),
+    duration: const Duration(milliseconds: 560),
+    value: 1,
   );
+  late final sway = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1800),
+  );
+  Timer? idlePause;
   bool expanded = false;
+  bool openingMotion = false;
+  ({double reveal, double lift, double tilt}) fromPose = (
+    reveal: 0,
+    lift: 0,
+    tilt: -.38,
+  );
+  double closingMenuOpacity = 0;
   double anchorFraction = .62;
-  void reveal() {
-    if (expanded) {
-      dismiss();
+
+  @override
+  void initState() {
+    super.initState();
+    animation.addStatusListener((status) {
+      if (status == AnimationStatus.completed && expanded) gentleSway();
+    });
+    sway.addStatusListener((status) {
+      if (status == AnimationStatus.completed && expanded) {
+        idlePause = Timer(const Duration(seconds: 5), gentleSway);
+      }
+    });
+  }
+
+  void gentleSway() {
+    if (!mounted || !expanded || MediaQuery.disableAnimationsOf(context)) {
       return;
     }
-    setState(() => expanded = true);
-    widget.onExpansionChanged?.call(true);
+    sway.forward(from: 0);
+  }
+
+  double get menuOpacity => openingMotion
+      ? ((animation.value - .75) / .25).clamp(0.0, 1.0)
+      : closingMenuOpacity *
+            (1 -
+                Curves.easeOut.transform(
+                  (animation.value / .55).clamp(0.0, 1.0),
+                ));
+
+  ({double reveal, double lift, double tilt}) get pose {
+    final progress = openingMotion
+        ? Curves.easeOutCubic.transform((animation.value / .7).clamp(0.0, 1.0))
+        : Curves.easeInOutCubic.transform(animation.value);
+    double between(double start, double end) =>
+        start + (end - start) * progress;
+    return (
+      reveal: between(fromPose.reveal, openingMotion ? 1 : 0),
+      lift:
+          between(fromPose.lift, openingMotion ? -26 : 0) -
+          (openingMotion ? 4 * math.sin(math.pi * progress) : 0),
+      tilt:
+          between(fromPose.tilt, openingMotion ? 0 : -.38) +
+          (expanded ? .009 * math.sin(sway.value * math.pi * 2) : 0),
+    );
+  }
+
+  void transition(bool open) {
+    // Capture the visible pose before changing direction so a quick second tap
+    // returns smoothly from the current position instead of snapping to an end.
+    final current = pose;
+    final opacity = menuOpacity;
+    idlePause?.cancel();
+    sway.stop();
+    sway.value = 0;
+    setState(() {
+      fromPose = current;
+      closingMenuOpacity = opacity;
+      openingMotion = open;
+      expanded = open;
+    });
+    widget.onExpansionChanged?.call(open);
+    animation.duration = Duration(milliseconds: open ? 560 : 360);
     if (MediaQuery.disableAnimationsOf(context)) {
       animation.value = 1;
     } else {
@@ -90,15 +158,17 @@ class NaiEggCompanionState extends State<NaiEggCompanion>
     }
   }
 
+  void reveal() {
+    if (expanded) {
+      dismiss();
+      return;
+    }
+    transition(true);
+  }
+
   void dismiss() {
     if (!mounted || !expanded) return;
-    setState(() => expanded = false);
-    widget.onExpansionChanged?.call(false);
-    if (MediaQuery.disableAnimationsOf(context)) {
-      animation.value = 0;
-    } else {
-      animation.reverse();
-    }
+    transition(false);
   }
 
   void choose(int index) {
@@ -107,20 +177,17 @@ class NaiEggCompanionState extends State<NaiEggCompanion>
   }
 
   int mouthFrame(double t) {
-    if (!expanded || t < .15 || t >= .85) return 0;
-    // Two complete closed → 安 → 迪 → closed cycles, then show the menu.
-    final phase = ((t - .15) / .7 * 2) % 1;
-    return phase < .1 || phase >= .9
-        ? 0
-        : phase < .5
-        ? 1
-        : 2;
+    if (!expanded || t < .2 || t >= .72) return 0;
+    // One closed → 安 → 迪 → closed mouth movement on entry only.
+    return t < .52 ? 1 : 2;
   }
 
   @override
   void dispose() {
+    idlePause?.cancel();
     if (expanded) widget.onExpansionChanged?.call(false);
     animation.dispose();
+    sway.dispose();
     super.dispose();
   }
 
@@ -143,99 +210,105 @@ class NaiEggCompanionState extends State<NaiEggCompanion>
           .clamp(topLimit, math.max(topLimit, bottomLimit - menuHeight))
           .toDouble();
       return AnimatedBuilder(
-        animation: animation,
+        animation: Listenable.merge([animation, sway]),
         builder: (context, _) {
           final t = animation.value;
-          final spring = Curves.elasticOut.transform((t / .65).clamp(0.0, 1.0));
-          final x = box.maxWidth - size / 2 - (size / 2 + 16) * spring;
-          final y =
-              anchor -
-              26 * spring -
-              12 * math.sin(math.pi * (t / .65).clamp(0.0, 1.0));
-          final wobble = math.sin(t * math.pi * 6) * (1 - t) * .09;
-          final ready = expanded && t >= .88;
+          final current = pose;
+          final x = box.maxWidth - size / 2 - (size / 2 + 16) * current.reveal;
+          final y = anchor + current.lift;
+          final opacity = menuOpacity;
+          final visible = expanded || animation.isAnimating;
           return BlockSemantics(
             blocking: expanded,
             child: Stack(
               clipBehavior: Clip.hardEdge,
               children: [
-                if (expanded)
+                if (visible)
                   Positioned.fill(
-                    child: Semantics(
-                      button: true,
-                      label: '收起奶蛋菜单',
-                      child: GestureDetector(
-                        key: const ValueKey('nai-pet-dismiss'),
-                        behavior: HitTestBehavior.opaque,
-                        onTap: dismiss,
-                        child: ColoredBox(
-                          color: Colors.black.withValues(alpha: .05),
+                    child: IgnorePointer(
+                      ignoring: !expanded,
+                      child: Semantics(
+                        button: true,
+                        label: '收起奶蛋菜单',
+                        child: GestureDetector(
+                          key: const ValueKey('nai-pet-dismiss'),
+                          behavior: HitTestBehavior.opaque,
+                          onTap: dismiss,
+                          child: ColoredBox(
+                            color: Colors.black.withValues(
+                              alpha: .05 * current.reveal,
+                            ),
+                          ),
                         ),
                       ),
                     ),
                   ),
-                if (ready)
+                if (opacity > 0)
                   Positioned(
                     left: menuX,
                     top: menuY,
                     width: menuWidth,
                     height: menuHeight,
-                    child: Opacity(
-                      opacity: ((t - .88) / .12).clamp(0.0, 1.0),
-                      child: Material(
-                        key: const ValueKey('nai-pet-menu'),
-                        color: context.meike.surface,
-                        elevation: 8,
-                        shadowColor: context.meike.ink.withValues(alpha: .14),
-                        borderRadius: BorderRadius.circular(20),
-                        clipBehavior: Clip.antiAlias,
-                        child: SingleChildScrollView(
-                          child: Padding(
-                            padding: const EdgeInsets.all(8),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                for (var i = 0; i < 5; i++)
-                                  SizedBox(
-                                    height: 44,
-                                    child: InkWell(
-                                      key: ValueKey('nai-pet-destination-$i'),
-                                      borderRadius: BorderRadius.circular(12),
-                                      onTap: () => choose(i),
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 8,
-                                        ),
-                                        child: Row(
-                                          children: [
-                                            NaiCharacter(
-                                              NaiAnimal.values[i],
-                                              size: 28,
-                                            ),
-                                            const SizedBox(width: 12),
-                                            Expanded(
-                                              child: Text(
-                                                const [
-                                                  '课表',
-                                                  '今天',
-                                                  '讨论',
-                                                  '校园',
-                                                  '我的',
-                                                ][i],
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                                style: TextStyle(
-                                                  fontSize: 14,
-                                                  color: context.meike.ink,
+                    child: IgnorePointer(
+                      ignoring: !expanded,
+                      child: Opacity(
+                        opacity: opacity,
+                        child: Material(
+                          key: const ValueKey('nai-pet-menu'),
+                          color: context.meike.surface,
+                          elevation: 8,
+                          shadowColor: context.meike.ink.withValues(alpha: .14),
+                          borderRadius: BorderRadius.circular(20),
+                          clipBehavior: Clip.antiAlias,
+                          child: SingleChildScrollView(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  for (var i = 0; i < 5; i++)
+                                    SizedBox(
+                                      height: 44,
+                                      child: InkWell(
+                                        key: ValueKey('nai-pet-destination-$i'),
+                                        borderRadius: BorderRadius.circular(12),
+                                        onTap: () => choose(i),
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 8,
+                                          ),
+                                          child: Row(
+                                            children: [
+                                              NaiCharacter(
+                                                NaiAnimal.values[i],
+                                                size: 28,
+                                              ),
+                                              const SizedBox(width: 12),
+                                              Expanded(
+                                                child: Text(
+                                                  const [
+                                                    '课表',
+                                                    '今天',
+                                                    '讨论',
+                                                    '校园',
+                                                    '我的',
+                                                  ][i],
+                                                  maxLines: 1,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: TextStyle(
+                                                    fontSize: 14,
+                                                    color: context.meike.ink,
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                          ],
+                                            ],
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
                         ),
@@ -263,12 +336,8 @@ class NaiEggCompanionState extends State<NaiEggCompanion>
                                       .clamp(.05, .95);
                             }),
                       child: Transform.rotate(
-                        angle: -.38 * (1 - spring),
-                        child: Transform.scale(
-                          scaleX: 1 + wobble,
-                          scaleY: 1 - wobble,
-                          child: NaiEggSprite(frame: mouthFrame(t), size: size),
-                        ),
+                        angle: current.tilt,
+                        child: NaiEggSprite(frame: mouthFrame(t), size: size),
                       ),
                     ),
                   ),
