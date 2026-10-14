@@ -26,9 +26,17 @@ class CourseEditor extends StatefulWidget {
 }
 
 class _CourseEditorState extends State<CourseEditor> {
-  late final Course draft = widget.course?.copy() ?? Course();
-  late final String initial = jsonEncode(draft.toJson());
+  late final Course draft;
+  late final String initial;
   bool saving = false, closing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    draft = widget.course?.copy() ?? Course();
+    initial = jsonEncode(draft.toJson());
+  }
+
   void close() {
     setState(() => closing = true);
     WidgetsBinding.instance.addPostFrameCallback((_) {

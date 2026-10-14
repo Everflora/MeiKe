@@ -95,6 +95,7 @@ class _SettingsPageState extends State<SettingsPage> {
           subtitle: '把学习与生活，安排得刚刚好。',
           padding: EdgeInsets.only(bottom: 24),
         ),
+
         if (!widget.store.canWrite)
           SectionCard(
             title: '本地数据读取失败',
@@ -137,6 +138,35 @@ class _SettingsPageState extends State<SettingsPage> {
           SectionCard(
             title: '外观',
             children: [
+              if (context.meike.design == MeikeTheme.naiFamily) ...[
+                SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: const Text('奶蛋宠物'),
+                  subtitle: const Text('屏幕边缘的快捷导航'),
+                  value: widget.appearance!.eggPet,
+                  onChanged: (value) async {
+                    try {
+                      await widget.appearance!.setEggPet(value);
+                    } catch (e) {
+                      if (context.mounted) await showError(context, e);
+                    }
+                  },
+                ),
+                const Divider(),
+                SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: const Text('角色动效'),
+                  value: widget.appearance!.motion,
+                  onChanged: (value) async {
+                    try {
+                      await widget.appearance!.setMotion(value);
+                    } catch (e) {
+                      if (context.mounted) await showError(context, e);
+                    }
+                  },
+                ),
+                const Divider(),
+              ],
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 leading: const Icon(Icons.palette_outlined),
@@ -228,13 +258,13 @@ class _SettingsPageState extends State<SettingsPage> {
             SizedBox(height: 10),
             Text('额外安排支持指定周、全天实验和独立地点。'),
             SizedBox(height: 10),
-            Text('课表保留课间与午休，今天页显示当前节次下课倒计时。'),
+            Text('课表展示每节课的起止时间，今天页显示当前节次下课倒计时。'),
             SizedBox(height: 10),
             Text('示例课程仅供体验，不代表真实课程信息。'),
           ],
         ),
         Text(
-          '梅课 1.5.2 · SEU 校园课表',
+          '梅课 1.6.5 · SEU 校园课表',
           style: Theme.of(context).textTheme.bodySmall,
           textAlign: TextAlign.center,
         ),

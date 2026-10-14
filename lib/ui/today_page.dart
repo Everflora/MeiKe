@@ -7,6 +7,8 @@ import '../domain/schedule.dart';
 import 'course_details.dart';
 import 'classroom_label.dart';
 import 'theme.dart';
+import 'nai_family.dart';
+import 'nai_today.dart';
 
 class TodayPage extends StatefulWidget {
   const TodayPage({super.key, required this.store, this.clock});
@@ -35,6 +37,9 @@ class _TodayPageState extends State<TodayPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (context.naiFamily) {
+      return NaiTodayContent(store: widget.store, now: now);
+    }
     final data = widget.store.data;
     final week = SchoolClock.week(now, data.semester);
     final courses = data.occurrences(week, weekday: SchoolClock.weekday(now));
@@ -48,6 +53,7 @@ class _TodayPageState extends State<TodayPage> {
           padding: const EdgeInsets.only(bottom: 24),
         ),
         _hero(context, data, courses, week),
+
         for (final calendar in calendarEvents)
           Padding(
             padding: const EdgeInsets.only(top: 12),
@@ -174,6 +180,12 @@ class _TodayPageState extends State<TodayPage> {
                         ),
                       ),
                       const SizedBox(width: 8),
+                      if (context.naiFamily &&
+                          !e.allDay &&
+                          e.busyRanges.any(
+                            (r) => r.contains(SchoolClock.minute(now)),
+                          ))
+                        const NaiCharacter(NaiAnimal.egg, size: 36),
                       Text(
                         e.periodLabel,
                         style: TextStyle(
@@ -215,6 +227,7 @@ class _TodayPageState extends State<TodayPage> {
         active == null;
     final allDay = courses.where((e) => e.allDay).firstOrNull;
     final seconds = next?.secondsUntilLessonEnds(now);
+
     return Container(
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(

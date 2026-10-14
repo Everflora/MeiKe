@@ -317,9 +317,9 @@ void main() {
       appearance.dispose();
       await screen(tester);
       await tester.runAsync(() async {
-        await tester.tap(find.widgetWithText(NavigationDestination, '校园'));
+        await tester.tap(find.text('校园').last);
         await tester.pump();
-        await tester.tap(find.widgetWithText(ChoiceChip, '教务通知'));
+        await tester.tap(find.text('教务通知'));
         await Future<void>.delayed(const Duration(milliseconds: 100));
       });
       await tester.pumpAndSettle();

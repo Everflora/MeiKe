@@ -5,6 +5,7 @@ import '../data/schedule_store.dart';
 import '../domain/schedule.dart';
 import 'labor_news_page.dart';
 import 'theme.dart';
+import 'nai_family.dart';
 import 'jwc_news_page.dart';
 import 'academic_calendar_page.dart';
 
@@ -21,43 +22,47 @@ class _NewsSectionsState extends State<NewsPage> {
   @override
   Widget build(BuildContext context) => Column(
     children: [
-      const BrandHeader(title: '校园消息', subtitle: '把与你有关的消息，放在一起。'),
-      Padding(
-        padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
-        child: Wrap(
-          spacing: 8,
-          runSpacing: 4,
-          children: [
-            ChoiceChip(
-              label: const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8),
-                child: Text('劳动教育'),
+      if (context.naiFamily)
+        _familyCampus()
+      else
+        const BrandHeader(title: '校园消息', subtitle: '把与你有关的消息，放在一起。'),
+      if (!context.naiFamily)
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
+          child: Wrap(
+            spacing: 8,
+            runSpacing: 4,
+            children: [
+              ChoiceChip(
+                label: const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 8),
+                  child: Text('劳动教育'),
+                ),
+                selected: selected == 0,
+                onSelected: (_) => setState(() => selected = 0),
               ),
-              selected: selected == 0,
-              onSelected: (_) => setState(() => selected = 0),
-            ),
-            ChoiceChip(
-              label: const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8),
-                child: Text('教务通知'),
+              ChoiceChip(
+                label: const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 8),
+                  child: Text('教务通知'),
+                ),
+                selected: selected == 1,
+                onSelected: (_) => setState(() {
+                  selected = 1;
+                  jwcOpened = true;
+                }),
               ),
-              selected: selected == 1,
-              onSelected: (_) => setState(() {
-                selected = 1;
-                jwcOpened = true;
-              }),
-            ),
-            ChoiceChip(
-              label: const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8),
-                child: Text('校历'),
+              ChoiceChip(
+                label: const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 8),
+                  child: Text('校历'),
+                ),
+                selected: selected == 2,
+                onSelected: (_) => setState(() => selected = 2),
               ),
-              selected: selected == 2,
-              onSelected: (_) => setState(() => selected = 2),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
       Expanded(
         child: IndexedStack(
           index: selected,
@@ -75,6 +80,62 @@ class _NewsSectionsState extends State<NewsPage> {
         ),
       ),
     ],
+  );
+
+  Widget _familyCampus() => Padding(
+    padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('校园', style: Theme.of(context).textTheme.headlineMedium),
+        const SizedBox(height: 10),
+        const SizedBox(height: 4),
+        Row(
+          children: [
+            for (var i = 0; i < 3; i++) ...[
+              if (i > 0) const SizedBox(width: 8),
+              Expanded(
+                child: Material(
+                  color: selected == i
+                      ? context.meike.goldSoft
+                      : context.meike.surface,
+                  borderRadius: BorderRadius.circular(16),
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(16),
+                    onTap: () => setState(() {
+                      selected = i;
+                      if (i == 1) jwcOpened = true;
+                    }),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: Column(
+                        children: [
+                          Text(
+                            const ['劳动教育', '教务通知', '校历'][i],
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: context.meike.ink,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Image.asset(
+                            'assets/nai-family/${const ['chicken-garden', 'mouse-blackboard', 'egg-calendar'][i]}.webp',
+                            height: 82,
+                            width: double.infinity,
+                            fit: BoxFit.contain,
+                            excludeFromSemantics: true,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ],
+    ),
   );
 }
 

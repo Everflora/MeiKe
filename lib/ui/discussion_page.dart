@@ -6,6 +6,7 @@ import '../data/discussion_client.dart';
 import '../data/schedule_store.dart';
 import '../domain/schedule.dart';
 import 'theme.dart';
+import 'nai_family.dart';
 import 'chat_page.dart';
 import 'discussion_profile.dart';
 import 'discussion_helpers.dart';
@@ -198,38 +199,59 @@ class _DiscussionPageState extends State<DiscussionPage> {
                 )
               : null,
         ),
+        if (context.naiFamily)
+          const Padding(
+            padding: EdgeInsets.only(bottom: 12),
+            child: NaiFamilyBanner(),
+          ),
         if (busy) const LinearProgressIndicator(),
         if (error != null)
           Padding(padding: const EdgeInsets.all(12), child: Text(error!)),
         if (!client.signedIn || terms.isEmpty)
           Expanded(
             child: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(24),
-                      decoration: BoxDecoration(
-                        color: context.meike.soft,
-                        borderRadius: BorderRadius.circular(28),
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        padding: context.naiFamily
+                            ? const EdgeInsets.all(8)
+                            : const EdgeInsets.all(24),
+                        decoration: BoxDecoration(
+                          color: context.meike.soft,
+                          borderRadius: BorderRadius.circular(28),
+                        ),
+                        child: context.naiFamily
+                            ? Image.asset(
+                                'assets/nai-family/discussion-circle.webp',
+                                width: MediaQuery.sizeOf(context).height < 650
+                                    ? 96
+                                    : 128,
+                                height: MediaQuery.sizeOf(context).height < 650
+                                    ? 96
+                                    : 128,
+                                fit: BoxFit.contain,
+                                excludeFromSemantics: true,
+                              )
+                            : const PlumMark(size: 52),
                       ),
-                      child: const PlumMark(size: 52),
-                    ),
-                    const SizedBox(height: 16),
-                    const Text('和同一个教学班的同学交流'),
-                    const SizedBox(height: 8),
-                    const Text(
-                      '设置昵称后，选择自己的课程进入讨论室。',
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 20),
-                    FilledButton(
-                      onPressed: ready && !busy ? connect : null,
-                      child: Text(client.signedIn ? '连接讨论室' : '设置头像和昵称'),
-                    ),
-                  ],
+                      const SizedBox(height: 16),
+                      const Text('和同一个教学班的同学交流'),
+                      const SizedBox(height: 8),
+                      const Text(
+                        '设置昵称后，选择自己的课程进入讨论室。',
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 20),
+                      FilledButton(
+                        onPressed: ready && !busy ? connect : null,
+                        child: Text(client.signedIn ? '连接讨论室' : '设置头像和昵称'),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -278,18 +300,20 @@ class _DiscussionPageState extends State<DiscussionPage> {
                             horizontal: 14,
                             vertical: 8,
                           ),
-                          leading: Container(
-                            width: 44,
-                            height: 44,
-                            decoration: BoxDecoration(
-                              color: course.color.surface(context),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Icon(
-                              Icons.forum_outlined,
-                              color: course.color.foreground(context),
-                            ),
-                          ),
+                          leading: context.naiFamily
+                              ? null
+                              : Container(
+                                  width: 44,
+                                  height: 44,
+                                  decoration: BoxDecoration(
+                                    color: course.color.surface(context),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Icon(
+                                    Icons.forum_outlined,
+                                    color: course.color.foreground(context),
+                                  ),
+                                ),
                           title: Text(course.name),
                           subtitle: Text(
                             '${course.teacher.isEmpty ? '未填写教师' : course.teacher}\n${course.meetings.map((m) => '${m.summary} · ${m.recurrence}').join('\n')}',
