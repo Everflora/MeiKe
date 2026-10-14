@@ -217,12 +217,26 @@ class _DiscussionPageState extends State<DiscussionPage> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(24),
+                        padding: context.naiFamily
+                            ? const EdgeInsets.all(8)
+                            : const EdgeInsets.all(24),
                         decoration: BoxDecoration(
                           color: context.meike.soft,
                           borderRadius: BorderRadius.circular(28),
                         ),
-                        child: const PlumMark(size: 52),
+                        child: context.naiFamily
+                            ? Image.asset(
+                                'assets/nai-family/discussion-circle.webp',
+                                width: MediaQuery.sizeOf(context).height < 650
+                                    ? 96
+                                    : 128,
+                                height: MediaQuery.sizeOf(context).height < 650
+                                    ? 96
+                                    : 128,
+                                fit: BoxFit.contain,
+                                excludeFromSemantics: true,
+                              )
+                            : const PlumMark(size: 52),
                       ),
                       const SizedBox(height: 16),
                       const Text('和同一个教学班的同学交流'),

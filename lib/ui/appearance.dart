@@ -19,6 +19,7 @@ class AppearanceController extends ChangeNotifier {
   ThemeMode mode = ThemeMode.system;
   MeikeTheme theme = MeikeTheme.plum;
   bool motion = true;
+  bool eggPet = true;
   Future<void> _pending = Future.value();
   bool _disposed = false;
   @override
@@ -31,12 +32,14 @@ class AppearanceController extends ChangeNotifier {
     mode = ThemeMode.system;
     theme = MeikeTheme.plum;
     motion = true;
+    eggPet = true;
     try {
       if (await file.exists()) {
         final value = (await file.readAsString()).trim();
         // Earlier versions stored only a plain ThemeMode name.
         final decoded = value.startsWith('{') ? jsonDecode(value) : null;
         motion = decoded is! Map || decoded['motion'] != false;
+        eggPet = decoded is! Map || decoded['eggPet'] != false;
         mode = ThemeMode.values.firstWhere(
           (m) => m.name == (decoded is Map ? decoded['mode'] : value),
           orElse: () => ThemeMode.system,
@@ -62,27 +65,33 @@ class AppearanceController extends ChangeNotifier {
 
   Future<void> setMotion(bool value) => _save(newMotion: value);
 
+  Future<void> setEggPet(bool value) => _save(newEggPet: value);
+
   Future<void> _save({
     ThemeMode? newMode,
     MeikeTheme? newTheme,
     bool? newMotion,
+    bool? newEggPet,
   }) {
     final saved = _pending.then((_) async {
       final nextMode = newMode ?? mode;
       final nextTheme = newTheme ?? theme;
       final nextMotion = newMotion ?? motion;
+      final nextEggPet = newEggPet ?? eggPet;
       await file.parent.create(recursive: true);
       await file.writeAsString(
         jsonEncode({
           'mode': nextMode.name,
           'theme': nextTheme.name,
           'motion': nextMotion,
+          'eggPet': nextEggPet,
         }),
         flush: true,
       );
       mode = nextMode;
       theme = nextTheme;
       motion = nextMotion;
+      eggPet = nextEggPet;
       if (!_disposed) notifyListeners();
     });
     // A failed write must not prevent a later selection from being saved.

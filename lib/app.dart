@@ -14,6 +14,7 @@ import 'ui/timetable_page.dart';
 import 'ui/today_page.dart';
 import 'ui/theme.dart';
 import 'ui/nai_family.dart';
+import 'ui/nai_egg_pet.dart';
 
 class SeuTimetableApp extends StatefulWidget {
   const SeuTimetableApp({super.key, required this.store});
@@ -26,6 +27,63 @@ class _SeuTimetableAppState extends State<SeuTimetableApp> {
   late final appearance = AppearanceController(
     File('${widget.store.file.parent.path}/appearance.txt'),
   );
+  final navigatorKey = GlobalKey<NavigatorState>();
+  final homeKey = GlobalKey<_HomeState>();
+  final petKey = GlobalKey<NaiEggCompanionState>();
+  final routeTracker = NaiRouteTracker();
+  LocalHistoryEntry? petHistory;
+  bool removingHistory = false, disposing = false, navigating = false;
+
+  void petExpansionChanged(bool open) {
+    if (disposing) return;
+    if (open) {
+      final route = routeTracker.current;
+      if (route is ModalRoute && petHistory == null) {
+        petHistory = LocalHistoryEntry(
+          onRemove: () {
+            petHistory = null;
+            if (!removingHistory && !disposing) petKey.currentState?.dismiss();
+          },
+        );
+        route.addLocalHistoryEntry(petHistory!);
+      }
+    } else {
+      final entry = petHistory;
+      petHistory = null;
+      removingHistory = true;
+      entry?.remove();
+      removingHistory = false;
+    }
+  }
+
+  Future<void> petNavigate(int index) async {
+    final navigator = navigatorKey.currentState;
+    if (navigator == null || navigating) return;
+    navigating = true;
+    try {
+      for (var i = 0; i < 16 && navigator.canPop(); i++) {
+        final previous = routeTracker.current;
+        final handled = await navigator.maybePop();
+        if (!mounted || !handled) return;
+        if (routeTracker.routes.contains(previous)) {
+          final confirmation = routeTracker.current;
+          if (confirmation != previous && confirmation is PopupRoute) {
+            final answer = await confirmation.popped;
+            if (answer == true && previous != null) {
+              await previous.popped;
+            } else {
+              await Future<void>.delayed(Duration.zero);
+            }
+          }
+          if (!mounted || routeTracker.routes.contains(previous)) return;
+        }
+      }
+      if (!navigator.canPop()) homeKey.currentState?.selectDestination(index);
+    } finally {
+      navigating = false;
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -34,6 +92,8 @@ class _SeuTimetableAppState extends State<SeuTimetableApp> {
 
   @override
   void dispose() {
+    disposing = true;
+    petHistory?.remove();
     appearance.dispose();
     super.dispose();
   }
@@ -43,6 +103,8 @@ class _SeuTimetableAppState extends State<SeuTimetableApp> {
     listenable: appearance,
     builder: (context, _) => MaterialApp(
       title: '梅课',
+      navigatorKey: navigatorKey,
+      navigatorObservers: [routeTracker],
       debugShowCheckedModeBanner: false,
       locale: const Locale('zh', 'CN'),
       supportedLocales: const [Locale('zh', 'CN')],
@@ -55,15 +117,28 @@ class _SeuTimetableAppState extends State<SeuTimetableApp> {
           disableAnimations:
               MediaQuery.disableAnimationsOf(context) || !appearance.motion,
         ),
-        child: child!,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            child!,
+            if (appearance.theme == MeikeTheme.naiFamily &&
+                appearance.eggPet &&
+                MediaQuery.viewInsetsOf(context).bottom == 0)
+              NaiEggCompanion(
+                key: petKey,
+                onSelect: petNavigate,
+                onExpansionChanged: petExpansionChanged,
+              ),
+          ],
+        ),
       ),
-      home: _Home(store: widget.store, appearance: appearance),
+      home: _Home(key: homeKey, store: widget.store, appearance: appearance),
     ),
   );
 }
 
 class _Home extends StatefulWidget {
-  const _Home({required this.store, required this.appearance});
+  const _Home({super.key, required this.store, required this.appearance});
   final ScheduleStore store;
   final AppearanceController appearance;
   @override
@@ -74,6 +149,15 @@ class _HomeState extends State<_Home> {
   int selected = 0;
   bool discussionOpened = false;
   bool newsOpened = false;
+  void selectDestination(int index) {
+    if (index < 0 || index > 4) return;
+    setState(() {
+      selected = index;
+      if (index == 2) discussionOpened = true;
+      if (index == 3) newsOpened = true;
+    });
+  }
+
   @override
   Widget build(BuildContext context) => ListenableBuilder(
     listenable: widget.store,
@@ -135,22 +219,11 @@ class _HomeState extends State<_Home> {
 
   Widget _navigation(BuildContext context) {
     if (context.naiFamily) {
-      return NaiNavigation(
-        selected: selected,
-        onSelect: (v) => setState(() {
-          selected = v;
-          if (v == 2) discussionOpened = true;
-          if (v == 3) newsOpened = true;
-        }),
-      );
+      return NaiNavigation(selected: selected, onSelect: selectDestination);
     }
     final bar = NavigationBar(
       selectedIndex: selected,
-      onDestinationSelected: (v) => setState(() {
-        selected = v;
-        if (v == 2) discussionOpened = true;
-        if (v == 3) newsOpened = true;
-      }),
+      onDestinationSelected: selectDestination,
       height: 60,
       destinations: const [
         NavigationDestination(

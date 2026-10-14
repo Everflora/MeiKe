@@ -141,6 +141,20 @@ class _SettingsPageState extends State<SettingsPage> {
               if (context.meike.design == MeikeTheme.naiFamily) ...[
                 SwitchListTile(
                   contentPadding: EdgeInsets.zero,
+                  title: const Text('奶蛋宠物'),
+                  subtitle: const Text('屏幕边缘的快捷导航'),
+                  value: widget.appearance!.eggPet,
+                  onChanged: (value) async {
+                    try {
+                      await widget.appearance!.setEggPet(value);
+                    } catch (e) {
+                      if (context.mounted) await showError(context, e);
+                    }
+                  },
+                ),
+                const Divider(),
+                SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
                   title: const Text('角色动效'),
                   value: widget.appearance!.motion,
                   onChanged: (value) async {
@@ -250,7 +264,7 @@ class _SettingsPageState extends State<SettingsPage> {
           ],
         ),
         Text(
-          '梅课 1.6.1 · SEU 校园课表',
+          '梅课 1.6.2 · SEU 校园课表',
           style: Theme.of(context).textTheme.bodySmall,
           textAlign: TextAlign.center,
         ),
