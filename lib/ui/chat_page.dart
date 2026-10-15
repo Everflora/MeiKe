@@ -47,7 +47,7 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
   String? error, draftId, draftBody;
   Uint8List? attachment;
   Json? pendingSticker;
-  String? attachmentId, attachmentFileName;
+  String? attachmentId;
   bool attachmentSticker = false;
   @override
   void initState() {
@@ -115,7 +115,11 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
             error = message(e);
           });
           if (!widget.client.signedIn) break;
-          await Future<void>.delayed(const Duration(seconds: 3));
+          await Future<void>.delayed(
+            e is ServerBusyException
+                ? e.retryDelay
+                : const Duration(seconds: 3),
+          );
         }
       }
     } finally {
@@ -221,7 +225,6 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
         setState(() {
           pendingSticker = null;
           attachment = prepared;
-          attachmentFileName = null;
           attachmentSticker = sticker;
           attachmentId = newId();
         });
@@ -237,68 +240,6 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
     }
   }
 
-  Future<void> moreActions() async {
-    FocusScope.of(context).unfocus();
-    final choice = await showModalBottomSheet<String>(
-      context: context,
-      builder: (ctx) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.image_outlined),
-              title: const Text('图片'),
-              onTap: () => Navigator.pop(ctx, 'image'),
-            ),
-            ListTile(
-              leading: const Icon(Icons.folder_open_outlined),
-              title: const Text('文件'),
-              subtitle: const Text('PDF、文档、压缩包等 · 最大 10 MB'),
-              onTap: () => Navigator.pop(ctx, 'file'),
-            ),
-          ],
-        ),
-      ),
-    );
-    if (!mounted || choice == null) return;
-    if (choice == 'file') {
-      await pickFile();
-    } else {
-      await pickAttachment(false);
-    }
-  }
-
-  Future<void> pickFile() async {
-    if (sending || loading) return;
-    setState(() {
-      sending = true;
-      error = null;
-    });
-    try {
-      final file = await FilePicker.pickFile(type: FileType.any);
-      if (file == null) return;
-      final name = chatFileName(file.name);
-      final bytes = await readChatFile(file.readAsByteStream());
-      if (mounted) {
-        setState(() {
-          pendingSticker = null;
-          attachment = bytes;
-          attachmentFileName = name;
-          attachmentSticker = false;
-          attachmentId = newId();
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(
-          () => error = e is FormatException ? e.message : '文件无法读取，请重新选择。',
-        );
-      }
-    } finally {
-      if (mounted) setState(() => sending = false);
-    }
-  }
-
   Future<void> sendAttachment() async {
     if (sending || attachment == null) return;
     setState(() {
@@ -306,24 +247,16 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
       error = null;
     });
     try {
-      final sent = attachmentFileName != null
-          ? await widget.client.sendFile(
-              widget.room.id,
-              attachmentFileName!,
-              attachment!,
-              attachmentId!,
-            )
-          : await widget.client.sendImage(
-              widget.room.id,
-              attachment!,
-              attachmentId!,
-              sticker: attachmentSticker,
-            );
+      final sent = await widget.client.sendImage(
+        widget.room.id,
+        attachment!,
+        attachmentId!,
+        sticker: attachmentSticker,
+      );
       if (!mounted) return;
       setState(() {
         messages = mergeChatMessages(messages, [sent]);
         attachment = null;
-        attachmentFileName = null;
         attachmentId = null;
       });
       toBottom();
@@ -344,7 +277,6 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
     if (!mounted || selected == null) return;
     setState(() {
       attachment = null;
-      attachmentFileName = null;
       pendingSticker = selected;
       attachmentId = newId();
     });
@@ -834,38 +766,26 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
             padding: const EdgeInsets.symmetric(horizontal: 12),
             child: Row(
               children: [
-                if (attachmentFileName != null)
-                  Icon(
-                    Icons.insert_drive_file_outlined,
-                    size: 42,
-                    color: context.meike.green,
-                  )
-                else
-                  Image.memory(
-                    attachment!,
-                    width: 80,
-                    height: 80,
-                    fit: BoxFit.contain,
-                  ),
+                Image.memory(
+                  attachment!,
+                  width: 80,
+                  height: 80,
+                  fit: BoxFit.contain,
+                ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    attachmentFileName != null
-                        ? '$attachmentFileName\n${chatFileSize(attachment!.length)} · 点发送确认'
-                        : attachmentSticker
-                        ? '表情包待发送'
-                        : '图片待发送',
+                    attachmentSticker ? '表情包待发送' : '图片待发送',
                     maxLines: 3,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 IconButton(
-                  tooltip: attachmentFileName != null ? '取消文件' : '取消图片',
+                  tooltip: '取消图片',
                   onPressed: sending
                       ? null
                       : () => setState(() {
                           attachment = null;
-                          attachmentFileName = null;
                           attachmentId = null;
                         }),
                   icon: const Icon(Icons.close),
@@ -907,9 +827,11 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                     ),
                   ),
                   IconButton(
-                    tooltip: '更多',
-                    onPressed: sending || loading ? null : moreActions,
-                    icon: const Icon(Icons.add_circle_outline),
+                    tooltip: '发送图片',
+                    onPressed: sending || loading
+                        ? null
+                        : () => pickAttachment(false),
+                    icon: const Icon(Icons.image_outlined),
                   ),
                   const SizedBox(width: 4),
                   FilledButton(

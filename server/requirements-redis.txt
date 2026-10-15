@@ -1,0 +1,2 @@
+# Optional Redis notification transport. The HTTP/database backend also runs without it.
+redis==6.4.0

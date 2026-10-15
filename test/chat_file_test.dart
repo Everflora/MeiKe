@@ -1,6 +1,4 @@
 import 'dart:typed_data';
-import 'dart:io';
-import 'dart:convert';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -11,26 +9,9 @@ import 'package:seu_timetable/ui/chat_page.dart';
 import 'package:seu_timetable/ui/chat_file_page.dart';
 import 'chat_test.dart' show FakeChat, item;
 
-final class MemoryFile extends PlatformFile {
-  @override
-  String get name => '课程资料.pdf';
-  @override
-  Uri get uri => Uri.parse('file:///test/notes.pdf');
-  @override
-  Never get xFile => throw UnimplementedError();
-  @override
-  int? lengthSync() => 4;
-  @override
-  Future<int?> length() async => 4;
-  @override
-  Future<Uint8List> readAsBytes() async => Uint8List.fromList([1, 2, 3, 4]);
-  @override
-  Stream<Uint8List> readAsByteStream() =>
-      Stream.value(Uint8List.fromList([1, 2, 3, 4]));
-}
-
 class MemoryPicker extends FilePickerPlatform {
-  bool cancel = false, cancelSave = false;
+  bool cancelSave = false;
+  FileType? selectedType;
   String? savedName;
   Uint8List? savedBytes;
   @override
@@ -46,7 +27,11 @@ class MemoryPicker extends FilePickerPlatform {
     WindowsOptions windowsOptions = const WindowsOptions(),
     LinuxOptions linuxOptions = const LinuxOptions(),
     WebOptions webOptions = const WebOptions(),
-  }) async => cancel ? null : MemoryFile();
+  }) async {
+    selectedType = type;
+    return null;
+  }
+
   @override
   Future<Uri?> saveFile({
     required String fileName,
@@ -66,26 +51,27 @@ class MemoryPicker extends FilePickerPlatform {
 }
 
 class FileChat extends FakeChat {
-  final attempts = <String>[];
-  bool failOnce = true;
   @override
-  Future<Json> sendFile(
-    String room,
-    String name,
-    Uint8List bytes,
-    String clientId,
-  ) async {
-    attempts.add(clientId);
-    if (failOnce) {
-      failOnce = false;
-      throw const FormatException('网络暂时断开，请重试');
+  Future<Json> messages(
+    String room, {
+    int? after,
+    int? before,
+    bool wait = false,
+  }) {
+    if (after != null) {
+      return super.messages(room, after: after, before: before, wait: wait);
     }
-    return {
-      ...item(2, mine: true, body: '[文件] $name'),
-      'kind': 'file',
-      'media': null,
-      'file': {'name': name, 'size': bytes.length},
-    };
+    return Future.value({
+      'messages': [
+        {
+          ...item(1, mine: true, body: '[文件] 课程资料.pdf'),
+          'kind': 'file',
+          'file': {'name': '课程资料.pdf', 'size': 4},
+        },
+      ],
+      'cursor': 1,
+      'before': null,
+    });
   }
 
   @override
@@ -93,47 +79,7 @@ class FileChat extends FakeChat {
       Uint8List.fromList([1, 2, 3, 4]);
 }
 
-class FileRequestClient extends DiscussionClient {
-  FileRequestClient() : super(sessionFile: File('unused'));
-  Json? captured;
-  bool legacy = false;
-  @override
-  Future<Json> request(String method, String path, {Json? body}) async {
-    captured = body;
-    if (legacy) throw const FormatException('不支持的消息类型。');
-    return {
-      'message': {'id': 1},
-    };
-  }
-}
-
 void main() {
-  test('文件请求保留文件字节和发送标识，旧服务提示明确', () async {
-    final client = FileRequestClient();
-    addTearDown(client.close);
-    await client.sendFile(
-      'room',
-      '课程.txt',
-      Uint8List.fromList([1, 2, 3]),
-      'same-id',
-    );
-    expect(client.captured!['clientId'], 'same-id');
-    expect(client.captured!['fileName'], '课程.txt');
-    expect(client.captured!['kind'], 'file');
-    expect(base64Decode(client.captured!['media'] as String), [1, 2, 3]);
-    client.legacy = true;
-    await expectLater(
-      client.sendFile('room', '课程.txt', Uint8List.fromList([1]), 'same-id'),
-      throwsA(
-        isA<FormatException>().having(
-          (e) => e.message,
-          'message',
-          '文件服务暂未启用，请稍后再试。',
-        ),
-      ),
-    );
-  });
-
   test('文件名允许中文，拒绝路径、控制字符及过长 UTF-8 名称', () {
     expect(chatFileName('  实验报告.pdf  '), '实验报告.pdf');
     for (final name in [
@@ -147,7 +93,7 @@ void main() {
       expect(() => chatFileName(name), throwsFormatException);
     }
   });
-  test('分块读取保留全部字节，空文件与超限文件在发送前拒绝', () async {
+  test('分块读取保留全部字节，空文件与超限文件在读取时拒绝', () async {
     expect(
       await readChatFile(
         Stream.fromIterable([
@@ -192,27 +138,16 @@ void main() {
     });
   }
 
-  testWidgets('文件需确认发送，失败重试不重复，消息可下载保存且不可收藏为表情', (tester) async {
+  testWidgets('上传入口移除，历史文件仍可下载且不可收藏为表情', (tester) async {
     final previous = FilePickerPlatform.instance;
     final picker = MemoryPicker();
     FilePickerPlatform.instance = picker;
     addTearDown(() => FilePickerPlatform.instance = previous);
     final client = FileChat();
     await showChat(tester, client);
-    await tester.tap(find.byTooltip('更多'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('文件'));
-    await tester.pumpAndSettle();
-    expect(client.attempts, isEmpty);
-    expect(find.byTooltip('取消文件'), findsOneWidget);
-    await tester.tap(find.text('发送'));
-    await tester.pumpAndSettle();
-    expect(find.text('网络暂时断开，请重试'), findsOneWidget);
-    expect(find.byTooltip('取消文件'), findsOneWidget);
-    await tester.tap(find.text('发送'));
-    await tester.pumpAndSettle();
-    expect(client.attempts.length, 2);
-    expect(client.attempts.toSet().length, 1);
+    expect(find.byTooltip('发送图片'), findsOneWidget);
+    expect(find.byTooltip('表情'), findsOneWidget);
+    expect(find.byTooltip('更多'), findsNothing);
     expect(find.byTooltip('取消文件'), findsNothing);
     expect(find.text('课程资料.pdf'), findsOneWidget);
     await tester.longPress(find.text('课程资料.pdf'));
@@ -231,29 +166,19 @@ void main() {
     await tester.pumpWidget(const SizedBox());
   });
 
-  testWidgets('取消文件选择或待发送文件保留文字草稿且不上传', (tester) async {
+  testWidgets('图片入口只打开图片选择器，取消后保留文字草稿', (tester) async {
     final previous = FilePickerPlatform.instance;
-    final picker = MemoryPicker()..cancel = true;
+    final picker = MemoryPicker();
     FilePickerPlatform.instance = picker;
     addTearDown(() => FilePickerPlatform.instance = previous);
     final client = FileChat();
     await showChat(tester, client);
     await tester.enterText(find.byType(TextField), '我的草稿');
-    await tester.tap(find.byTooltip('更多'));
+    await tester.tap(find.byTooltip('发送图片'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('文件'));
-    await tester.pumpAndSettle();
+    expect(picker.selectedType, FileType.image);
     expect(find.text('我的草稿'), findsOneWidget);
-    expect(client.attempts, isEmpty);
-    picker.cancel = false;
-    await tester.tap(find.byTooltip('更多'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('文件'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.byTooltip('取消文件'));
-    await tester.pumpAndSettle();
-    expect(find.text('我的草稿'), findsOneWidget);
-    expect(client.attempts, isEmpty);
+    expect(find.byTooltip('取消文件'), findsNothing);
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox());
   });
