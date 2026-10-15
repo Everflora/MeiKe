@@ -8,6 +8,7 @@ import 'theme.dart';
 import 'nai_family.dart';
 import 'jwc_news_page.dart';
 import 'academic_calendar_page.dart';
+import 'lecture_selection_page.dart';
 
 class NewsPage extends StatefulWidget {
   const NewsPage({super.key, required this.store});
@@ -60,6 +61,14 @@ class _NewsSectionsState extends State<NewsPage> {
                 selected: selected == 2,
                 onSelected: (_) => setState(() => selected = 2),
               ),
+              ChoiceChip(
+                label: const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 8),
+                  child: Text('素质讲座'),
+                ),
+                selected: selected == 3,
+                onSelected: (_) => setState(() => selected = 3),
+              ),
             ],
           ),
         ),
@@ -76,6 +85,7 @@ class _NewsSectionsState extends State<NewsPage> {
                   )
                 : const SizedBox(),
             AcademicCalendarPanel(store: widget.store),
+            const LectureSelectionPanel(),
           ],
         ),
       ),
@@ -92,7 +102,7 @@ class _NewsSectionsState extends State<NewsPage> {
         const SizedBox(height: 4),
         Row(
           children: [
-            for (var i = 0; i < 3; i++) ...[
+            for (var i = 0; i < 4; i++) ...[
               if (i > 0) const SizedBox(width: 8),
               Expanded(
                 child: Material(
@@ -111,7 +121,7 @@ class _NewsSectionsState extends State<NewsPage> {
                       child: Column(
                         children: [
                           Text(
-                            const ['劳动教育', '教务通知', '校历'][i],
+                            const ['劳动教育', '教务通知', '校历', '素质讲座'][i],
                             style: TextStyle(
                               fontSize: 12,
                               color: context.meike.ink,
@@ -119,7 +129,7 @@ class _NewsSectionsState extends State<NewsPage> {
                           ),
                           const SizedBox(height: 4),
                           Image.asset(
-                            'assets/nai-family/${const ['chicken-garden', 'mouse-blackboard', 'egg-calendar'][i]}.webp',
+                            'assets/nai-family/${const ['chicken-garden', 'mouse-blackboard', 'egg-calendar', 'mouse-blackboard'][i]}.webp',
                             height: 82,
                             width: double.infinity,
                             fit: BoxFit.contain,

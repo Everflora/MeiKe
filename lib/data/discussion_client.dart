@@ -1,10 +1,27 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 import 'dart:typed_data';
 
 import '../domain/schedule.dart';
 import 'chat_file.dart';
+
+class ServerBusyException extends FormatException {
+  const ServerBusyException(super.message, {this.retryAfterSeconds = 3});
+  factory ServerBusyException.fromHeader(String? value) {
+    final seconds = (int.tryParse(value ?? '') ?? 3).clamp(1, 30);
+    return ServerBusyException(
+      '服务器繁忙，请 $seconds 秒后重试。',
+      retryAfterSeconds: seconds,
+    );
+  }
+  final int retryAfterSeconds;
+  Duration get retryDelay => Duration(
+    seconds: retryAfterSeconds,
+    milliseconds: Random().nextInt(1000),
+  );
+}
 
 Json discussionMatchRequest(Course course, String termCode) {
   if (course.name.trim().isEmpty || course.teacher.trim().isEmpty) {
@@ -202,35 +219,6 @@ class DiscussionClient {
           ))['message']
           as Json;
 
-  Future<Json> sendFile(
-    String room,
-    String name,
-    Uint8List bytes,
-    String clientId,
-  ) async {
-    if (bytes.isEmpty || bytes.length > maxChatFileBytes) {
-      throw const FormatException('请选择非空且不超过 10 MB 的文件。');
-    }
-    try {
-      return (await request(
-            'POST',
-            'v1/rooms/$room/messages',
-            body: {
-              'kind': 'file',
-              'fileName': chatFileName(name),
-              'media': base64Encode(bytes),
-              'clientId': clientId,
-            },
-          ))['message']
-          as Json;
-    } on FormatException catch (e) {
-      if (e.message == '不支持的消息类型。') {
-        throw const FormatException('文件服务暂未启用，请稍后再试。');
-      }
-      rethrow;
-    }
-  }
-
   Future<Uint8List> downloadFile(int id, int expectedSize) async {
     if (expectedSize < 1 || expectedSize > maxChatFileBytes) {
       throw const FormatException('文件大小无效。');
@@ -245,6 +233,11 @@ class DiscussionClient {
       if (response.statusCode != 200) {
         if (response.statusCode == 401) _token = '';
         await response.timeout(const Duration(seconds: 15)).drain<void>();
+        if (response.statusCode == 503) {
+          throw ServerBusyException.fromHeader(
+            response.headers.value('retry-after'),
+          );
+        }
         throw FormatException(
           response.statusCode == 404 ? '文件不存在或消息已撤回。' : '文件下载失败，请重试。',
         );
@@ -310,7 +303,7 @@ class DiscussionClient {
         request.add(encoded);
       }
       final response = await request.close().timeout(
-        Duration(seconds: body?['kind'] == 'file' ? 60 : 15),
+        const Duration(seconds: 15),
       );
       final bytes = <int>[];
       await for (final chunk in response.timeout(const Duration(seconds: 15))) {
@@ -318,6 +311,11 @@ class DiscussionClient {
         if (bytes.length > 2 * 1024 * 1024) {
           throw const FormatException('服务器响应过大。');
         }
+      }
+      if (response.statusCode == 503) {
+        throw ServerBusyException.fromHeader(
+          response.headers.value('retry-after'),
+        );
       }
       final value = jsonDecode(utf8.decode(bytes)) as Json;
       if (response.statusCode == 401) _token = '';

@@ -1,80 +1,60 @@
+"""New file uploads are disabled; historical attachments remain readable."""
 import base64
+import hashlib
 import http.client
 import json
 import threading
+import time
 import unittest
-from unittest.mock import patch
-from app import ApiError, Database, Server
+from app import ApiError, Server
 import test_chat as fixtures
+from test_chat_media import gif_image
 
 
 class ChatFileTests(unittest.TestCase):
     setUp = fixtures.ChatTests.setUp
     call = fixtures.ChatTests.call
 
-    def upload(self, data=b'course notes', name='课程资料.pdf', client='FILE-1'):
-        return self.call('POST', self.path, {'kind': 'file', 'fileName': name,
-            'media': base64.b64encode(data).decode(), 'clientId': client})['message']
+    def historical_file(self, data=b'course notes', name='课程资料.pdf'):
+        with self.db.connect() as db:
+            cur = db.execute("""INSERT INTO messages
+                (room_id,user_id,body,created,client_id,kind,file_name,file_size,media_hash)
+                VALUES (?,?,?,?,?,?,?,?,?)""", (self.room, self.a['user']['id'], '[文件] '+name,
+                int(time.time()), 'LEGACY-FILE', 'file', name, len(data), hashlib.sha256(data).hexdigest()))
+            mid = cur.lastrowid
+            db.execute('INSERT INTO message_media VALUES (?,?,?)', (mid, data, 'application/octet-stream'))
+            db.execute('INSERT INTO message_events(room_id,message_id) VALUES (?,?)', (self.room, mid))
+        return mid
 
-    def test_metadata_bytes_restart_and_authenticated_download(self):
-        sent = self.upload()
-        self.assertEqual(sent['file'], {'name': '课程资料.pdf', 'size': 12})
-        self.assertIsNone(sent['media'])
-        self.assertEqual(sent['body'], '[文件] 课程资料.pdf')
-        self.db = Database(self.file)
-        url = f"/v1/messages/{sent['id']}/media"
-        data = self.call('GET', url, token=self.b['token'])
-        self.assertEqual(data, b'course notes')
-        self.assertEqual(data.content_type, 'application/octet-stream')
-        self.assertIn("filename*=UTF-8''%E8%AF%BE", data.content_disposition)
-        with self.assertRaises(ApiError) as error:
-            self.call('GET', url, token='')
-        self.assertEqual(error.exception.status, 401)
-
-    def test_retry_is_idempotent_and_filename_or_content_conflicts(self):
-        original = self.upload()
-        self.assertEqual(original, self.upload())
-        for kwargs in ({'data': b'changed'}, {'name': '另一个文件.pdf'}):
-            with self.assertRaises(ApiError) as error:
-                self.upload(**kwargs)
-            self.assertEqual(error.exception.status, 409)
-        self.assertEqual(len(self.call('GET', self.path)['messages']), 1)
-
-    def test_recall_deletes_bytes_but_does_not_allow_other_sender(self):
-        sent = self.upload()
-        url = f"/v1/messages/{sent['id']}"
-        with self.assertRaises(ApiError) as error:
-            self.call('DELETE', url, token=self.b['token'])
-        self.assertEqual(error.exception.status, 403)
-        self.call('DELETE', url)
-        self.assertIsNone(self.call('GET', self.path)['messages'][0]['file'])
-        with self.assertRaises(ApiError) as error:
-            self.call('GET', url+'/media')
-        self.assertEqual(error.exception.status, 404)
+    def test_file_upload_rejected_without_creating_messages_or_media(self):
+        for media in [base64.b64encode(b'notes').decode(), '**', '']:
+            with self.assertRaises(ApiError) as caught:
+                self.call('POST', self.path, {'kind': 'file', 'fileName': 'notes.pdf',
+                    'media': media, 'clientId': 'NEW-FILE'})
+            self.assertEqual((caught.exception.status, caught.exception.code), (400, 'FILE_UPLOAD_DISABLED'))
+        self.assertEqual(self.call('GET', self.path)['messages'], [])
         with self.db.connect() as db:
             self.assertEqual(db.execute('SELECT COUNT(*) FROM message_media').fetchone()[0], 0)
 
-    def test_files_cannot_be_collected_as_stickers(self):
-        sent = self.upload(data=b'<script>not an image</script>', name='notes.html')
+    def test_historical_files_remain_authenticated_downloadable_and_recallable(self):
+        mid = self.historical_file()
+        url = f'/v1/messages/{mid}/media'
+        self.assertEqual(self.call('GET', self.path)['messages'][0]['file']['size'], 12)
+        with self.assertRaises(ApiError) as caught:
+            self.call('GET', url, token='')
+        self.assertEqual(caught.exception.status, 401)
+        self.assertEqual(self.call('GET', url, token=self.b['token']), b'course notes')
         with self.assertRaises(ApiError):
-            self.call('POST', '/v1/stickers', {'messageId': sent['id']})
-        self.assertEqual(self.call('GET', '/v1/stickers')['stickers'], [])
+            self.call('POST', '/v1/stickers', {'messageId': mid})
+        with self.assertRaises(ApiError):
+            self.call('DELETE', f'/v1/messages/{mid}', token=self.b['token'])
+        self.call('DELETE', f'/v1/messages/{mid}')
+        with self.assertRaises(ApiError) as caught:
+            self.call('GET', url)
+        self.assertEqual(caught.exception.status, 404)
 
-    def test_names_content_limits_and_invalid_base64_do_not_create_messages(self):
-        for name in ('../notes.txt', 'dir\\notes.txt', 'bad\r\nname.txt', '..', '', '字'*81):
-            with self.assertRaises(ApiError):
-                self.upload(name=name)
-        with self.assertRaises(ApiError):
-            self.upload(data=b'')
-        with patch('chat_files.MAX_BYTES', 4):
-            with self.assertRaises(ApiError) as error:
-                self.upload(data=b'12345')
-            self.assertEqual(error.exception.status, 413)
-        with self.assertRaises(ApiError):
-            self.call('POST', self.path, {'kind': 'file', 'fileName': 'file.txt', 'media': '**', 'clientId': 'BAD'})
-        self.assertEqual(self.call('GET', self.path)['messages'], [])
-
-    def test_http_upload_larger_than_image_limit_download_headers_and_recall(self):
+    def test_http_blocks_old_client_upload_but_keeps_gif_and_legacy_download(self):
+        mid = self.historical_file()
         server = Server(('127.0.0.1', 0), self.db)
         worker = threading.Thread(target=server.serve_forever, daemon=True)
         worker.start()
@@ -86,19 +66,21 @@ class ChatFileTests(unittest.TestCase):
             response = conn.getresponse()
             return response.status, dict(response.getheaders()), response.read()
         try:
-            raw = b'x'*(4*1024*1024+1)
-            status, _, body = request('POST', self.path, {'kind': 'file', 'fileName': '实验数据.zip',
-                'media': base64.b64encode(raw).decode(), 'clientId': 'HTTP-FILE'}, self.a['token'])
+            status, _, body = request('POST', self.path, {'kind': 'file', 'fileName': 'data.zip',
+                'media': base64.b64encode(b'x'*(4*1024*1024)).decode(), 'clientId': 'HTTP-FILE'}, self.a['token'])
+            self.assertEqual(status, 400)
+            self.assertEqual(json.loads(body)['code'], 'FILE_UPLOAD_DISABLED')
+            raw = gif_image(2)
+            status, _, body = request('POST', self.path, {'kind': 'sticker',
+                'media': base64.b64encode(raw).decode(), 'clientId': 'HTTP-GIF'}, self.a['token'])
             self.assertEqual(status, 200)
-            sent = json.loads(body)['message']
-            url = f"/v1/messages/{sent['id']}/media"
+            gif_id = json.loads(body)['message']['id']
+            self.assertEqual(request('GET', f'/v1/messages/{gif_id}/media', token=self.b['token'])[2], raw)
+            url = f'/v1/messages/{mid}/media'
             self.assertEqual(request('GET', url)[0], 401)
             status, headers, data = request('GET', url, token=self.b['token'])
-            self.assertEqual((status, data), (200, raw))
+            self.assertEqual((status, data), (200, b'course notes'))
             self.assertEqual(headers['Content-Type'], 'application/octet-stream')
             self.assertTrue(headers['Content-Disposition'].startswith('attachment;'))
-            self.assertEqual(headers['X-Content-Type-Options'], 'nosniff')
-            self.assertEqual(request('DELETE', url[:-6], token=self.a['token'])[0], 200)
-            self.assertEqual(request('GET', url, token=self.a['token'])[0], 404)
         finally:
             conn.close(); server.shutdown(); server.server_close(); worker.join(3)

@@ -144,7 +144,7 @@ def message(row, user):
 SELECT_MESSAGE = 'SELECT m.*,u.name,u.avatar_version FROM messages m JOIN users u ON u.id=m.user_id '
 
 
-def route(db, user, method, path, query, body, error, bounded):
+def route(db, user, method, path, query, body, error, bounded, events=None):
     saved = chat_stickers.route(db, user, method, path, body, error)
     if saved is not chat_stickers.NOT_HANDLED:
         return saved
@@ -195,13 +195,19 @@ def route(db, user, method, path, query, body, error, bounded):
                     raise error(400, '消息游标无效。')
                 deadline = time.monotonic() + wait
                 while True:
+                    generation = events.snapshot(room) if events else None
                     changes = db.execute('''SELECT e.id AS event_id,m.*,u.name,u.avatar_version
                         FROM message_events e JOIN messages m ON m.id=e.message_id
                         JOIN users u ON u.id=m.user_id WHERE e.room_id=? AND e.id>? ORDER BY e.id LIMIT 100''', (room, after)).fetchall()
                     if changes or time.monotonic() >= deadline:
                         return {'messages': [message(row, user) for row in changes],
                                 'cursor': changes[-1]['event_id'] if changes else after, 'before': None}
-                    time.sleep(min(0.25, max(0, deadline - time.monotonic())))
+                    remaining = max(0, deadline - time.monotonic())
+                    if events:
+                        # Periodic cursor checks heal missed Redis notifications.
+                        events.wait(room, generation, min(4, remaining))
+                    else:
+                        time.sleep(min(.25, remaining))
             before = int(before) if before is not None else 9223372036854775807
             if before < 1:
                 raise error(400, '历史消息游标无效。')
@@ -214,16 +220,12 @@ def route(db, user, method, path, query, body, error, bounded):
                     'before': rows[-1]['id'] if len(rows) == 50 else None}
         if method == 'POST':
             kind = body.get('kind', 'text')
-            if kind not in ('text', 'image', 'sticker', 'file'):
+            if kind == 'file':
+                raise error(400, '文件上传功能已关闭。', 'FILE_UPLOAD_DISABLED')
+            if kind not in ('text', 'image', 'sticker'):
                 raise error(400, '不支持的消息类型。')
             media, width, height, mime, media_hash = None, None, None, None, ''
-            file_name = None
-            if kind == 'file':
-                media, file_name = chat_files.parse(body, error)
-                mime = 'application/octet-stream'
-                media_hash = hashlib.sha256(media).hexdigest()
-                content = '[文件] ' + file_name
-            elif kind != 'text':
+            if kind != 'text':
                 if 'stickerId' in body:
                     if kind != 'sticker' or 'media' in body or not isinstance(body['stickerId'], str):
                         raise error(400, '表情包发送参数无效。')
@@ -257,7 +259,7 @@ def route(db, user, method, path, query, body, error, bounded):
                 if recent_media >= 10 or used + len(media) > 100 * 1024 * 1024:
                     raise error(429, '附件发送过多，请稍后再试。')
             inserted = db.execute('''INSERT INTO messages(room_id,user_id,body,created,client_id,kind,media_width,media_height,media_hash,file_name,file_size)
-                VALUES (?,?,?,?,?,?,?,?,?,?,?)''', (room, user['id'], content, now, client_id, kind, width, height, media_hash, file_name, len(media) if kind == 'file' else None))
+                VALUES (?,?,?,?,?,?,?,?,?,?,?)''', (room, user['id'], content, now, client_id, kind, width, height, media_hash, None, None))
             if media:
                 db.execute('INSERT INTO message_media VALUES (?,?,?)', (inserted.lastrowid, media, mime))
             db.execute('INSERT INTO message_events(room_id,message_id) VALUES (?,?)', (room, inserted.lastrowid))

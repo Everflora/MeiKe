@@ -4,7 +4,9 @@ import hashlib
 import json
 import re
 import secrets
+import socket
 import sqlite3
+import threading
 import time
 from contextlib import contextmanager
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -13,8 +15,9 @@ from urllib.parse import parse_qs, urlsplit
 from matching import match_records
 import chat
 import chat_media
-import chat_files
 import teams
+from capacity import CapacityLimits
+from room_events import RoomEvents
 
 
 class ApiError(Exception):
@@ -34,7 +37,7 @@ def digest(value):
 
 
 class Database:
-    def __init__(self, file):
+    def __init__(self, file, events=None):
         self.file = str(file)
         Path(file).parent.mkdir(parents=True, exist_ok=True)
         with self.connect() as db:
@@ -73,6 +76,7 @@ class Database:
             ''')
             chat.initialize(db)
             teams.initialize(db)
+        self.events = events or RoomEvents()
 
     @contextmanager
     def connect(self):
@@ -177,9 +181,29 @@ class Database:
                            (record_key, term, class_id, found['room_id'], json.dumps(row, ensure_ascii=False)))
 
     def route(self, method, path, query, body, token):
+        result = self.route_transaction(method, path, query, body, token)
+        # route_transaction returns only after its connection context commits.
+        # A broker failure must never turn a committed message into a failed send.
+        try:
+            room = re.fullmatch(r'/v1/rooms/([a-f0-9]{64})/messages', path)
+            recalled = re.fullmatch(r'/v1/messages/(\d+)', path)
+            if method == 'POST' and room:
+                self.events.notify(room[1])
+            elif method in ('POST', 'PUT') and path == '/v1/profile':
+                self.events.notify('*')
+            elif method == 'DELETE' and recalled:
+                with self.connect() as db:
+                    row = db.execute('SELECT room_id FROM messages WHERE id=?', (int(recalled[1]),)).fetchone()
+                if row:
+                    self.events.notify(row['room_id'])
+        except Exception:
+            pass
+        return result
+
+    def route_transaction(self, method, path, query, body, token):
         with self.connect() as db:
             if method == 'GET' and path == '/health':
-                return {'ok': True, 'version': 1}
+                return {'ok': True, 'version': 1, 'notifications': self.events.mode}
             if method == 'POST' and path == '/v1/sessions':
                 name = bounded(body.get('name'), '昵称', 24)
                 value = secrets.token_urlsafe(32)
@@ -195,7 +219,7 @@ class Database:
             result = teams.route(db, user, method, path, query, body, ApiError, bounded)
             if result is not teams.NOT_HANDLED:
                 return result
-            result = chat.route(db, user, method, path, query, body, ApiError, bounded)
+            result = chat.route(db, user, method, path, query, body, ApiError, bounded, self.events)
             if result is not chat.NOT_HANDLED:
                 return result
             if method == 'POST' and path == '/v1/rooms/match':
@@ -278,10 +302,54 @@ class Database:
 
 class Server(ThreadingHTTPServer):
     daemon_threads = True
-    def __init__(self, address, database):
+    def __init__(self, address, database, limits=None):
+        self.limits = limits or CapacityLimits.from_environment()
+        self.request_queue_size = self.limits.backlog
+        self.connection_slots = threading.BoundedSemaphore(self.limits.connections)
+        self.request_slots = threading.BoundedSemaphore(self.limits.requests)
+        self.poll_slots = threading.BoundedSemaphore(self.limits.polls)
+        self.upload_slots = threading.BoundedSemaphore(self.limits.uploads)
+        self.download_slots = threading.BoundedSemaphore(self.limits.downloads)
         super().__init__(address, Handler)
         self.database = database
         self.session_attempts = {}
+
+    def process_request(self, request, client_address):
+        if not self.connection_slots.acquire(blocking=False):
+            # Reject before allocating another thread or reading a large body.
+            body = json.dumps({'error': '服务器繁忙，请稍后重试。', 'code': 'SERVER_BUSY'}).encode()
+            response = (f'HTTP/1.1 503 Service Unavailable\r\nContent-Type: application/json; charset=utf-8\r\n'
+                        f'Content-Length: {len(body)}\r\nRetry-After: {self.limits.retry_after}\r\n'
+                        'Connection: close\r\nCache-Control: no-store\r\n\r\n').encode()+body
+            try:
+                request.settimeout(.2)
+                request.sendall(response)
+                request.shutdown(socket.SHUT_WR)
+                # Drain only bounded headers so closing an unread GET does not
+                # reset the connection and hide its already-sent 503 response.
+                request.settimeout(.05)
+                pending = b''
+                while len(pending) < 16384 and b'\r\n\r\n' not in pending:
+                    chunk = request.recv(min(4096, 16384-len(pending)))
+                    if not chunk:
+                        break
+                    pending += chunk
+            except OSError:
+                pass
+            finally:
+                self.shutdown_request(request)
+            return
+        try:
+            super().process_request(request, client_address)
+        except Exception:
+            self.connection_slots.release()
+            raise
+
+    def process_request_thread(self, request, client_address):
+        try:
+            super().process_request_thread(request, client_address)
+        finally:
+            self.connection_slots.release()
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -294,21 +362,60 @@ class Handler(BaseHTTPRequestHandler):
         pass  # Do not log bearer tokens, user content or query strings.
 
     def handle_api(self):
+        self.leases = []
+        self.unread_body = 0
+        try:
+            self.handle_with_limits()
+        finally:
+            for slot in reversed(self.leases):
+                slot.release()
+
+    def acquire_slot(self, slot, code='SERVER_BUSY'):
+        if not slot.acquire(blocking=False):
+            # The request may still have an unread upload body.
+            self.close_connection = True
+            raise ApiError(503, '服务器繁忙，请稍后重试。', code)
+        self.leases.append(slot)
+
+    def handle_with_limits(self):
         status = 200
         try:
             parsed = urlsplit(self.path)
+            query = parse_qs(parsed.query)
+            if self.command in ('POST', 'PUT', 'DELETE'):
+                self.unread_body = min(max(int(self.headers.get('Content-Length', '0')), 0), chat_media.MAX_REQUEST)
+            if not (self.command == 'GET' and parsed.path == '/health'):
+                if (self.command == 'GET' and re.fullmatch(r'/v1/rooms/[a-f0-9]{64}/messages', parsed.path)
+                        and 'after' in query and float(query.get('wait', ['0'])[0]) > 0):
+                    self.acquire_slot(self.server.poll_slots, 'POLL_BUSY')
+                self.acquire_slot(self.server.request_slots)
+            media_upload = self.command == 'POST' and (parsed.path == '/v1/stickers' or
+                re.fullmatch(r'/v1/rooms/[a-f0-9]{64}/messages', parsed.path))
+            upload_reserved = False
             body = {}
             if self.command in ('POST', 'PUT', 'DELETE'):
                 length = int(self.headers.get('Content-Length', '0'))
-                limit = (chat_files.MAX_REQUEST if self.command == 'POST' and re.fullmatch(r'/v1/rooms/[a-f0-9]{64}/messages', parsed.path)
+                limit = (chat_media.MAX_REQUEST if self.command == 'POST' and re.fullmatch(r'/v1/rooms/[a-f0-9]{64}/messages', parsed.path)
                          else chat_media.MAX_REQUEST if self.command == 'POST' and parsed.path == '/v1/stickers'
                          else 150000 if parsed.path in ('/v1/profile', '/v1/sessions') else 20000)
                 if length < 0 or length > limit:
                     self.close_connection = True
                     raise ApiError(413, '请求内容过大。')
-                body = json.loads(self.rfile.read(length)) if length else {}
+                if media_upload and length > 150000:
+                    self.acquire_slot(self.server.upload_slots, 'UPLOAD_BUSY')
+                    upload_reserved = True
+                raw_body = self.rfile.read(length) if length else b''
+                self.unread_body = 0
+                body = json.loads(raw_body) if length else {}
                 if not isinstance(body, dict):
                     raise ApiError(400, '请求应为 JSON 对象。')
+            if media_upload and not upload_reserved and (parsed.path == '/v1/stickers' or
+                    body.get('kind') in ('image', 'sticker')):
+                # Sending a saved sticker also copies its potentially large BLOB.
+                self.acquire_slot(self.server.upload_slots, 'UPLOAD_BUSY')
+            if self.command == 'GET' and (re.fullmatch(r'/v1/(messages/\d+|stickers/[a-f0-9]+)/media', parsed.path)
+                    or re.fullmatch(r'/v1/users/[a-f0-9]{32}/avatar', parsed.path)):
+                self.acquire_slot(self.server.download_slots, 'DOWNLOAD_BUSY')
             if self.command == 'POST' and parsed.path == '/v1/sessions':
                 # Reverse proxy must retain the real peer separately; clients
                 # cannot select a rate-limit identity with a forwarded header.
@@ -322,7 +429,7 @@ class Handler(BaseHTTPRequestHandler):
                 self.server.session_attempts[ip] = times + [now]
             auth = self.headers.get('Authorization', '')
             token = auth[7:] if auth.startswith('Bearer ') else ''
-            result = self.server.database.route(self.command, parsed.path, parse_qs(parsed.query), body, token)
+            result = self.server.database.route(self.command, parsed.path, query, body, token)
         except ApiError as error:
             status, result = error.status, {'error': error.message}
             if error.code:
@@ -333,6 +440,11 @@ class Handler(BaseHTTPRequestHandler):
             status, result = 400, {'error': str(error), 'code': 'INVALID_MEDIA'}
         except (ValueError, TypeError, KeyError):
             status, result = 400, {'error': '请求参数无效。'}
+        except sqlite3.OperationalError as error:
+            if 'locked' in str(error).lower() or 'busy' in str(error).lower():
+                status, result = 503, {'error': '服务器繁忙，请稍后重试。', 'code': 'DATABASE_BUSY'}
+            else:
+                status, result = 500, {'error': '服务暂时不可用，请稍后再试。'}
         except Exception:
             status, result = 500, {'error': '服务暂时不可用，请稍后再试。'}
         binary = isinstance(result, bytes)
@@ -344,8 +456,30 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header('Content-Length', str(len(encoded)))
         self.send_header('Cache-Control', 'no-store')
         self.send_header('X-Content-Type-Options', 'nosniff')
+        if status == 503:
+            self.send_header('Retry-After', str(self.server.limits.retry_after))
+        if self.close_connection:
+            self.send_header('Connection', 'close')
         self.end_headers()
         self.wfile.write(encoded)
+        if status == 503 and self.close_connection and self.unread_body:
+            # Send the rejection first, then discard buffered upstream bytes in
+            # small chunks. Closing immediately can break an upload before its
+            # client/Nginx reads the retry response. Never retain the rejected
+            # body, and never let a slow sender occupy the thread indefinitely.
+            try:
+                self.wfile.flush()
+                self.connection.shutdown(socket.SHUT_WR)
+                self.connection.settimeout(.1)
+                deadline = time.monotonic()+.5
+                remaining = self.unread_body
+                while remaining and time.monotonic() < deadline:
+                    chunk = self.rfile.read1(min(65536, remaining))
+                    if not chunk:
+                        break
+                    remaining -= len(chunk)
+            except OSError:
+                pass
 
     do_GET = do_POST = do_PUT = do_DELETE = handle_api
 
