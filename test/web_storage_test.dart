@@ -3,12 +3,39 @@ library;
 
 import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter/widgets.dart';
+import 'package:seu_timetable/app.dart';
 import 'package:seu_timetable/platform/io.dart';
 import 'package:seu_timetable/data/schedule_store.dart';
 import 'package:seu_timetable/domain/schedule.dart';
 import 'package:seu_timetable/ui/appearance.dart';
 
 void main() {
+  testWidgets(
+    'Fresh web profile renders timetable and campus without native plugins',
+    (tester) async {
+      final base = '/test-${newId()}';
+      final store = ScheduleStore(File('$base/schedule.json'));
+      addTearDown(() async {
+        store.dispose();
+        await File('$base/schedule.json').delete();
+        await File('$base/appearance.txt').delete();
+      });
+      await tester.runAsync(() async {
+        await store.load();
+        await tester.pumpWidget(SeuTimetableApp(store: store));
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+      });
+      await tester.pumpAndSettle();
+      expect(find.text('课表'), findsWidgets);
+      await tester.tap(find.text('校园'));
+      await tester.pumpAndSettle();
+      expect(find.text('打开学校官网'), findsOneWidget);
+      expect(find.text('登录并同步劳动教育'), findsNothing);
+      await tester.pumpWidget(const SizedBox());
+      expect(tester.takeException(), isNull);
+    },
+  );
   test(
     'IndexedDB saves survive new store instances and preserve course rules',
     () async {

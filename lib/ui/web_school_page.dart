@@ -115,19 +115,22 @@ class _WebSchoolImportState extends State<WebSchoolImportPage> {
 class WebJwcPanel extends StatelessWidget {
   const WebJwcPanel({super.key});
   @override
-  Widget build(BuildContext context) => ListView(
-    padding: const EdgeInsets.all(20),
-    children: [
-      Text('教务通知', style: Theme.of(context).textTheme.headlineSmall),
-      const SizedBox(height: 8),
-      const Text('选择栏目，在学校官网查看最新通知。网页版暂不自动抓取官网内容。'),
-      for (final section in JwcSection.values)
-        ListTile(
-          title: Text(section.label),
-          trailing: const Icon(Icons.open_in_new),
-          onTap: () => openExternalPage(section.pageUrl(1).toString()),
-        ),
-    ],
+  Widget build(BuildContext context) => Material(
+    color: context.meike.paper,
+    child: ListView(
+      padding: const EdgeInsets.all(20),
+      children: [
+        Text('教务通知', style: Theme.of(context).textTheme.headlineSmall),
+        const SizedBox(height: 8),
+        const Text('选择栏目，在学校官网查看最新通知。网页版暂不自动抓取官网内容。'),
+        for (final section in JwcSection.values)
+          ListTile(
+            title: Text(section.label),
+            trailing: const Icon(Icons.open_in_new),
+            onTap: () => openExternalPage(section.pageUrl(1).toString()),
+          ),
+      ],
+    ),
   );
 }
 

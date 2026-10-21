@@ -19,6 +19,8 @@ Everflora 团队的 SEU 校园课程表项目。当前工程是从 SwiftUI 1.1.1
 
 ## GitHub Pages 网页版（PWA）
 
+正式网址：[梅课网页版](https://everflora.github.io/MeiKe-web/)。
+
 支持浏览器课表保存、课程编辑、JSON 备份迁移、三套主题和离线资源缓存，可由 iPhone Safari 添加到主屏幕。网页端不会读取学校网页登录会话；学校课程请手动添加或从手机 App 导出 JSON 后导入。讨论室默认关闭，需另行配置支持 HTTPS 和跨域的后端。
 
 ```sh
