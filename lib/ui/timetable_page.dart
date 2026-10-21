@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math' as math;
@@ -111,7 +112,7 @@ class _TimetablePageState extends State<TimetablePage>
                         ? () => importSchoolSchedule(context, widget.store)
                         : null,
                     icon: const Icon(Icons.download_outlined),
-                    label: const Text('一键导入学校课表'),
+                    label: const Text(kIsWeb ? '导入课表备份' : '一键导入学校课表'),
                   ),
                   const SizedBox(height: 8),
                   OutlinedButton.icon(
@@ -618,7 +619,7 @@ class _TimetablePageState extends State<TimetablePage>
                       icon: const Icon(Icons.edit_note_outlined),
                     ),
                     IconButton(
-                      tooltip: '一键导入学校课表',
+                      tooltip: kIsWeb ? '导入课表备份' : '一键导入学校课表',
                       constraints: const BoxConstraints.tightFor(
                         width: 36,
                         height: 44,

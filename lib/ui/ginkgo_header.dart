@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import '../data/schedule_store.dart';
 import 'course_editor.dart';
@@ -46,7 +47,7 @@ class GinkgoHeader extends StatelessWidget {
           icon: Icon(Icons.edit_note_outlined, color: context.meike.onHero),
         ),
         IconButton(
-          tooltip: '一键导入学校课表',
+          tooltip: kIsWeb ? '导入课表备份' : '一键导入学校课表',
           onPressed: store.canWrite && !store.busy
               ? () => importSchoolSchedule(context, store)
               : null,

@@ -1,4 +1,6 @@
-import 'dart:io';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'web_school_page.dart';
+import '../platform/io.dart';
 import 'package:flutter/material.dart';
 import '../data/news_store.dart';
 import '../data/schedule_store.dart';
@@ -77,7 +79,9 @@ class _NewsSectionsState extends State<NewsPage> {
           index: selected,
           children: [
             LaborNewsPanel(store: widget.store),
-            jwcOpened
+            kIsWeb
+                ? const WebJwcPanel()
+                : jwcOpened
                 ? JwcNewsPanel(
                     file: File(
                       '${widget.store.file.parent.path}/jwc-news.json',

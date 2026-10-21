@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart' show kDebugMode, defaultTargetPlatform;
+import 'package:flutter/foundation.dart'
+    show kDebugMode, defaultTargetPlatform, kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -11,6 +12,7 @@ import '../data/schedule_store.dart';
 import '../domain/schedule.dart';
 import '../domain/school_import.dart';
 import 'theme.dart';
+import 'web_school_page.dart';
 
 Future<void> importSchoolSchedule(
   BuildContext context,
@@ -22,7 +24,11 @@ Future<void> importSchoolSchedule(
   }
   await Navigator.push<void>(
     context,
-    MaterialPageRoute(builder: (_) => SchoolImportPage(store: store)),
+    MaterialPageRoute(
+      builder: (_) => kIsWeb
+          ? WebSchoolImportPage(store: store)
+          : SchoolImportPage(store: store),
+    ),
   );
 }
 

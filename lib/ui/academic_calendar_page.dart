@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'web_school_page.dart';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -311,8 +313,10 @@ class _CalendarSourcePageState extends State<CalendarSourcePage> {
   late final controller = WebViewController()
     ..loadRequest(Uri.parse(SeuCalendar.source));
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('学校官网校历')),
-    body: WebViewWidget(controller: controller),
-  );
+  Widget build(BuildContext context) => kIsWeb
+      ? const WebSchoolPage(title: '学校官网校历', url: SeuCalendar.source)
+      : Scaffold(
+          appBar: AppBar(title: const Text('学校官网校历')),
+          body: WebViewWidget(controller: controller),
+        );
 }

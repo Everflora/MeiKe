@@ -1,4 +1,6 @@
-import 'dart:io';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'ui/web_school_page.dart';
+import 'platform/io.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -112,29 +114,49 @@ class _SeuTimetableAppState extends State<SeuTimetableApp> {
       theme: meikeTheme(Brightness.light, appearance.theme),
       darkTheme: meikeTheme(Brightness.dark, appearance.theme),
       themeMode: appearance.mode,
-      builder: (context, child) => MediaQuery(
-        data: MediaQuery.of(context).copyWith(
-          disableAnimations:
-              MediaQuery.disableAnimationsOf(context) || !appearance.motion,
-        ),
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            child!,
-            if (appearance.theme == MeikeTheme.naiFamily && appearance.eggPet)
-              Offstage(
-                offstage: MediaQuery.viewInsetsOf(context).bottom > 0,
-                child: TickerMode(
-                  enabled: MediaQuery.viewInsetsOf(context).bottom == 0,
-                  child: NaiEggCompanion(
-                    key: petKey,
-                    onSelect: petNavigate,
-                    onExpansionChanged: petExpansionChanged,
+      builder: (context, child) => LayoutBuilder(
+        builder: (context, bounds) {
+          final width = kIsWeb && bounds.maxWidth > 560
+              ? 560.0
+              : bounds.maxWidth;
+          return ColoredBox(
+            color: context.meike.paper,
+            child: Center(
+              child: SizedBox(
+                width: width,
+                height: bounds.maxHeight,
+                child: MediaQuery(
+                  data: MediaQuery.of(context).copyWith(
+                    size: Size(width, bounds.maxHeight),
+                    disableAnimations:
+                        MediaQuery.disableAnimationsOf(context) ||
+                        !appearance.motion,
+                  ),
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      child!,
+                      if (appearance.theme == MeikeTheme.naiFamily &&
+                          appearance.eggPet)
+                        Offstage(
+                          offstage: MediaQuery.viewInsetsOf(context).bottom > 0,
+                          child: TickerMode(
+                            enabled:
+                                MediaQuery.viewInsetsOf(context).bottom == 0,
+                            child: NaiEggCompanion(
+                              key: petKey,
+                              onSelect: petNavigate,
+                              onExpansionChanged: petExpansionChanged,
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
                 ),
               ),
-          ],
-        ),
+            ),
+          );
+        },
       ),
       home: _Home(key: homeKey, store: widget.store, appearance: appearance),
     ),
@@ -200,7 +222,12 @@ class _HomeState extends State<_Home> {
                       TimetablePage(store: widget.store),
                       TodayPage(store: widget.store),
                       discussionOpened
-                          ? DiscussionPage(store: widget.store)
+                          ? kIsWeb &&
+                                    const String.fromEnvironment(
+                                      'DISCUSSION_API',
+                                    ).isEmpty
+                                ? const WebDiscussionInfo()
+                                : DiscussionPage(store: widget.store)
                           : const SizedBox(),
                       newsOpened
                           ? NewsPage(store: widget.store)

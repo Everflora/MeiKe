@@ -1,4 +1,6 @@
-import 'dart:io';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'web_school_page.dart';
+import '../platform/io.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import '../data/jwc_news.dart';
@@ -282,6 +284,7 @@ class _JwcArticlePageState extends State<JwcArticlePage> {
   @override
   void initState() {
     super.initState();
+    if (kIsWeb) return;
     controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(
@@ -308,24 +311,27 @@ class _JwcArticlePageState extends State<JwcArticlePage> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      title: const Text('教务通知原文'),
-      actions: [
-        IconButton(
-          tooltip: '刷新原文',
-          onPressed: () => controller.reload(),
-          icon: const Icon(Icons.refresh),
-        ),
-      ],
-    ),
-    body: Column(
-      children: [
-        if (progress < 100) LinearProgressIndicator(value: progress / 100),
-        if (error != null)
-          Padding(padding: const EdgeInsets.all(16), child: Text(error!)),
-        Expanded(child: WebViewWidget(controller: controller)),
-      ],
-    ),
-  );
+  Widget build(BuildContext context) => kIsWeb
+      ? WebSchoolPage(title: '教务通知原文', url: widget.item.url)
+      : Scaffold(
+          appBar: AppBar(
+            title: const Text('教务通知原文'),
+            actions: [
+              IconButton(
+                tooltip: '刷新原文',
+                onPressed: () => controller.reload(),
+                icon: const Icon(Icons.refresh),
+              ),
+            ],
+          ),
+          body: Column(
+            children: [
+              if (progress < 100)
+                LinearProgressIndicator(value: progress / 100),
+              if (error != null)
+                Padding(padding: const EdgeInsets.all(16), child: Text(error!)),
+              Expanded(child: WebViewWidget(controller: controller)),
+            ],
+          ),
+        );
 }

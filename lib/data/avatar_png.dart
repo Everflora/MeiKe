@@ -1,4 +1,4 @@
-import 'dart:io';
+import '../platform/io.dart';
 import 'dart:typed_data';
 
 /// Server avatar format: 128×128, straight RGBA, 8 bits, no interlacing.
