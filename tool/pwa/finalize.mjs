@@ -18,7 +18,7 @@ async function walk(dir, prefix = '') {
 export async function finalize(directory = build) {
   const files = [];
   for (const name of (await walk(directory)).sort()) {
-    if (name.endsWith('.map') || name.endsWith('.symbols') || name.startsWith('canvaskit/skwasm')) {
+    if (name === '.last_build_id' || name.endsWith('.map') || name.endsWith('.symbols') || name.startsWith('canvaskit/skwasm')) {
       await rm(path.join(directory, name));
       continue;
     }

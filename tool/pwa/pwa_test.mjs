@@ -84,7 +84,7 @@ test('offline navigation retains one release and privacy page; API and foreign r
 test('release manifest is deterministic, includes offline essentials and strips debug sources', async () => {
   const dir = await mkdtemp(path.join(os.tmpdir(), 'meike-pwa-'));
   try {
-    for (const name of ['index.html', 'main.dart.js', 'manifest.json', 'assets/web-fonts/NotoSansSC.ttf', 'canvaskit/canvaskit.wasm', 'private.js.map', 'canvaskit/canvaskit.js.symbols', 'canvaskit/skwasm.wasm', '.nojekyll']) {
+    for (const name of ['index.html', 'main.dart.js', 'manifest.json', 'assets/web-fonts/NotoSansSC.ttf', 'canvaskit/canvaskit.wasm', 'private.js.map', 'canvaskit/canvaskit.js.symbols', 'canvaskit/skwasm.wasm', '.last_build_id', '.nojekyll']) {
       await mkdir(path.dirname(path.join(dir, name)), {recursive: true});
       await writeFile(path.join(dir, name), name);
     }
@@ -93,6 +93,7 @@ test('release manifest is deterministic, includes offline essentials and strips 
     assert.equal(first.files.length, 5);
     assert(first.files.every(file => !file.url.endsWith('.map') && !file.url.startsWith('canvaskit/skwasm')));
     await assert.rejects(readFile(path.join(dir, 'private.js.map')), /ENOENT/);
+    await assert.rejects(readFile(path.join(dir, '.last_build_id')), /ENOENT/);
     const sw = await readFile(path.join(dir, 'sw.js'), 'utf8');
     assert(!sw.includes('__MEIKE_RELEASE__'));
   } finally {await rm(dir, {recursive: true, force: true});}
