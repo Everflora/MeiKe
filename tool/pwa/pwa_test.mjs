@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import {createHash, webcrypto} from 'node:crypto';
-import {mkdtemp, mkdir, readFile, rm, writeFile} from 'node:fs/promises';
+import {mkdtemp, mkdir, readFile, rm, writeFile, chmod} from 'node:fs/promises';
+import {spawnSync} from 'node:child_process';
 import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
@@ -15,6 +16,26 @@ const release = {version: 'new', files: [
   {url: 'index.html', sha256: digest('APP')},
   {url: 'privacy.html', sha256: digest('PRIVACY')},
 ]};
+
+test('web build passes optional HTTPS API safely and rejects invalid bases', async () => {
+  const dir = await mkdtemp(path.join(os.tmpdir(), 'meike-build-'));
+  try {
+    const fake = path.join(dir, 'flutter'), output = path.join(dir, 'args.json');
+    await writeFile(fake, '#!/usr/bin/env node\nrequire("node:fs").writeFileSync(process.env.MEIKE_TEST_ARGS, JSON.stringify(process.argv.slice(2)));process.exit(70);\n');
+    await chmod(fake, 0o700);
+    const run = api => spawnSync('bash', [new URL('./build.sh', import.meta.url).pathname, '/MeiKe-web/'], {
+      env: {...process.env, MEIKE_FLUTTER: fake, MEIKE_TEST_ARGS: output, MEIKE_DISCUSSION_API: api}, encoding: 'utf8',
+    });
+    assert.equal(run('').status, 70);
+    assert(!(JSON.parse(await readFile(output))).some(x => x.startsWith('--dart-define=')));
+    const api = 'https://106.14.199.134/api/meike/';
+    assert.equal(run(api).status, 70);
+    assert(JSON.parse(await readFile(output)).includes('--dart-define=DISCUSSION_API=' + api));
+    for (const invalid of ['http://host.test/', 'https://host.test/no-slash', 'https://user@host.test/', 'https://host.test/?token=x/', 'https://host.test/ bad/']) {
+      assert.equal(run(invalid).status, 1, invalid);
+    }
+  } finally {await rm(dir, {recursive: true, force: true});}
+});
 
 function worker({broken = false} = {}) {
   const listeners = new Map(), buckets = new Map(), claimed = [];

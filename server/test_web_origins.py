@@ -22,10 +22,10 @@ class WebOriginTests(unittest.TestCase):
         self.db.events.close()
         self.temp.cleanup()
 
-    def request(self, method, headers):
+    def request(self, method, headers, path='/health'):
         conn = http.client.HTTPConnection(*self.server.server_address, timeout=3)
         try:
-            conn.request(method, '/health', headers=headers)
+            conn.request(method, path, headers=headers)
             response = conn.getresponse()
             response.read()
             return response.status, dict(response.getheaders())
@@ -45,6 +45,10 @@ class WebOriginTests(unittest.TestCase):
         status, headers = self.request('GET', {'Origin': 'https://everflora.github.io'})
         self.assertEqual(status, 200)
         self.assertIn('Retry-After', headers['Access-Control-Expose-Headers'])
+        status, headers = self.request('GET', {
+            'Origin': 'https://everflora.github.io'}, '/v1/profile')
+        self.assertEqual(status, 401)
+        self.assertEqual(headers['Access-Control-Allow-Origin'], 'https://everflora.github.io')
 
     def test_untrusted_or_null_origins_do_not_get_cors_access(self):
         for origin in ('null', 'https://evil.example', 'https://everflora.github.io.evil.example'):

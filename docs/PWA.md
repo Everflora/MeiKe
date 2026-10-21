@@ -66,6 +66,16 @@ Flutter 不在 PATH 时可设置 `MEIKE_FLUTTER=/absolute/path/to/flutter`。`/M
 
 GitHub Pages 只能托管静态文件，无法运行 Python/SQLite 服务。本次实现浏览器 HTTP 适配与后端精确来源校验，但没有修改或重启现有线上服务，也没有以真实用户身份测试网页聊天。
 
+原工程已有生产 API：`https://106.14.199.134/api/meike/`，可以复用原讨论室、图片/表情包和组队数据。完整部署及回滚顺序见 [现有服务器网页接入](../server/WEB_CLIENT.md)。先运行 `python3 tool/pwa/check_api.py` 确认生产跨域和鉴权检查全部通过，再构建并发布启用讨论的网页；不要直接把未适配的服务接到线上。
+
+构建脚本已支持直接指定现有接口：
+
+```sh
+MEIKE_DISCUSSION_API=https://106.14.199.134/api/meike/ bash tool/pwa/build.sh /MeiKe-web/
+```
+
+不设置该变量仍生成讨论关闭的版本。Actions 手动构建使用 `discussion_api` 输入；它是公开服务地址，不可填写令牌或密码。
+
 后端部署时设置 `MEIKE_WEB_ORIGINS=https://everflora.github.io`；多个来源用逗号分隔。来源只写协议、主机和端口，不带仓库路径，不允许 `*`。仅明确配置的本机开发来源允许 HTTP。反向代理需转发 OPTIONS 和应用返回的 CORS 响应头，避免自行叠加通配符。现有无 Origin 的原生客户端继续使用原鉴权。
 
 前端构建可先运行以下命令，再运行 `node tool/pwa/finalize.mjs`：

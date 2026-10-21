@@ -9,6 +9,10 @@ on:
         description: 'GitHub Pages repository path, including leading/trailing slash'
         default: '/MeiKe-web/'
         required: true
+      discussion_api:
+        description: 'Optional HTTPS API base URL ending in /; leave empty to disable web discussion'
+        default: ''
+        required: false
 permissions:
   contents: read
 jobs:
@@ -28,6 +32,7 @@ jobs:
       - name: Build offline release
         env:
           MEIKE_BASE_PATH: ${{ inputs.base_path || '/MeiKe-web/' }}
+          MEIKE_DISCUSSION_API: ${{ inputs.discussion_api || '' }}
         run: bash tool/pwa/build.sh "$MEIKE_BASE_PATH"
       - uses: actions/upload-artifact@v7.0.2
         with:
