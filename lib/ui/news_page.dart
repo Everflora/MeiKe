@@ -78,7 +78,13 @@ class _NewsSectionsState extends State<NewsPage> {
         child: IndexedStack(
           index: selected,
           children: [
-            LaborNewsPanel(store: widget.store),
+            kIsWeb
+                ? const WebSchoolPage(
+                    title: '劳动教育',
+                    url: laborNewsUrl,
+                    message: '请在学校官网查看劳动教育课程并完成选课。网页版暂不能读取学校登录后的课程列表或同步选课结果。',
+                  )
+                : LaborNewsPanel(store: widget.store),
             kIsWeb
                 ? const WebJwcPanel()
                 : jwcOpened
