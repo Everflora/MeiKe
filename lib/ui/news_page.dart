@@ -129,7 +129,7 @@ class _NewsSectionsState extends State<NewsPage> {
                           ),
                           const SizedBox(height: 4),
                           Image.asset(
-                            'assets/nai-family/${const ['chicken-garden', 'mouse-blackboard', 'egg-calendar', 'mouse-blackboard'][i]}.webp',
+                            'assets/nai-family/${const ['chicken-garden', 'mouse-blackboard', 'egg-calendar', 'frog-lecture'][i]}.webp',
                             height: 82,
                             width: double.infinity,
                             fit: BoxFit.contain,

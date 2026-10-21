@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import '../domain/school_import.dart';
+import 'nai_family.dart';
 import 'theme.dart';
 
 const lectureSelectionUrl =
@@ -22,7 +23,20 @@ class LectureSelectionPanel extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(Icons.school_outlined, size: 36, color: context.meike.green),
+              if (context.naiFamily)
+                Image.asset(
+                  'assets/nai-family/frog-lecture.webp',
+                  width: 88,
+                  height: 88,
+                  fit: BoxFit.contain,
+                  excludeFromSemantics: true,
+                )
+              else
+                Icon(
+                  Icons.school_outlined,
+                  size: 36,
+                  color: context.meike.green,
+                ),
               const SizedBox(height: 12),
               const Text('在学校平台查看素质讲座、报名和选课记录。'),
               const SizedBox(height: 8),
