@@ -380,7 +380,7 @@ class SchoolImportPreview extends StatefulWidget {
 }
 
 class _SchoolImportPreviewState extends State<SchoolImportPreview> {
-  DateTime? startDate;
+  DateTime? startDate = SchoolClock.instant(2026, 9, 21);
   bool replace = false, saving = false;
   @override
   void initState() {

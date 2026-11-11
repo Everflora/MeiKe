@@ -10,6 +10,8 @@ import 'package:seu_timetable/ui/discussion_page.dart';
 import 'package:seu_timetable/ui/appearance.dart';
 import 'package:seu_timetable/ui/theme.dart';
 
+import 'fixtures/appearance.dart';
+
 class TermFixtureClient extends DiscussionClient {
   TermFixtureClient(String semester) : super(sessionFile: File('unused')) {
     nickname = '演示同学';
@@ -179,12 +181,16 @@ void main() {
       dir = await Directory.systemTemp.createTemp('seu-discussion-ui-');
       store = ScheduleStore(File('${dir.path}/schedule.json'));
       await store.load();
+      await savePlumTheme(dir);
     });
     tester.view.physicalSize = const Size(320, 568);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
-    await tester.pumpWidget(SeuTimetableApp(store: store));
+    await tester.runAsync(() async {
+      await tester.pumpWidget(SeuTimetableApp(store: store));
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+    });
     await tester.pumpAndSettle();
     await tester.tap(find.widgetWithText(NavigationDestination, '讨论'));
     await tester.pump();

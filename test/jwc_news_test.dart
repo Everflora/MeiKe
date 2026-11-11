@@ -13,6 +13,37 @@ String page({
 <ul class="wp_paging"><em class="curr_page">$index</em><em class="all_pages">3</em></ul>
 ''';
 void main() {
+  test('新版卡片列表提取标题日期，去重并忽略导航', () {
+    final source = '''
+<a href="/main.htm">首页</a>
+<div class="news-list-item">
+  <div class="news-item-title"><a href="/2026/demo/page.htm" title="完整标题"><b>简称</b></a></div>
+  <div class="news-item-date-ym">2026-11-11</div>
+</div>
+<div class="news-list-item">
+  <div class="news-item-title"><a href="/2026/demo/page.htm">重复通知</a></div>
+  <div class="news-item-date-ym">2026-11-11</div>
+</div>
+<ul class="wp_paging"><em class="curr_page">2</em><em class="all_pages">3</em></ul>
+''';
+    final result = JwcPage.parse(source, expectedPage: 2);
+    expect(result.items.single.title, '完整标题');
+    expect(result.items.single.date, '2026-11-11');
+    expect(result.page, 2);
+    expect(result.pages, 3);
+    expect(() => JwcPage.parse(source), throwsFormatException);
+    expect(
+      () => JwcPage.parse(source.replaceAll('2026-11-11', ''), expectedPage: 2),
+      throwsFormatException,
+    );
+    expect(
+      () => JwcPage.parse(
+        source.replaceAll('/2026/demo/page.htm', 'javascript:alert(1)'),
+        expectedPage: 2,
+      ),
+      throwsFormatException,
+    );
+  });
   test('国际交流栏目 htm 跳转到 psp 时保持 HTTPS 和当前栏目，拒绝外部跳转', () {
     final current = JwcSection.international.pageUrl(1);
     expect(

@@ -17,7 +17,7 @@ class AppearanceController extends ChangeNotifier {
   AppearanceController(this.file);
   final File file;
   ThemeMode mode = ThemeMode.system;
-  MeikeTheme theme = MeikeTheme.plum;
+  MeikeTheme theme = MeikeTheme.naiFamily;
   bool motion = true;
   bool eggPet = true;
   Future<void> _pending = Future.value();
@@ -30,7 +30,7 @@ class AppearanceController extends ChangeNotifier {
 
   Future<void> load() async {
     mode = ThemeMode.system;
-    theme = MeikeTheme.plum;
+    theme = MeikeTheme.naiFamily;
     motion = true;
     eggPet = true;
     try {
@@ -46,15 +46,15 @@ class AppearanceController extends ChangeNotifier {
         );
         theme = MeikeTheme.values.firstWhere(
           (t) => t.name == (decoded is Map ? decoded['theme'] : null),
-          orElse: () => MeikeTheme.plum,
+          orElse: () => MeikeTheme.naiFamily,
         );
       }
     } on FileSystemException {
       mode = ThemeMode.system;
-      theme = MeikeTheme.plum;
+      theme = MeikeTheme.naiFamily;
     } on FormatException {
       mode = ThemeMode.system;
-      theme = MeikeTheme.plum;
+      theme = MeikeTheme.naiFamily;
     }
     if (!_disposed) notifyListeners();
   }

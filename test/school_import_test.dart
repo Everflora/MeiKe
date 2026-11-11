@@ -226,7 +226,7 @@ void main() {
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox());
   });
-  testWidgets('预览必须确认开学周，退出预览不改变课表', (tester) async {
+  testWidgets('预览默认9月21日即可导入，退出预览不改变课表', (tester) async {
     final dir = (await tester.runAsync(
       () => Directory.systemTemp.createTemp('meike-preview-'),
     ))!;
@@ -247,9 +247,12 @@ void main() {
       tester
           .widget<FilledButton>(find.widgetWithText(FilledButton, '确认导入 1 门课程'))
           .onPressed,
-      isNull,
+      isNotNull,
     );
-    expect(find.text('请选择日期，确保周次准确（必填）'), findsOneWidget);
+    expect(
+      find.text(SchoolClock.fullDate(SchoolClock.instant(2026, 9, 21))),
+      findsOneWidget,
+    );
     await tester.pumpWidget(const SizedBox());
     expect(store.data.courses, isEmpty);
     expect(await tester.runAsync(store.file.exists), isFalse);
