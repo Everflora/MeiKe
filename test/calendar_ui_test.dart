@@ -10,6 +10,8 @@ import 'package:seu_timetable/ui/theme.dart';
 import 'package:seu_timetable/ui/timetable_page.dart';
 import 'package:seu_timetable/ui/today_page.dart';
 
+import 'fixtures/appearance.dart';
+
 void main() {
   late Directory dir;
   late ScheduleStore store;
@@ -32,6 +34,7 @@ void main() {
   testWidgets('校园有离线校历入口，无需登录，可浏览月份和全年原图', (tester) async {
     small(tester);
     await tester.runAsync(() async {
+      await savePlumTheme(dir);
       await tester.pumpWidget(SeuTimetableApp(store: store));
       await Future<void>.delayed(const Duration(milliseconds: 100));
     });

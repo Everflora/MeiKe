@@ -7,6 +7,8 @@ import 'package:seu_timetable/data/news_store.dart';
 import 'package:seu_timetable/data/schedule_store.dart';
 import 'package:seu_timetable/domain/schedule.dart';
 
+import 'fixtures/appearance.dart';
+
 Json row(String id, {String enrollment = '10/20', String deadline = '明天'}) => {
   'itemId': 'demo',
   'offeringId': id,
@@ -117,12 +119,16 @@ void main() {
     await tester.runAsync(() async {
       schedule = ScheduleStore(File('${dir.path}/schedule.json'));
       await schedule.load();
+      await savePlumTheme(dir);
     });
     tester.view.physicalSize = const Size(320, 568);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
-    await tester.pumpWidget(SeuTimetableApp(store: schedule));
+    await tester.runAsync(() async {
+      await tester.pumpWidget(SeuTimetableApp(store: schedule));
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+    });
     await tester.pumpAndSettle();
     await tester.tap(find.widgetWithText(NavigationDestination, '校园'));
     await tester.pump();

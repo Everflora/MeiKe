@@ -13,6 +13,8 @@ import 'package:seu_timetable/ui/timetable_page.dart';
 import 'package:seu_timetable/data/jwc_news.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
+import 'fixtures/appearance.dart';
+
 void main() {
   late Directory dir;
   late ScheduleStore store;
@@ -51,6 +53,7 @@ void main() {
   }
 
   testWidgets('主题与显示模式分两行，银杏切换全局并在重启后保留', (tester) async {
+    await tester.runAsync(() => savePlumTheme(dir));
     await screen(tester);
     await tester.tap(find.widgetWithText(NavigationDestination, '我的'));
     await tester.pumpAndSettle();
@@ -172,6 +175,7 @@ void main() {
   });
 
   testWidgets('七天13节首屏、单节体育地点、无本周和放大按钮', (tester) async {
+    await tester.runAsync(() => savePlumTheme(dir));
     await screen(tester);
     expect(find.text('周日'), findsOneWidget);
     expect(finalPeriodLabel(), findsOneWidget);
@@ -374,6 +378,7 @@ void main() {
     }
   });
   testWidgets('五项导航，课表与我的都可进入课程管理并返回', (tester) async {
+    await tester.runAsync(() => savePlumTheme(dir));
     await screen(tester);
     expect(find.byType(NavigationDestination), findsNWidgets(5));
     await tester.tap(find.byTooltip('课程管理'));

@@ -17,6 +17,7 @@ void main() {
     final settings = AppearanceController(file);
     await settings.load();
     expect(settings.mode, ThemeMode.system);
+    expect(settings.theme, MeikeTheme.naiFamily);
     await settings.setMode(ThemeMode.dark);
     final reopened = AppearanceController(file);
     await reopened.load();
