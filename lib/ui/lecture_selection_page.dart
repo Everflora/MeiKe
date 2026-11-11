@@ -1,7 +1,10 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'web_school_page.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import '../domain/school_import.dart';
+import 'nai_family.dart';
 import 'theme.dart';
 
 const lectureSelectionUrl =
@@ -22,7 +25,20 @@ class LectureSelectionPanel extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(Icons.school_outlined, size: 36, color: context.meike.green),
+              if (context.naiFamily)
+                Image.asset(
+                  'assets/nai-family/frog-lecture.webp',
+                  width: 88,
+                  height: 88,
+                  fit: BoxFit.contain,
+                  excludeFromSemantics: true,
+                )
+              else
+                Icon(
+                  Icons.school_outlined,
+                  size: 36,
+                  color: context.meike.green,
+                ),
               const SizedBox(height: 12),
               const Text('在学校平台查看素质讲座、报名和选课记录。'),
               const SizedBox(height: 8),
@@ -62,6 +78,7 @@ class _LectureSelectionPageState extends State<LectureSelectionPage> {
   @override
   void initState() {
     super.initState();
+    if (kIsWeb) return;
     controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(
@@ -103,32 +120,35 @@ class _LectureSelectionPageState extends State<LectureSelectionPage> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      title: const Text('素质讲座选课'),
-      actions: [
-        IconButton(
-          tooltip: '素质讲座首页',
-          onPressed: () =>
-              controller.loadRequest(Uri.parse(lectureSelectionUrl)),
-          icon: const Icon(Icons.home_outlined),
-        ),
-        IconButton(
-          tooltip: '刷新学校页面',
-          onPressed: () => controller.reload(),
-          icon: const Icon(Icons.refresh),
-        ),
-      ],
-    ),
-    body: Column(
-      children: [
-        if (progress < 100) LinearProgressIndicator(value: progress / 100),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-          child: Text(error ?? '在学校网页完成登录和选课，报名结果以学校平台为准。'),
-        ),
-        Expanded(child: WebViewWidget(controller: controller)),
-      ],
-    ),
-  );
+  Widget build(BuildContext context) => kIsWeb
+      ? WebSchoolPage(title: '素质讲座', url: lectureSelectionUrl)
+      : Scaffold(
+          appBar: AppBar(
+            title: const Text('素质讲座选课'),
+            actions: [
+              IconButton(
+                tooltip: '素质讲座首页',
+                onPressed: () =>
+                    controller.loadRequest(Uri.parse(lectureSelectionUrl)),
+                icon: const Icon(Icons.home_outlined),
+              ),
+              IconButton(
+                tooltip: '刷新学校页面',
+                onPressed: () => controller.reload(),
+                icon: const Icon(Icons.refresh),
+              ),
+            ],
+          ),
+          body: Column(
+            children: [
+              if (progress < 100)
+                LinearProgressIndicator(value: progress / 100),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                child: Text(error ?? '在学校网页完成登录和选课，报名结果以学校平台为准。'),
+              ),
+              Expanded(child: WebViewWidget(controller: controller)),
+            ],
+          ),
+        );
 }

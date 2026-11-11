@@ -2,6 +2,7 @@
 import argparse
 import hashlib
 import json
+import os
 import re
 import secrets
 import socket
@@ -18,6 +19,7 @@ import chat_media
 import teams
 from capacity import CapacityLimits
 from room_events import RoomEvents
+from web_origins import parse_origins
 
 
 class ApiError(Exception):
@@ -302,7 +304,9 @@ class Database:
 
 class Server(ThreadingHTTPServer):
     daemon_threads = True
-    def __init__(self, address, database, limits=None):
+    def __init__(self, address, database, limits=None, *, web_origins=None):
+        self.web_origins = parse_origins(
+            os.environ.get('MEIKE_WEB_ORIGINS', '') if web_origins is None else web_origins)
         self.limits = limits or CapacityLimits.from_environment()
         self.request_queue_size = self.limits.backlog
         self.connection_slots = threading.BoundedSemaphore(self.limits.connections)
@@ -354,6 +358,28 @@ class Server(ThreadingHTTPServer):
 
 class Handler(BaseHTTPRequestHandler):
     protocol_version = 'HTTP/1.1'
+    def cors_headers(self):
+        origin = self.headers.get('Origin')
+        self.send_header('Vary', 'Origin')
+        if origin and origin in self.server.web_origins:
+            self.send_header('Access-Control-Allow-Origin', origin)
+            self.send_header('Access-Control-Expose-Headers', 'Retry-After, Content-Disposition')
+
+    def do_OPTIONS(self):
+        origin = self.headers.get('Origin')
+        method = self.headers.get('Access-Control-Request-Method', '')
+        requested = {v.strip().lower() for v in self.headers.get('Access-Control-Request-Headers', '').split(',') if v.strip()}
+        valid = (origin in self.server.web_origins and method in ('GET', 'POST', 'PUT', 'DELETE')
+                 and requested <= {'accept', 'authorization', 'content-type'})
+        self.send_response(204 if valid else 403)
+        self.cors_headers()
+        if valid:
+            self.send_header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE')
+            self.send_header('Access-Control-Allow-Headers', 'Accept, Authorization, Content-Type')
+            self.send_header('Access-Control-Max-Age', '600')
+        self.send_header('Content-Length', '0')
+        self.end_headers()
+
     def setup(self):
         super().setup()
         self.connection.settimeout(15)
@@ -380,6 +406,10 @@ class Handler(BaseHTTPRequestHandler):
     def handle_with_limits(self):
         status = 200
         try:
+            origin = self.headers.get('Origin')
+            if origin and origin not in self.server.web_origins:
+                self.close_connection = True
+                raise ApiError(403, '此网页来源尚未开放讨论室访问。')
             parsed = urlsplit(self.path)
             query = parse_qs(parsed.query)
             if self.command in ('POST', 'PUT', 'DELETE'):
@@ -450,6 +480,7 @@ class Handler(BaseHTTPRequestHandler):
         binary = isinstance(result, bytes)
         encoded = result if binary else json.dumps(result, ensure_ascii=False).encode()
         self.send_response(status)
+        self.cors_headers()
         self.send_header('Content-Type', getattr(result, 'content_type', 'image/png') if binary else 'application/json; charset=utf-8')
         if binary and hasattr(result, 'content_disposition'):
             self.send_header('Content-Disposition', result.content_disposition)

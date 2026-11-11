@@ -1,8 +1,8 @@
 import 'dart:async';
-import 'dart:io';
+import '../platform/io.dart';
 
 import 'package:flutter/foundation.dart';
-import 'package:path_provider/path_provider.dart';
+import '../platform/support_directory.dart';
 
 import '../domain/schedule.dart';
 
@@ -15,8 +15,8 @@ class ScheduleStore extends ChangeNotifier {
   bool busy = false;
   String? loadError;
   static Future<ScheduleStore> open() async {
-    final support = await getApplicationSupportDirectory();
-    final store = ScheduleStore(File('${support.path}/KeJian/schedule.json'));
+    final support = await supportDirectory();
+    final store = ScheduleStore(File('$support/KeJian/schedule.json'));
     await store.load();
     return store;
   }

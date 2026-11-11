@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -100,6 +101,36 @@ class _SettingsPageState extends State<SettingsPage> {
           SectionCard(
             title: '本地数据读取失败',
             children: [Text(widget.store.loadError ?? '请先导出原始数据，再通过有效备份恢复。')],
+          ),
+        if (kIsWeb)
+          SectionCard(
+            title: '梅课网页版',
+            children: [
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.install_mobile_outlined),
+                title: const Text('添加到 iPhone 主屏幕'),
+                subtitle: const Text('Safari → 分享 → 添加到主屏幕'),
+                onTap: () => showDialog<void>(
+                  context: context,
+                  builder: (ctx) => AlertDialog(
+                    title: const Text('像 App 一样打开梅课'),
+                    content: const Text(
+                      '用 Safari 打开梅课网址，点击分享，选择「添加到主屏幕」。如有「作为网页 App 打开」，请将它开启。\n\n首次访问请保持联网，等待离线资源就绪。添加前建议先导出备份，必要时在主屏幕应用中恢复。',
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(ctx),
+                        child: const Text('知道了'),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const Text(
+                '课表和外观保存在当前浏览器中，不会自动上传。离线资源就绪后可断网查看和编辑。清理网站数据、浏览器存储回收或更换网址可能导致数据丢失，请定期导出备份。',
+              ),
+            ],
           ),
         SectionCard(
           title: '学期与作息',
@@ -233,8 +264,9 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
         SectionCard(
           title: '数据备份',
-          footer:
-              '数据仅保存在本机，不需要账号。删除 App 会删除本机数据，请定期导出备份。可导入原 SwiftUI 版的 JSON 备份。',
+          footer: kIsWeb
+              ? '课表保存在当前浏览器。清理网站数据或浏览器回收存储可能导致数据丢失，请定期导出备份。可导入梅课手机 App 的 JSON 备份。'
+              : '数据仅保存在本机，不需要账号。删除 App 会删除本机数据，请定期导出备份。可导入原 SwiftUI 版的 JSON 备份。',
           children: [
             ListTile(
               contentPadding: EdgeInsets.zero,

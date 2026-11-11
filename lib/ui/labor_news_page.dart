@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'web_school_page.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
@@ -23,6 +25,7 @@ class _LaborNewsPageState extends State<LaborNewsPage> {
   @override
   void initState() {
     super.initState();
+    if (kIsWeb) return;
     controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..addJavaScriptChannel('MeiKeLaborNews', onMessageReceived: receive)
@@ -156,51 +159,59 @@ class _LaborNewsPageState extends State<LaborNewsPage> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      title: Text(widget.sync ? '同步劳动教育课程' : '劳动教育选课'),
-      actions: [
-        IconButton(
-          tooltip: '学校选课首页',
-          icon: const Icon(Icons.home_outlined),
-          onPressed: () => controller.loadRequest(Uri.parse(laborNewsUrl)),
-        ),
-        IconButton(
-          tooltip: '刷新',
-          icon: const Icon(Icons.refresh),
-          onPressed: () => controller.reload(),
-        ),
-      ],
-    ),
-    body: Column(
-      children: [
-        if (progress < 100) LinearProgressIndicator(value: progress / 100),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-          child: Text(
-            status ??
-                (widget.sync
-                    ? '在学校网页完成登录，课程列表出现后会自动读取。'
-                    : '在学校网页手动选课，报名结果以学校平台为准。'),
+  Widget build(BuildContext context) => kIsWeb
+      ? WebSchoolPage(
+          title: '劳动教育',
+          url: laborNewsUrl,
+          message: '网页版在学校官网查看与选课；自动读取劳动教育列表请使用梅课手机 App。',
+        )
+      : Scaffold(
+          appBar: AppBar(
+            title: Text(widget.sync ? '同步劳动教育课程' : '劳动教育选课'),
+            actions: [
+              IconButton(
+                tooltip: '学校选课首页',
+                icon: const Icon(Icons.home_outlined),
+                onPressed: () =>
+                    controller.loadRequest(Uri.parse(laborNewsUrl)),
+              ),
+              IconButton(
+                tooltip: '刷新',
+                icon: const Icon(Icons.refresh),
+                onPressed: () => controller.reload(),
+              ),
+            ],
           ),
-        ),
-        Expanded(child: WebViewWidget(controller: controller)),
-        if (widget.sync)
-          SafeArea(
-            top: false,
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: SizedBox(
-                width: double.infinity,
-                child: FilledButton.icon(
-                  onPressed: reading ? null : read,
-                  icon: const Icon(Icons.sync),
-                  label: Text(reading ? '正在读取…' : '读取课程通知'),
+          body: Column(
+            children: [
+              if (progress < 100)
+                LinearProgressIndicator(value: progress / 100),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                child: Text(
+                  status ??
+                      (widget.sync
+                          ? '在学校网页完成登录，课程列表出现后会自动读取。'
+                          : '在学校网页手动选课，报名结果以学校平台为准。'),
                 ),
               ),
-            ),
+              Expanded(child: WebViewWidget(controller: controller)),
+              if (widget.sync)
+                SafeArea(
+                  top: false,
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: FilledButton.icon(
+                        onPressed: reading ? null : read,
+                        icon: const Icon(Icons.sync),
+                        label: Text(reading ? '正在读取…' : '读取课程通知'),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
           ),
-      ],
-    ),
-  );
+        );
 }

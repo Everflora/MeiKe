@@ -1,4 +1,6 @@
-import 'dart:io';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'web_school_page.dart';
+import '../platform/io.dart';
 import 'package:flutter/material.dart';
 import '../data/news_store.dart';
 import '../data/schedule_store.dart';
@@ -76,8 +78,16 @@ class _NewsSectionsState extends State<NewsPage> {
         child: IndexedStack(
           index: selected,
           children: [
-            LaborNewsPanel(store: widget.store),
-            jwcOpened
+            kIsWeb
+                ? const WebSchoolPage(
+                    title: '劳动教育',
+                    url: laborNewsUrl,
+                    message: '请在学校官网查看劳动教育课程并完成选课。网页版暂不能读取学校登录后的课程列表或同步选课结果。',
+                  )
+                : LaborNewsPanel(store: widget.store),
+            kIsWeb
+                ? const WebJwcPanel()
+                : jwcOpened
                 ? JwcNewsPanel(
                     file: File(
                       '${widget.store.file.parent.path}/jwc-news.json',
@@ -129,7 +139,7 @@ class _NewsSectionsState extends State<NewsPage> {
                           ),
                           const SizedBox(height: 4),
                           Image.asset(
-                            'assets/nai-family/${const ['chicken-garden', 'mouse-blackboard', 'egg-calendar', 'mouse-blackboard'][i]}.webp',
+                            'assets/nai-family/${const ['chicken-garden', 'mouse-blackboard', 'egg-calendar', 'frog-lecture'][i]}.webp',
                             height: 82,
                             width: double.infinity,
                             fit: BoxFit.contain,

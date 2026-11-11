@@ -17,6 +17,19 @@ Everflora 团队的 SEU 校园课程表项目。当前工程是从 SwiftUI 1.1.1
 
 学校课表导入使用学校网页登录；讨论室提供聊天与课程组队，新闻提供劳动教育选课及教务处通知。尚未包含独立学籍账号、课表云同步、全校空教室、考试数据同步、AI 识别、小组件和悬浮窗。
 
+## GitHub Pages 网页版（PWA）
+
+正式网址：[梅课网页版](https://everflora.github.io/MeiKe-web/)。
+
+支持浏览器课表保存、课程编辑、JSON 备份迁移、三套主题和离线资源缓存，可由 iPhone Safari 添加到主屏幕。网页端不会读取学校网页登录会话；学校课程请手动添加或从手机 App 导出 JSON 后导入。讨论室默认关闭；可复用现有服务器，先按 [服务器网页接入说明](server/WEB_CLIENT.md) 开放指定来源，再通过 `MEIKE_DISCUSSION_API` 构建启用讨论的版本。
+
+```sh
+flutter pub get --enforce-lockfile
+bash tool/pwa/build.sh /MeiKe-web/
+```
+
+发布产物位于 `build/pages-repository/`，包含 GitHub Pages 工作流；不包含 Dart 源码和后端源码。私有源码仓库继续保持私有，免费 Pages 可使用独立的公开产物仓库。完整功能范围、安装、离线行为和发布步骤见 [网页版说明](docs/PWA.md)。
+
 ## 奶家日常主题
 
 在「我的 → 外观 → 主题」选择「奶家日常」。五个页面使用奶动物导航，课表显示当前课程高亮与奶蛋探头，「今天」使用黄色状态卡，讨论与校园使用角色插画。

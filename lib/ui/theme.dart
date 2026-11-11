@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -166,7 +167,11 @@ ThemeData meikeTheme(
         outline: p.line,
         outlineVariant: p.line,
       );
-  final base = ThemeData(useMaterial3: true, colorScheme: scheme);
+  final base = ThemeData(
+    useMaterial3: true,
+    colorScheme: scheme,
+    fontFamily: kIsWeb ? 'MeikeWebSans' : null,
+  );
   final text = base.textTheme
       .apply(bodyColor: p.ink, displayColor: p.ink)
       .copyWith(
