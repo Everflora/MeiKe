@@ -29,7 +29,7 @@ void main() {
     await dir.delete(recursive: true);
   });
 
-  test('旧版深色设置迁移为青梅，主题和显示模式独立保存', () async {
+  test('旧版深色设置使用奶家日常默认主题，主题和显示模式独立保存', () async {
     final dir = await Directory.systemTemp.createTemp('meike-migrate-');
     addTearDown(() => dir.delete(recursive: true));
     final file = File('${dir.path}/appearance.txt');
@@ -38,7 +38,7 @@ void main() {
     addTearDown(settings.dispose);
     await settings.load();
     expect(settings.mode, ThemeMode.dark);
-    expect(settings.theme, MeikeTheme.plum);
+    expect(settings.theme, MeikeTheme.naiFamily);
     await settings.setTheme(MeikeTheme.ginkgo);
     expect(settings.mode, ThemeMode.dark);
     final reopened = AppearanceController(file);
@@ -52,11 +52,11 @@ void main() {
     expect(settings.mode, ThemeMode.system);
     await file.writeAsString('{"theme":"missing","mode":"light"}');
     await settings.load();
-    expect(settings.theme, MeikeTheme.plum);
+    expect(settings.theme, MeikeTheme.naiFamily);
     expect(settings.mode, ThemeMode.light);
     await file.writeAsString('{broken');
     await settings.load();
-    expect(settings.theme, MeikeTheme.plum);
+    expect(settings.theme, MeikeTheme.naiFamily);
     expect(settings.mode, ThemeMode.system);
   });
 

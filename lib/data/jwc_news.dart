@@ -79,12 +79,22 @@ class JwcPage {
     }
     final items = <JwcNotice>[];
     final seen = <String>{};
-    for (final row in doc.querySelectorAll('tr')) {
+    final modernRows = doc.querySelectorAll('.news-list-item');
+    for (final row
+        in modernRows.isNotEmpty ? modernRows : doc.querySelectorAll('tr')) {
       final cells = row.children.where((e) => e.localName == 'td').toList();
-      if (cells.length != 3) continue;
-      final date = cells.last.text.trim();
-      if (!RegExp(r'^\d{4}-\d{2}-\d{2}$').hasMatch(date)) continue;
-      final links = cells[1].querySelectorAll('a[href]');
+      final modern = modernRows.isNotEmpty;
+      if (!modern && cells.length != 3) continue;
+      final date = modern
+          ? row.querySelector('.news-item-date-ym')?.text.trim() ?? ''
+          : cells.last.text.trim();
+      if (!RegExp(r'^\d{4}-\d{2}-\d{2}$').hasMatch(date)) {
+        if (modern) throw const FormatException('通知日期无法识别，原列表已保留。');
+        continue;
+      }
+      final links = modern
+          ? row.querySelectorAll('.news-item-title a[href]')
+          : cells[1].querySelectorAll('a[href]');
       if (links.isEmpty) throw const FormatException('通知链接缺失，未更新列表。');
       final link = links.last;
       final title = (link.attributes['title'] ?? link.text)
