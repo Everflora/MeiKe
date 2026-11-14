@@ -10,6 +10,13 @@
   </p>
 </div>
 
+## 手机 App 实机截图
+
+| 整周课表 | 劳动教育 | 素质讲座 |
+| :---: | :---: | :---: |
+| <img src="https://raw.githubusercontent.com/Everflora/MeiKe-site/b6b794fc2bf3561c24888b116f5bfb2c63281643/assets/app-timetable.jpg" width="220" alt="整周课表实机截图"> | <img src="https://raw.githubusercontent.com/Everflora/MeiKe-site/b6b794fc2bf3561c24888b116f5bfb2c63281643/assets/app-campus.jpg" width="220" alt="劳动教育实机截图"> | <img src="https://raw.githubusercontent.com/Everflora/MeiKe-site/b6b794fc2bf3561c24888b116f5bfb2c63281643/assets/app-lectures.jpg" width="220" alt="素质讲座实机截图"> |
+
+
 ## 功能概览
 
 | 模块 | 功能 |
